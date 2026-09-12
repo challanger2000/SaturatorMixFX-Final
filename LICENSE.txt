@@ -1,0 +1,15 @@
+125A SMX-3 Freeware License
+
+Copyright (c) 2026 125A / challanger2000
+
+SMX-3 is freeware. You may use the compiled plug-ins free of charge for personal and commercial music production.
+
+You may redistribute the original unmodified SMX-3 package free of charge, provided that this license and the accompanying documentation remain included.
+
+You may not sell, rent, relicense, bundle for payment, or otherwise commercially redistribute SMX-3 itself without prior permission from the copyright holder.
+
+You may not present SMX-3 as your own work or remove the 125A attribution.
+
+The software is provided "as is", without warranty of any kind. Use is at your own risk. The copyright holder is not liable for damages arising from use of the software.
+
+Third-party names and trademarks mentioned in the documentation belong to their respective owners. SMX-3 is not affiliated with or endorsed by PreSonus, Fender, or Steinberg.
