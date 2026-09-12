@@ -1,0 +1,9 @@
+build/
+build-*/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+*.zip
+.DS_Store
