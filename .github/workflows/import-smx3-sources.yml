@@ -55,3 +55,4 @@ jobs:
             git commit -m "Import complete SMX-3 Channel and Mix FX sources"
             git push
           fi
+# import trigger
