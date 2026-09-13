@@ -1,0 +1,57 @@
+name: Import SMX-3 source trees
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-smx3-sources.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout final repository
+        uses: actions/checkout@v4
+        with:
+          path: final
+
+      - name: Checkout SMX-3 Channel source at tested 0.1.0 baseline
+        uses: actions/checkout@v4
+        with:
+          repository: challanger2000/SaturatorMixFX
+          ref: defa042e659e3315e1b2bfa355ae0513db722be9
+          path: channel
+
+      - name: Checkout SMX-3 Mix FX source
+        uses: actions/checkout@v4
+        with:
+          repository: challanger2000/SaturatorMixFX
+          ref: 8d1ff819ca2af7cf3a2c7d9cb3c57d30e95fd661
+          path: mixfx
+
+      - name: Copy complete source trees into Final
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf final/SMX-3-Channel final/SMX-3-MixFX
+          mkdir -p final/SMX-3-Channel final/SMX-3-MixFX
+          rsync -a --exclude='.git' --exclude='.github' channel/ final/SMX-3-Channel/
+          rsync -a --exclude='.git' --exclude='.github' mixfx/ final/SMX-3-MixFX/
+
+      - name: Commit imported project sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd final
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add SMX-3-Channel SMX-3-MixFX
+          if git diff --cached --quiet; then
+            echo "Nothing to import."
+          else
+            git commit -m "Import complete SMX-3 Channel and Mix FX sources"
+            git push
+          fi
