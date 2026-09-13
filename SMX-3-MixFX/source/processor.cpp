@@ -185,7 +185,7 @@ tresult PLUGIN_API Processor::setProcessing(TBool state)
     }
 
     processing_ = shouldProcess;
-    return AudioEffect::setProcessing(state);
+    return kResultOk;
 }
 
 void Processor::resetDsp()
