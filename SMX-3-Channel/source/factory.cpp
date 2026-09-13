@@ -10,8 +10,8 @@
 using namespace Steinberg;
 using namespace Steinberg::Vst;
 
-BEGIN_FACTORY_DEF("challanger2000",
-                  "https://github.com/challanger2000/SaturatorMixFX",
+BEGIN_FACTORY_DEF("125A",
+                  "https://github.com/challanger2000/SaturatorMixFX-Final",
                   "")
 
 DEF_CLASS2(INLINE_UID_FROM_FUID(SaturatorMixFX::kProcessorUID),
