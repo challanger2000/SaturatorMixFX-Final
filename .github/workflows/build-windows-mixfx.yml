@@ -1,0 +1,79 @@
+name: Build SMX-3 Mix FX Windows VST3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout Final repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Steinberg VST3 SDK
+        uses: actions/checkout@v4
+        with:
+          repository: steinbergmedia/vst3sdk
+          ref: 3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96
+          path: vst3sdk
+          submodules: recursive
+
+      - name: Configure SMX-3 Mix FX
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-MixFX -B build-mixfx
+          -G "Visual Studio 17 2022"
+          -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Release
+        run: cmake --build build-mixfx --config Release --target SMX-3-MixFX
+
+      - name: Build VST3 Validator
+        run: cmake --build build-mixfx --config Release --target validator
+
+      - name: Run VST3 Validator
+        shell: pwsh
+        run: |
+          $validator = Get-ChildItem -Path build-mixfx -Recurse -File -Filter validator.exe | Select-Object -First 1
+          if (-not $validator) {
+            throw "validator.exe not found after validator target build"
+          }
+
+          $plugin = Get-ChildItem -Path build-mixfx -Recurse -Directory -Filter SMX-3-MixFX.vst3 | Select-Object -First 1
+          if (-not $plugin) {
+            throw "SMX-3-MixFX.vst3 not found after plugin build"
+          }
+
+          Write-Host "Validator: $($validator.FullName)"
+          Write-Host "Plugin:    $($plugin.FullName)"
+
+          & $validator.FullName $plugin.FullName 2>&1 | Tee-Object -FilePath validator-mixfx.log
+          $validatorExit = $LASTEXITCODE
+
+          $log = Get-Content validator-mixfx.log -Raw
+          if ($log -match 'Result:\s+0 tests passed,\s+0 tests failed') {
+            Write-Error "Validator created zero plugin tests."
+            exit 2
+          }
+
+          if ($validatorExit -ne 0) {
+            exit $validatorExit
+          }
+
+      - name: Upload Validator Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX-3-MixFX-Validator-Log
+          path: validator-mixfx.log
+          if-no-files-found: warn
+
+      - name: Upload VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX-3-MixFX-0.1.1-Windows-x64
+          path: build-mixfx/**/*.vst3
+          if-no-files-found: error
