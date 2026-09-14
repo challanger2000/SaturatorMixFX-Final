@@ -1,0 +1,13 @@
+125A SMX-3 0.1.1 - Installation (Windows x64)
+
+Das Paket enthält zwei Plug-ins:
+- SMX-3 Channel: normaler VST3-Insert
+- SMX-3 Mix FX: spezielle Mix-FX-Variante für Studio One / Fender Studio
+
+1. ZIP vollständig entpacken.
+2. Beide kompletten `.vst3`-Bundles nach `C:\Program Files\Common Files\VST3` kopieren.
+3. Studio One / Fender Studio neu starten oder VST3-Rescan ausführen.
+4. SMX-3 Channel als normalen Insert laden.
+5. SMX-3 Mix FX im Mix-FX-Slot des Hosts laden.
+
+Nicht einzelne Dateien aus den .vst3-Bundles herauskopieren. Vor dem Ersetzen einer älteren Version den Host schließen.
