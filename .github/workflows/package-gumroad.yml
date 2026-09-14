@@ -1,0 +1,73 @@
+name: Package Gumroad Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/package-gumroad.yml'
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Gold Master
+        uses: actions/checkout@v4
+
+      - name: Checkout Steinberg VST3 SDK
+        uses: actions/checkout@v4
+        with:
+          repository: steinbergmedia/vst3sdk
+          ref: 3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96
+          path: vst3sdk
+          submodules: recursive
+
+      - name: Configure Channel
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-Channel -B build-channel
+          -G "Visual Studio 17 2022" -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Channel
+        run: cmake --build build-channel --config Release --target SMX-3-Channel
+
+      - name: Configure Mix FX
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-MixFX -B build-mixfx
+          -G "Visual Studio 17 2022" -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Mix FX
+        run: cmake --build build-mixfx --config Release --target SMX-3-MixFX
+
+      - name: Assemble release package
+        shell: pwsh
+        run: |
+          $channel = Get-ChildItem -Path build-channel -Recurse -Directory -Filter SMX-3-Channel.vst3 | Select-Object -First 1
+          $mixfx = Get-ChildItem -Path build-mixfx -Recurse -Directory -Filter SMX-3-MixFX.vst3 | Select-Object -First 1
+          if (-not $channel) { throw "SMX-3-Channel.vst3 bundle not found" }
+          if (-not $mixfx) { throw "SMX-3-MixFX.vst3 bundle not found" }
+          $root = "release/125A_SMX-3_v0.1.1_Windows_x64"
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          Copy-Item -Path $channel.FullName -Destination $root -Recurse -Force
+          Copy-Item -Path $mixfx.FullName -Destination $root -Recurse -Force
+          Copy-Item README.md, LICENSE.txt, INSTALL_DE.txt, INSTALL_EN.txt -Destination $root
+          Copy-Item docs/SMX-3_Handbuch_DE.pdf, docs/SMX-3_Manual_EN.pdf -Destination $root
+          Get-ChildItem $root -Recurse -File | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            $rel = $_.FullName.Substring((Resolve-Path $root).Path.Length + 1).Replace('\','/')
+            "$hash  $rel"
+          } | Set-Content -Encoding ascii "$root/SHA256SUMS.txt"
+          Compress-Archive -Path $root -DestinationPath release/125A_SMX-3_v0.1.1_Windows_x64_Gumroad.zip -CompressionLevel Optimal
+
+      - name: Upload Gumroad package
+        uses: actions/upload-artifact@v4
+        with:
+          name: 125A_SMX-3_v0.1.1_Windows_x64_Gumroad
+          path: release/125A_SMX-3_v0.1.1_Windows_x64_Gumroad.zip
+          if-no-files-found: error
