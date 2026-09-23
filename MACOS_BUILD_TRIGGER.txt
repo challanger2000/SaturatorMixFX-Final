@@ -1,0 +1,8 @@
+125A SMX-3 v0.1.1 macOS Universal VST3 build trigger
+
+Gold-master reference: 125A_SMX-3_v0.1.1_Windows_x64_Gumroad.zip
+Confirmed source baseline: main @ 98e3d7d0fa7eca2b2104b78c7ffc99cf06cf117d
+Target branch: macos/universal-vst3
+Products:
+- SMX-3 Channel
+- SMX-3 Mix FX
