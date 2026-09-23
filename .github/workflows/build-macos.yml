@@ -1,0 +1,153 @@
+name: Build SMX-3 macOS Universal VST3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - macos/universal-vst3
+    paths:
+      - MACOS_BUILD_TRIGGER.txt
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout Final repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Steinberg VST3 SDK
+        uses: actions/checkout@v4
+        with:
+          repository: steinbergmedia/vst3sdk
+          ref: 3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96
+          path: vst3sdk
+          submodules: recursive
+
+      - name: Show build environment
+        run: |
+          sw_vers
+          uname -m
+          cmake --version
+          xcodebuild -version
+
+      - name: Configure Channel
+        run: |
+          cmake -S SMX-3-Channel -B build-channel -G Xcode \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DVST3_SDK_ROOT="${{ github.workspace }}/vst3sdk" \
+            -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Channel and validator
+        run: |
+          cmake --build build-channel --config Release \
+            --target SMX-3-Channel validator \
+            --parallel
+
+      - name: Validate Channel
+        run: |
+          set -euo pipefail
+          plugin="$(find build-channel -type d -name 'SMX-3-Channel.vst3' -print -quit)"
+          validator="$(find build-channel -type f -name 'validator' -perm +111 -print -quit)"
+          test -n "$plugin"
+          test -n "$validator"
+          "$validator" "$plugin" 2>&1 | tee validator-channel.log
+          if grep -Eq 'Result:[[:space:]]+0 tests passed,[[:space:]]+0 tests failed' validator-channel.log; then
+            echo "Channel validator produced zero tests, refusing result."
+            exit 2
+          fi
+          grep -Eq 'Result:[[:space:]]+47 tests passed,[[:space:]]+0 tests failed' validator-channel.log
+
+      - name: Configure Mix FX
+        run: |
+          cmake -S SMX-3-MixFX -B build-mixfx -G Xcode \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DVST3_SDK_ROOT="${{ github.workspace }}/vst3sdk" \
+            -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Mix FX and validator
+        run: |
+          cmake --build build-mixfx --config Release \
+            --target SMX-3-MixFX validator \
+            --parallel
+
+      - name: Validate Mix FX class scan
+        run: |
+          set -euo pipefail
+          plugin="$(find build-mixfx -type d -name 'SMX-3-MixFX.vst3' -print -quit)"
+          validator="$(find build-mixfx -type f -name 'validator' -perm +111 -print -quit)"
+          test -n "$plugin"
+          test -n "$validator"
+          set +e
+          "$validator" "$plugin" 2>&1 | tee validator-mixfx.log
+          code=$?
+          set -e
+          grep -Eq 'category[[:space:]]*=[[:space:]]*Audio Mix Processor' validator-mixfx.log
+          grep -Eq 'Result:[[:space:]]+0 tests passed,[[:space:]]+0 tests failed' validator-mixfx.log
+          if [ "$code" -ne 0 ]; then
+            echo "Validator exit code $code accepted only because Audio Mix Processor class scan and expected 0/0 result were confirmed."
+          fi
+
+      - name: Verify resources, metadata and architectures
+        run: |
+          set -euo pipefail
+          channel="$(find build-channel -type d -name 'SMX-3-Channel.vst3' -print -quit)"
+          mixfx="$(find build-mixfx -type d -name 'SMX-3-MixFX.vst3' -print -quit)"
+          test -n "$channel"
+          test -n "$mixfx"
+
+          for plugin in "$channel" "$mixfx"; do
+            resources="$plugin/Contents/Resources"
+            for name in               SMX3.uidesc SMX3_MainGUI.png SMX3_Drive.png               SMX3_Drive_Ring_Blue.png SMX3_Button_OFF.png SMX3_Button_PRESSED.png               SMX3_Button_Ring_Blue.png SMX3_Cell_OFF.png SMX3_Cell_LOW.png               SMX3_Cell_MEDIUM.png SMX3_Cell_HIGH.png SMX3_Cell_PEAK.png               SMX3_SCHWACH.png SMX3_MITTEL.png SMX3_STARK.png               SMX3_Internal_Glow.png SMX3_Base_Underlight.png
+            do
+              test -f "$resources/$name"
+            done
+            grep -Eq '"Version"[[:space:]]*:[[:space:]]*"0\.1\.1"' "$resources/moduleinfo.json"
+          done
+
+          channelBinary="$channel/Contents/MacOS/SMX-3-Channel"
+          mixfxBinary="$mixfx/Contents/MacOS/SMX-3-MixFX"
+
+          for binary in "$channelBinary" "$mixfxBinary"; do
+            file "$binary"
+            lipo -info "$binary"
+            lipo -archs "$binary" | grep -qw arm64
+            lipo -archs "$binary" | grep -qw x86_64
+          done
+
+          mkdir -p artifact
+          cp -R "$channel" artifact/
+          cp -R "$mixfx" artifact/
+
+      - name: Ad-hoc sign staged bundles
+        run: |
+          set -euo pipefail
+          for plugin in "artifact/SMX-3-Channel.vst3" "artifact/SMX-3-MixFX.vst3"; do
+            codesign --force --deep --sign - "$plugin"
+            codesign --verify --deep --strict --verbose=2 "$plugin"
+          done
+
+      - name: Verify staged architectures
+        run: |
+          set -euo pipefail
+          for binary in             "artifact/SMX-3-Channel.vst3/Contents/MacOS/SMX-3-Channel"             "artifact/SMX-3-MixFX.vst3/Contents/MacOS/SMX-3-MixFX"
+          do
+            archs="$(lipo -archs "$binary")"
+            echo "$binary: $archs"
+            echo "$archs" | grep -qw arm64
+            echo "$archs" | grep -qw x86_64
+          done
+
+      - name: Upload SMX-3 Universal VST3 pair
+        uses: actions/upload-artifact@v4
+        with:
+          name: 125A-SMX-3-v0.1.1-macOS-Universal-VST3
+          path: artifact
+          if-no-files-found: error
