@@ -149,7 +149,7 @@ def main():
     # coercive field are unambiguous.
     n = args.steps
     descending = rows[n:2*n+1]
-    remanence = interpolate_zero_cross([(M,H) for H,M in descending], 1)  # M at H=0
+    remanence = interpolate_zero_cross(descending, 0)  # M at H=0
     coercive = interpolate_zero_cross(descending, 1)  # H at M=0
 
     max_abs_m = max(abs(M) for _,M in rows)
