@@ -177,3 +177,51 @@ Published candidate parameters:
 - KVB=30
 
 The model is fitted to the Philips/Mullard 250 V / 140 V / -2.2 V device anchor, not to the full plate-curve family. It must therefore be treated as a useful independent baseline, not hardware ground truth.
+
+
+### Cohen & Helie — Real-Time Simulation of a Guitar Power Amplifier
+DAFx-2010
+URL: https://www.dafx.de/paper-archive/2010/DAFx10/CohenHelie_DAFx10_P45.pdf
+Evidence use: implementation-method comparison
+
+Relevant points:
+- treats pentode/beam-tetrode current models as phenomenological curve fits rather than fundamental hardware laws;
+- notes that correct knee behaviour materially affects realism;
+- models control-grid current with a smooth diode-like transition;
+- uses extended nonlinear state-space equations and implicit numerical treatment for realtime circuit simulation;
+- reports that pentode/tetrode parasitic capacitances have much less audible-band influence than triode Miller capacitance in the studied power-stage context.
+
+Use in SMX-3:
+- support for explicit knee validation;
+- support for treating grid current as a separate large-signal mechanism;
+- numerical-method reference only, not an EF86 parameter source.
+
+### Valve Wizard — Small Signal Pentode design notes
+URL: https://www.valvewizard.co.uk/pentode.html
+Evidence use: secondary engineering interpretation / sanity check
+
+Relevant points:
+- screen voltage materially changes the plate-curve family;
+- screen current is part of cathode current and changes operating point;
+- the EF86 example uses the data-sheet ratio around Ia=3.0 mA / Ig2=0.6 mA away from the knee;
+- screen bypassing materially affects stage gain;
+- plate-curve knee/load-line placement changes headroom and asymmetry.
+
+Use in SMX-3:
+- topology sanity checks and interpretation only;
+- not a replacement for Philips manufacturer curves.
+
+### Image-fitted EF86 SPICE model family (diyAudio / paint_kip)
+Example source:
+https://www.diyaudio.com/community/threads/vacuum-tube-spice-models.243950/page-93
+
+Evidence use: comparison candidate / model-family research only
+
+Why useful:
+- explicitly fitted to published EF86 plate-curve images;
+- adds independent knee, plate-slope and kink terms beyond classic six-parameter Koren;
+- demonstrates that higher-fidelity curve matching generally needs more degrees of freedom than the simple Koren form.
+
+Restriction:
+- community-derived parameters are not treated as primary hardware evidence;
+- no production parameter is copied merely because it exists in a SPICE model.
