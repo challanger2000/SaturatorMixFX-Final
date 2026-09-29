@@ -32,3 +32,22 @@ iron,Jensen JT-11P-1,secondary,DC_resistance_typ,1.55,kOhm,DOCUMENTED,Jensen dat
 iron,Jensen JT-11P-1,primary_to_shield_case,capacitance_typ,98,pF,DOCUMENTED,Jensen datasheet
 iron,Jensen JT-11P-1,secondary_to_shield_case,capacitance_typ,110,pF,DOCUMENTED,Jensen datasheet
 iron,Jensen JT-11P-1,turns,turns_ratio_typ,1.000,ratio,DOCUMENTED,Jensen datasheet
+
+pentode,EF86,Philips RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,cathode_current,3.2,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,140,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,max_output,85,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,cathode_current,2.75,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,134,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,max_output,74,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,cathode_current,2.4,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,129,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,max_output,62,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,cathode_current,2,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,123,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,max_output,50,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,cathode_current,1.55,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,117,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,max_output,38,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,cathode_current,1.05,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,110,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,max_output,27,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
