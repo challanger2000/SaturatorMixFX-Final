@@ -135,11 +135,11 @@ From the Mullard "Typical Operating Conditions" table for EF86 as an R-C coupled
 
 - B+ / supply: 250 V — DOCUMENTED
 - anode resistor Ra: 100 kOhm — DOCUMENTED
-- cathode current Ik: approximately 2.0 mA — DOCUMENTED
+- cathode current Ik: approximately 2.1 mA in the 1956 Philips sheet — DOCUMENTED
 - screen-grid feed resistor Rg2: 390 kOhm — DOCUMENTED
 - cathode resistor Rk: 1.0 kOhm — DOCUMENTED
 - following-stage grid resistor: 330 kOhm — DOCUMENTED
-- small-signal voltage gain: approximately 123 V/V — DOCUMENTED
+- small-signal voltage gain: approximately 112 V/V in the 1956 Philips sheet — DOCUMENTED
 - documented maximum output: approximately 50 Vrms — DOCUMENTED
 - documented distortion at that maximum-output condition: approximately 5 % — DOCUMENTED
 
@@ -282,3 +282,25 @@ IRON:
 - fit low-frequency level dependence before any realtime simplification.
 
 Only after these gates may production V2 DSP replace the V1 character engines.
+
+
+### EF86 manufacturer-edition note
+
+Do not collapse all Philips/Mullard EF86 publications into one synthetic target.
+
+Primary fitting edition:
+- Philips EF86 sheet dated 4 April 1956.
+
+For circuit 1 at Vb=250 V it documents:
+- Ik = 2.1 mA
+- small-signal Vo/Vi = 112
+- Vo = 50 Vrms
+- dtot = 5 %
+
+A later Philips receiving-tube handbook gives approximately:
+- Ik = 2.0 mA
+- gain = 123
+- Vo = 50 Vrms
+- dtot = 5 %
+
+Treat the later data as an independent manufacturer cross-check / production-family spread, not as a replacement for the 1956 curve set.
