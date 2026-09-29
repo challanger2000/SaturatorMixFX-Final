@@ -88,3 +88,37 @@ No approach is promoted to production merely because:
 - it matches one data point.
 
 Promotion requires multi-point agreement with the selected primary hardware evidence plus realtime/host QA.
+
+
+## New research decisions
+
+### Provisional refitted EF86 Koren-form candidate
+Status: ACCEPTED AS PROVISIONAL MULTI-ANCHOR CANDIDATE; NOT FINAL
+
+Reason:
+- one parameter set reproduces the Philips-1956 device point closely;
+- reproduces Ia, Ig2 and gm near the selected device anchor;
+- reproduces circuit-1 cathode current across Vb=200..400 V within about 4.4% worst-case;
+- reproduces circuit-1 small-signal gain across the same sweep within about 1.6% worst-case;
+- no per-supply gain trim is used.
+
+Not promoted because:
+- full Ia(Va,Vg1) plate-curve family has not yet been included or validated;
+- knee/output-resistance and large-signal distortion behavior are therefore not proven.
+
+### DAFx example Jiles-Atherton shape scaled to Jensen
+Status: REJECTED AS JT-11P-1 FIT
+
+Reason:
+- geometry/field scaling can make +20 dBu/20 Hz land near Jensen's 1% THD anchor;
+- the same scaled model predicts about 0.153% at +4 dBu/20 Hz versus Jensen's ~0.025%;
+- therefore the hysteresis SHAPE itself is wrong for the target, despite a correct qualitative frequency trend.
+
+Retain:
+- the coupled electrical/magnetic solver architecture;
+- the low-level Lm constraint;
+- the composite geometry parameterization;
+- Jiles-Atherton as a model family.
+
+Next requirement:
+fit magnetic shape parameters to the full Jensen multi-level/multi-frequency curve set.
