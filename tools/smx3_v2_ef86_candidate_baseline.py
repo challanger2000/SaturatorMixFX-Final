@@ -39,13 +39,13 @@ PHILIPS_AMP = {
     "next_grid_ohm": 330000.0,
 }
 
+# Primary amplifier-fit targets: original Philips sheet dated 4-Apr-1956.
 PHILIPS_SWEEP = {
-    400.0: {"ik_a":0.00320, "gain_abs":140.0},
-    350.0: {"ik_a":0.00275, "gain_abs":134.0},
-    300.0: {"ik_a":0.00240, "gain_abs":129.0},
-    250.0: {"ik_a":0.00200, "gain_abs":123.0},
-    200.0: {"ik_a":0.00155, "gain_abs":117.0},
-    150.0: {"ik_a":0.00105, "gain_abs":110.0},
+    400.0: {"ik_a":0.00330, "gain_abs":124.0},
+    350.0: {"ik_a":0.00290, "gain_abs":120.0},
+    300.0: {"ik_a":0.00250, "gain_abs":116.0},
+    250.0: {"ik_a":0.00210, "gain_abs":112.0},
+    200.0: {"ik_a":0.00170, "gain_abs":106.0},
 }
 
 
