@@ -147,3 +147,33 @@ A source is not considered an implementation authority until:
 3. a standalone reference calculation reproduces at least one published/table/curve result within a documented tolerance;
 4. units/sign conventions are verified;
 5. the realtime implementation is compared back to that reference calculation.
+
+
+### Philips Electron Tubes Part 4 — EF86 operating characteristics (May 1973)
+URL: https://frank.pocnet.net/other/Philips/elcoma/Philips_ElectronTubes_4_1975-03.pdf
+Type: manufacturer receiving-tube handbook
+Evidence use: DOCUMENTED
+
+For the selected EF86 R-C amplifier at Vb=250 V, Ra=100 kOhm, Rg2=390 kOhm, Rk=1 kOhm, next-stage grid resistor=330 kOhm, the table gives:
+- Ik = 2.0 mA
+- small-signal voltage gain = 123 V/V
+- output voltage = 50 Vrms
+- total distortion = 5 % at the stated maximum-output condition
+
+This source also supplies the same circuit over Vb=150..400 V, which is a stronger multi-point validation target than a single operating point.
+
+### Circuit Codex EF86 CC0 Koren-fit candidate
+URL: https://github.com/TheAnalogMaker/circuit-codex/blob/main/models/ef86.inc
+Methodology: https://github.com/TheAnalogMaker/circuit-codex/blob/main/models/METHODOLOGY.md
+License stated in model: CC0 1.0 Universal
+Evidence use: comparison candidate only
+
+Published candidate parameters:
+- MU=38
+- EX=1.5
+- KG1=1051.45
+- KG2=3013.64
+- KP=143.216
+- KVB=30
+
+The model is fitted to the Philips/Mullard 250 V / 140 V / -2.2 V device anchor, not to the full plate-curve family. It must therefore be treated as a useful independent baseline, not hardware ground truth.
