@@ -146,3 +146,23 @@ This is a device-characteristic anchor and must not be confused with the self-bi
 A Koren-style equation family may be used as a candidate parameterization, but no third-party EF86 fit is accepted as ground truth.
 
 The selected model is the one that best satisfies the Philips manufacturer curves under the defined error metrics while remaining numerically stable enough for a realtime implementation or a justified reduced surrogate.
+
+
+## Exact 1956 circuit-1 table
+
+The original Philips sheet dated 4 April 1956 gives for:
+- Ra = 100 kOhm
+- next-stage grid resistor = 330 kOhm
+- total distortion at maximum output = 5 %
+
+| Vb | Ik | Rg2 | Rk | small-signal Vo/Vi | Vo at 5% |
+|---:|---:|---:|---:|---:|---:|
+| 400 V | 3.3 mA | 390 kOhm | 1.0 kOhm | 124 | 87 Vrms |
+| 350 V | 2.9 mA | 390 kOhm | 1.0 kOhm | 120 | 75 Vrms |
+| 300 V | 2.5 mA | 390 kOhm | 1.0 kOhm | 116 | 64 Vrms |
+| 250 V | 2.1 mA | 390 kOhm | 1.0 kOhm | 112 | 50 Vrms |
+| 200 V | 1.7 mA | 390 kOhm | 1.0 kOhm | 106 | 40 Vrms |
+
+The 100 V row changes Rg2 to 470 kOhm and Rk to 1.5 kOhm and is therefore not part of the same fixed-component sweep.
+
+These 1956 rows are the primary PENTODE amplifier-fit targets because they belong to the same edition as the selected characteristic curves.
