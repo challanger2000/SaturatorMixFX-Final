@@ -69,3 +69,34 @@ The nonlinear Jiles-Atherton model should therefore be fitted around this skelet
 2. Replace the linear magnetizing branch with the stateful magnetic model while preserving the low-level effective inductance.
 3. Fit magnetic parameters against 20/30/50 Hz THD-vs-level and +4/+14/+20 dBu THD-vs-frequency curves.
 4. Verify that nonlinear fitting does not destroy the already-correct low-level input impedance and insertion loss.
+
+
+## Flux-linkage anchors for nonlinear fitting
+
+For a sinusoidal winding voltage,
+
+v(t) = d(lambda)/dt, with lambda = N*Phi,
+
+so the peak flux linkage is
+
+lambda_peak = Vwinding_rms * sqrt(2) / (2*pi*f).
+
+Using the derived low-level 20 Hz skeleton to estimate the primary magnetic-branch voltage:
+
+| input level | input Vrms | magnetic-branch Vrms @20 Hz | lambda_peak = N*Phi_peak |
+|---:|---:|---:|---:|
+| +4 dBu | 1.22829 V | 1.08627 V | 0.0122249 Wb-turn |
+| +14 dBu | 3.88420 V | 3.43510 V | 0.0386585 Wb-turn |
+| +20 dBu | 7.75000 V | 6.85393 V | 0.0771338 Wb-turn |
+
+These values are CIRCUIT DERIVED from:
+- the documented Jensen test level;
+- documented winding DCR/load;
+- the derived effective low-level Lm.
+
+Why this matters:
+the first nonlinear magnetic fit can operate in terms of flux linkage lambda=N*Phi without inventing N and core area A separately.
+
+Only if a later solver requires absolute B and H must geometry/turns be resolved or fitted with an explicit identifiability note.
+
+The +20 dBu / 20 Hz point corresponds to the manufacturer typical 1 % THD threshold and therefore gives a particularly useful high-flux nonlinear anchor.
