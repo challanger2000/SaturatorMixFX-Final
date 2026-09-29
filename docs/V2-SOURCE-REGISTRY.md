@@ -85,6 +85,35 @@ Use for:
 Important limitation:
 - the paper targets an output transformer in a tube amplifier. SMX-3 IRON targets a studio/line transformer archetype, so topology/parameters must not be transplanted blindly.
 
+
+
+### Jensen JT-11P-1 line-input transformer
+Manufacturer selector:
+https://www.jensen-transformers.com/transformers/line-input/
+
+Manufacturer data sheet:
+https://www.jensen-transformers.com/wp-content/uploads/2014/08/jt-11p-1.pdf
+
+Type: manufacturer specification and measured curves
+Evidence use: DOCUMENTED / target curve source
+
+Documented reference points useful for IRON validation:
+- 10 kOhm : 10 kOhm nominal impedance ratio;
+- 1:1 turns ratio;
+- maximum 20 Hz input level approximately +20 dBu at 1% THD in the stated test circuit;
+- typical THD about 0.025% at 20 Hz / +4 dBu;
+- typical THD below 0.001% at 1 kHz / +4 dBu;
+- typical magnitude response approximately -0.04 dB at 20 Hz and -0.05 dB at 20 kHz relative to 1 kHz in the stated test circuit;
+- manufacturer plots provide THD vs frequency at fixed input levels and THD vs input level at fixed low frequencies.
+
+Why this is important:
+- it gives SMX-3 IRON a line-level studio-transformer reference instead of relying only on guitar-amplifier output-transformer literature;
+- the level/frequency distortion curves provide quantitative targets for frequency-dependent magnetic saturation.
+
+Rule:
+- the JT-11P-1 is a reference archetype, not a claim that SMX-3 is a component-accurate Jensen clone;
+- if its measured curves are digitized for fitting, record the digitization method and error bounds.
+
 ## Antialiasing
 
 ### Martin Holters — Antiderivative Antialiasing for Stateful Systems
