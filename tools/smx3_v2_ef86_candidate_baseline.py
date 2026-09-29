@@ -33,13 +33,19 @@ PHILIPS_DEVICE = {
 }
 
 PHILIPS_AMP = {
-    "vb_v": 250.0,
     "ra_ohm": 100000.0,
     "rg2_ohm": 390000.0,
     "rk_ohm": 1000.0,
     "next_grid_ohm": 330000.0,
-    "ik_a": 0.0020,
-    "gain_abs": 123.0,
+}
+
+PHILIPS_SWEEP = {
+    400.0: {"ik_a":0.00320, "gain_abs":140.0},
+    350.0: {"ik_a":0.00275, "gain_abs":134.0},
+    300.0: {"ik_a":0.00240, "gain_abs":129.0},
+    250.0: {"ik_a":0.00200, "gain_abs":123.0},
+    200.0: {"ik_a":0.00155, "gain_abs":117.0},
+    150.0: {"ik_a":0.00105, "gain_abs":110.0},
 }
 
 
@@ -67,8 +73,7 @@ def currents(vp, vg2, vg1):
     return ia, ig2
 
 
-def solve_dc():
-    vb = PHILIPS_AMP["vb_v"]
+def solve_dc(vb):
     ra = PHILIPS_AMP["ra_ohm"]
     rg2 = PHILIPS_AMP["rg2_ohm"]
     rk = PHILIPS_AMP["rk_ohm"]
@@ -104,13 +109,12 @@ def solve_dc():
     raise RuntimeError("DC solver did not converge")
 
 
-def solve_plate_ac(vin, dc):
+def solve_plate_ac(vin, dc, vb):
     """Low-frequency AC plate solution with cathode/screen bypassed.
 
     The 330 kOhm next-stage grid resistor loads the plate through the coupling
     capacitor for AC, so the effective plate load is Ra || 330 kOhm.
     """
-    vb = PHILIPS_AMP["vb_v"]
     ra = PHILIPS_AMP["ra_ohm"]
     rg = PHILIPS_AMP["next_grid_ohm"]
     rload = 1.0 / (1.0/ra + 1.0/rg)
@@ -151,27 +155,26 @@ def main():
         PHILIPS_DEVICE["vg1_v"],
     )
 
-    dc = solve_dc()
-
-    dv = 1.0e-5
-    p_plus = solve_plate_ac(+dv, dc)
-    p_minus = solve_plate_ac(-dv, dc)
-    av = (p_plus-p_minus)/(2.0*dv)
-
     print("SMX-3 V2 EF86 comparison baseline")
     print("Candidate: Circuit Codex CC0 Koren-form EF86")
     print()
     print(f"Device anchor Ia: {ia*1e3:.9f} mA  target 3.000000000 mA")
     print(f"Device anchor Ig2: {ig2*1e3:.9f} mA target 0.600000000 mA")
     print()
-    print(f"RC amplifier Ik: {dc['ik_a']*1e3:.9f} mA target 2.000000000 mA")
-    print(f"RC amplifier Va node: {dc['vp_node_v']:.9f} V")
-    print(f"RC amplifier Vg2 node: {dc['vg2_node_v']:.9f} V")
-    print(f"RC amplifier Vk: {dc['vk_v']:.9f} V")
-    print(f"Approx AC gain: {av:.9f} V/V target -123 V/V")
     print()
-    print(f"Ik error: {pct_error(dc['ik_a'],PHILIPS_AMP['ik_a']):.6f}%")
-    print(f"Gain magnitude error: {pct_error(abs(av),PHILIPS_AMP['gain_abs']):.6f}%")
+    print("Vb_V,Ik_mA,Ik_target_mA,Ik_error_pct,Av_abs,Av_target,Av_error_pct")
+    sweep_results = []
+    for vb in sorted(PHILIPS_SWEEP.keys(), reverse=True):
+        target = PHILIPS_SWEEP[vb]
+        dc = solve_dc(vb)
+        dv = 1.0e-5
+        p_plus = solve_plate_ac(+dv, dc, vb)
+        p_minus = solve_plate_ac(-dv, dc, vb)
+        av = (p_plus-p_minus)/(2.0*dv)
+        ikerr = pct_error(dc["ik_a"], target["ik_a"])
+        gerr = pct_error(abs(av), target["gain_abs"])
+        sweep_results.append((vb, dc, av, ikerr, gerr))
+        print(f"{vb:.1f},{dc['ik_a']*1e3:.9f},{target['ik_a']*1e3:.9f},{ikerr:.6f},{abs(av):.9f},{target['gain_abs']:.9f},{gerr:.6f}")
 
     # This candidate is expected to hit its one fitted device anchor but is not
     # expected to pass the full amplifier validation. Treat a surprisingly
