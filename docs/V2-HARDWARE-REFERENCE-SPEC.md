@@ -135,10 +135,11 @@ From the Mullard "Typical Operating Conditions" table for EF86 as an R-C coupled
 
 - B+ / supply: 250 V — DOCUMENTED
 - anode resistor Ra: 100 kOhm — DOCUMENTED
-- cathode current Ik: approximately 2.05 mA — DOCUMENTED
+- cathode current Ik: approximately 2.0 mA — DOCUMENTED
 - screen-grid feed resistor Rg2: 390 kOhm — DOCUMENTED
 - cathode resistor Rk: 1.0 kOhm — DOCUMENTED
 - following-stage grid resistor: 330 kOhm — DOCUMENTED
+- small-signal voltage gain: approximately 123 V/V — DOCUMENTED
 - documented maximum output: approximately 50 Vrms — DOCUMENTED
 - documented distortion at that maximum-output condition: approximately 5 % — DOCUMENTED
 
