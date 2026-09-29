@@ -16,7 +16,8 @@ pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,scr
 pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,transconductance,2.0,mA_per_V,DOCUMENTED,Philips EF86 1956 data
 pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,mu_g2_g1,38,ratio,DOCUMENTED,Philips EF86 1956 data
 pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,anode_resistance,2.5,MOhm,DOCUMENTED,Philips EF86 1956 data
-pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,cathode_current,2.05,mA,DOCUMENTED,Mullard World Series typical operating conditions
+pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,cathode_current,2.0,mA,DOCUMENTED,Philips operating characteristics May 1973
+pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,123,V/V,DOCUMENTED,Philips operating characteristics May 1973
 pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,max_output,50,Vrms,DOCUMENTED,Mullard World Series typical operating conditions
 pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,distortion_at_max_output,5.0,percent,DOCUMENTED,Mullard World Series typical operating conditions
 iron,Jensen JT-11P-1,test circuit 1 1kHz +4dBu,input_impedance_typ,13.0,kOhm,DOCUMENTED,Jensen datasheet
