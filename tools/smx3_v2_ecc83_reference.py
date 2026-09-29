@@ -111,6 +111,7 @@ def pct_error(value, reference):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tube", choices=list(TUBES) + ["all"], default="all")
+    ap.add_argument("--check", action="store_true", help="Run the EHX-1 regression gate against Mullard anchors.")
     args = ap.parse_args()
 
     names = list(TUBES) if args.tube == "all" else [args.tube]
@@ -120,10 +121,12 @@ def main():
     print()
     print("tube,Ik_mA,Vk_V,Vp_V,Va_V,Ig_uA,Av,Ik_error_pct,gain_error_pct")
 
+    results = {}
     for name in names:
         p = TUBES[name]
         b = solve_bias(p, MULLARD["supply_v"], MULLARD["ra_ohm"], MULLARD["rk_ohm"])
         av = small_signal_gain(p, b, MULLARD["supply_v"], MULLARD["ra_ohm"])
+        results[name] = (b, av)
         print(
             f"{name},"
             f"{b['ik_a']*1e3:.9f},"
@@ -135,6 +138,32 @@ def main():
             f"{pct_error(b['ik_a'], MULLARD['ik_a']):.6f},"
             f"{pct_error(abs(av), MULLARD['gain_abs']):.6f}"
         )
+
+    if args.check:
+        if "EHX-1" not in results:
+            raise SystemExit("--check requires --tube all or --tube EHX-1")
+        b, av = results["EHX-1"]
+        ik_err = abs(pct_error(b["ik_a"], MULLARD["ik_a"]))
+        gain_err = abs(pct_error(abs(av), MULLARD["gain_abs"]))
+
+        # Gate is deliberately wider than the present fit. It detects accidental
+        # equation/units/solver regressions without pretending a single specimen
+        # must equal the Mullard average exactly.
+        max_ik_error_pct = 8.0
+        max_gain_error_pct = 5.0
+
+        print()
+        print(
+            f"CHECK EHX-1: |Ik error|={ik_err:.3f}% "
+            f"(limit {max_ik_error_pct:.1f}%), "
+            f"|gain error|={gain_err:.3f}% "
+            f"(limit {max_gain_error_pct:.1f}%)"
+        )
+
+        if ik_err > max_ik_error_pct or gain_err > max_gain_error_pct:
+            raise SystemExit("FAIL: ECC83 reference regression outside tolerance")
+
+        print("PASS: ECC83 EHX-1 reference remains consistent with Mullard anchors")
 
 
 if __name__ == "__main__":
