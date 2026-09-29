@@ -51,3 +51,18 @@ pentode,EF86,Philips RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,max_output,38,Vr
 pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,cathode_current,1.05,mA,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
 pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,110,V/V,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
 pentode,EF86,Philips RC circuit1 Vb=150V Ra=100k Rg2=390k Rk=1k,max_output,27,Vrms,DOCUMENTED,Philips Electron Tubes Part 4 operating characteristics
+pentode,EF86,Philips1956 RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,cathode_current,3.3,mA,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,124,V/V,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=400V Ra=100k Rg2=390k Rk=1k,max_output,87,Vrms,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,cathode_current,2.9,mA,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,120,V/V,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=350V Ra=100k Rg2=390k Rk=1k,max_output,75,Vrms,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,cathode_current,2.5,mA,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,116,V/V,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=300V Ra=100k Rg2=390k Rk=1k,max_output,64,Vrms,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,cathode_current,2.1,mA,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,112,V/V,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=250V Ra=100k Rg2=390k Rk=1k,max_output,50,Vrms,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,cathode_current,1.7,mA,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,voltage_gain_abs,106,V/V,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
+pentode,EF86,Philips1956 RC circuit1 Vb=200V Ra=100k Rg2=390k Rk=1k,max_output,40,Vrms,DOCUMENTED,Philips EF86 sheet 4-Apr-1956
