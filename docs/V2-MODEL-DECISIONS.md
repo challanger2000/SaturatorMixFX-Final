@@ -122,3 +122,29 @@ Retain:
 
 Next requirement:
 fit magnetic shape parameters to the full Jensen multi-level/multi-frequency curve set.
+
+
+### Six-parameter EF86 candidate after large-signal gate
+Status: REJECTED AS FINAL PENTODE MODEL
+
+Reason:
+- a parameter set can match Philips device current, screen current, gm, amplifier DC current and small-signal gain closely;
+- when constrained by Philips 5% total-distortion output, the same simple model family cannot reproduce the whole 200-400 V large-signal envelope closely enough;
+- representative compromise still misses 400 V maximum output by about 11.5%, 350 V by about 8.6%, and 300 V by about 6.5%, while the 250/200 V region is close.
+
+Conclusion:
+- do not keep forcing six Koren parameters;
+- move to a curve-family model with independent knee/slope flexibility;
+- full Philips plate curves and large-signal envelope remain simultaneous acceptance gates.
+
+### EF86 screen/cathode dynamics
+Status: MUST BE MODELED DELIBERATELY
+
+Reason:
+- manufacturer circuit uses a screen dropping resistor and bypass conditions that affect gain and overload;
+- screen current contributes to cathode current;
+- large-signal behaviour near the knee cannot be represented reliably by plate current alone.
+
+Production implication:
+- first offline reference keeps plate and screen currents separate;
+- realtime reduction may simplify only after comparison against the reference circuit.
