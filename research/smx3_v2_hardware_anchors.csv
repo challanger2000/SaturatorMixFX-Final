@@ -1,0 +1,33 @@
+domain,device,condition,quantity,value,unit,evidence,source_note
+triode,ECC83/12AX7,Mullard RC amplifier Vb=250V Ra=100k Rk=1.5k,cathode_current,0.86,mA,DOCUMENTED,Mullard World Series typical operating conditions
+triode,ECC83/12AX7,Mullard RC amplifier Vb=250V Ra=100k Rk=1.5k,voltage_gain_abs,54.5,V/V,DOCUMENTED,Mullard World Series typical operating conditions
+triode,ECC83/12AX7,Mullard RC amplifier Vb=250V Ra=100k Rk=1.5k,max_output,26,Vrms,DOCUMENTED,quoted at start of positive grid current
+triode,ECC83/12AX7,Mullard RC amplifier Vb=250V Ra=100k Rk=1.5k,distortion_at_max_output,3.9,percent,DOCUMENTED,quoted at documented maximum output
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,G,0.001371,A_per_Vpow,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,mu,86.9,ratio,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,gamma,1.349,ratio,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,C,4.56,1_per_V,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,Gg,0.0003263,A_per_Vpow,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,xi,1.156,ratio,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,Cg,11.99,1_per_V,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+triode,12AX7 EHX-1,Dempwolf-Zoelzer fitted specimen,Ig0,3.917e-8,A,PUBLISHED_PARAMETER_DERIVED,DAFx-2011 Table 1
+pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,anode_current,3.0,mA,DOCUMENTED,Philips EF86 1956 data
+pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,screen_current,0.6,mA,DOCUMENTED,Philips EF86 1956 data
+pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,transconductance,2.0,mA_per_V,DOCUMENTED,Philips EF86 1956 data
+pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,mu_g2_g1,38,ratio,DOCUMENTED,Philips EF86 1956 data
+pentode,EF86,Philips typical characteristics Va=250V Vg2=140V Vg3=0V Vg1=-2V,anode_resistance,2.5,MOhm,DOCUMENTED,Philips EF86 1956 data
+pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,cathode_current,2.05,mA,DOCUMENTED,Mullard World Series typical operating conditions
+pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,max_output,50,Vrms,DOCUMENTED,Mullard World Series typical operating conditions
+pentode,EF86,Mullard RC amplifier Vb=250V Ra=100k Rg2=390k Rk=1k,distortion_at_max_output,5.0,percent,DOCUMENTED,Mullard World Series typical operating conditions
+iron,Jensen JT-11P-1,test circuit 1 1kHz +4dBu,input_impedance_typ,13.0,kOhm,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,test circuit 1 1kHz +4dBu,voltage_gain_typ,-2.3,dB,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,test circuit 1 Rs=600 20Hz +4dBu,magnitude_response_typ,-0.04,dB,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,test circuit 1 Rs=600 20kHz +4dBu,magnitude_response_typ,-0.05,dB,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,test circuit 1 Rs=600 1kHz +4dBu,THD_typ,0.001,percent_upper_bound,DOCUMENTED,Jensen datasheet states <0.001 percent
+iron,Jensen JT-11P-1,test circuit 1 Rs=600 20Hz +4dBu,THD_typ,0.025,percent,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,test circuit 1 Rs=600 20Hz,level_at_1pct_THD_typ,20,dBu,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,primary,DC_resistance_typ,1.45,kOhm,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,secondary,DC_resistance_typ,1.55,kOhm,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,primary_to_shield_case,capacitance_typ,98,pF,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,secondary_to_shield_case,capacitance_typ,110,pF,DOCUMENTED,Jensen datasheet
+iron,Jensen JT-11P-1,turns,turns_ratio_typ,1.000,ratio,DOCUMENTED,Jensen datasheet
