@@ -1,4 +1,4 @@
-# revision: 12 - rerun stable constrained LqS c KI refit
+# revision: 8 - classical plus excess dynamic-loss screen
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -56,6 +56,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_classical_loss_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run classical+excess dynamic-loss sensitivity
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_excess_loss_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Run classical plus excess loss sensitivity
         shell: bash
