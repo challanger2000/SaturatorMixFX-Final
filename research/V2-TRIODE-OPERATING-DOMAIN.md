@@ -4,127 +4,103 @@ Date: 2026-09-30
 Reference:
 Dempwolf/Zoelzer EHX-1 12AX7 current model inside the documented Philips/Mullard ECC83 dynamic network.
 
+Status:
+settled-state result; supersedes the earlier short-run interpretation.
+
 ## Why this gate exists
 
-The source model is not equally trustworthy everywhere.
-
-The Dempwolf/Zoelzer paper identifies inaccuracies in particular for:
+The Dempwolf/Zoelzer source model identifies reduced accuracy especially for:
 - positive grid voltage;
-- very low plate/anode voltage (approximately Va below 20 V).
+- very low anode voltage, approximately Va < 20 V.
 
-SMX-3 must therefore know where its product Drive mapping enters those regions instead of silently extrapolating.
+SMX-3 must therefore measure where the actual cathode-biased/coupled reference circuit enters those regions.
 
-## Measured matrix highlights
+## Measurement-method correction
 
-### 20 Hz
+The first operating-domain estimate used only a fixed number of cycles and therefore inherited the same insufficient-settling problem documented in:
 
-At 0.70 Vrms:
-- min Va ~125.65 V
-- max Vg ~-0.515 V
+research/V2-TRIODE-SETTLING-CORRECTION.md
 
-At 1.00 Vrms:
-- min Va ~112.40 V
-- max Vg ~-0.282 V
+The corrected probe now preconditions the complete nonlinear/capacitive circuit for 0.4 s before evaluating the final cycles.
 
-Even 2.0 Vrms remains negative-grid in the current low-frequency network.
+This materially changes the strong-drive HF operating point because:
+- cathode bias has time to shift;
+- input-coupling/grid-current interaction reaches periodic steady state;
+- the circuit self-biases rather than remaining near its cold-start trajectory.
 
-### 1 kHz
+## Settled-state regression points
 
-At 0.70 Vrms:
-- min Va ~117.03 V
-- max Vg ~-0.299 V
+GitHub Actions run 36657000349 measured:
 
-At 1.00 Vrms:
-- min Va ~107.43 V
-- max Vg ~-0.113 V
+| frequency | Vin RMS | min Va | max Vg | max Ig | interpretation |
+|---:|---:|---:|---:|---:|---|
+| 20 Hz | 0.70 V | ~125.65 V | ~-0.515 V | ~0.054 uA | valid-domain |
+| 1 kHz | 0.70 V | ~117.91 V | ~-0.312 V | ~0.281 uA | valid-domain |
+| 10 kHz | 0.70 V | ~117.86 V | ~-0.311 V | ~0.284 uA | valid-domain |
+| 20 kHz | 0.70 V | ~117.87 V | ~-0.311 V | ~0.284 uA | valid-domain |
+| 20 kHz | 1.00 V | ~107.22 V | ~-0.101 V | ~3.96 uA | still negative-grid |
+| 20 kHz | 8.00 V | ~78.32 V | ~+0.563 V | ~167.88 uA | positive-grid extrapolation |
 
-At 2.00 Vrms:
-- min Va ~99.74 V
-- max Vg ~+0.0556 V
+## Important correction
 
-Therefore the measured model begins entering positive-grid extrapolation somewhere above the 1 Vrms region at 1 kHz.
+The earlier short-run estimate suggested:
+- positive-grid crossing already near ~0.93 Vrms at 20 kHz;
+- Va < 20 V around 8 Vrms / 20 kHz.
 
-### 10 kHz
+Those conclusions are superseded.
 
-At 0.70 Vrms:
-- min Va ~115.32 V
-- max Vg ~-0.266 V
+After proper settling:
+- 1.0 Vrms / 20 kHz remains negative-grid;
+- 8.0 Vrms / 20 kHz enters positive-grid operation strongly;
+- but Va remains around 78 V rather than dropping below 20 V.
 
-At 1.00 Vrms:
-- min Va ~99.57 V
-- max Vg ~+0.0307 V
+The cathode-bias/grid-conduction network moves the operating point substantially under sustained extreme excitation.
 
-### 20 kHz
+## Current conservative normal-domain fixture
 
-At 0.70 Vrms:
-- min Va ~115.19 V
-- max Vg ~-0.263 V
+The automated gate now establishes:
 
-At 1.00 Vrms:
-- min Va ~97.28 V
-- max Vg ~+0.0764 V
+- 0.70 Vrms remains safely negative-grid from 20 Hz through 20 kHz;
+- 1.00 Vrms at 20 kHz also remains negative-grid;
+- 8.00 Vrms at 20 kHz intentionally exercises the positive-grid extrapolation region.
 
-Therefore the worst current positive-grid boundary within the tested audio band is near the top of the band.
+This gives the future product calibration more headroom than the initial short-run result suggested.
 
-A linear interpolation of the already measured 0.70/1.00 Vrms points places first crossing around:
-- ~0.97 Vrms at 10 kHz;
-- ~0.93 Vrms at 20 kHz.
+## Low-Va limitation
 
-The checked-in tool performs an actual numerical bisection and is the authority for the exact research threshold.
+Very-low-anode-voltage behavior remains a known limitation of the Dempwolf model family.
 
-## Very-low-anode-voltage stress
+However, the present documented Mullard/Philips circuit may not reach Va < 20 V under ordinary or even very strong steady sine excitation before:
+- grid conduction;
+- cathode-bias shift;
+- coupling-network behavior
 
-The Va<20 V warning region is much farther away than the first positive-grid boundary under ordinary audio-band excitation.
+substantially changes the trajectory.
 
-Representative extreme stress:
-- 20 kHz / 4 Vrms -> min Va ~50.27 V
-- 20 kHz / 6 Vrms -> min Va ~26.36 V
-- 20 kHz / 8 Vrms -> min Va ~3.70 V
+Therefore Va<20 V is now treated as:
+- a monitored warning;
+- not a required stress fixture.
 
-Thus extremely strong HF excitation can enter BOTH suspect regions.
-
-At 1 kHz / 8 Vrms:
-- min Va remains roughly 79.5 V;
-- positive grid is already substantial.
-
-## Current conservative valid-domain fixture
-
-Freeze for reference work:
-
-- Vin <= 0.70 Vrms
-- frequencies 20 Hz..20 kHz
-
-Within the measured matrix this remains:
-- grid voltage < 0 V;
-- Va > 20 V.
-
-This is deliberately conservative and is NOT yet the final Drive=75% boundary.
+Do not invent an artificial low-Va test merely to force the circuit into a region it does not naturally visit.
 
 ## Product implication
 
-TRI0DE Drive mapping should be split conceptually:
+### 0-75% Drive target
+Can likely remain fully inside the validated negative-grid region if calibration is chosen carefully.
 
-### Normal/musical region
-Target approximately 0-75% Drive:
-- should remain mostly within the validated tube-model domain;
-- no reliance on positive-grid/low-Va extrapolation for its basic character.
+### 75-100% Drive target
+May intentionally enter positive-grid operation for stronger physical saturation.
 
-### Strong/extreme region
-Target approximately 75-100% Drive:
-- may intentionally approach grid-current operation;
-- but a production model cannot simply trust the present Dempwolf extrapolation outside its documented-valid region.
-
-Before that region is frozen, choose and validate one of:
-- a bounded extension of the current law;
-- a richer low-Va/positive-grid model;
-- a deliberate saturation boundary whose residual versus a higher-authority reference is measured.
-
-Do not simply clamp internal voltages: that would create an arbitrary transfer characteristic rather than hardware behavior.
+Before production:
+- positive-grid behavior needs a more authoritative extension or bounded model;
+- Drive mapping must record the fraction of samples/time spent beyond Vg=0;
+- extreme operation must not depend on undocumented low-Va extrapolation.
 
 ## Decision
 
-The first limiting mechanism for the current TRI0DE reference is positive-grid excursion, especially at high audio frequencies.
+The first practical validity boundary in the current TRI0DE circuit remains positive-grid operation.
 
-Low-anode-voltage invalidity is an extreme-stress issue rather than the first normal operating boundary.
+But correct periodic steady-state measurement moves that boundary materially higher than the initial short-run estimate.
 
-This gives the later Drive-calibration stage a measurable physical ceiling instead of an arbitrary normalized number.
+This is favorable:
+SMX-3 can obtain substantial authentic triode nonlinearity before relying on the least reliable region of the Dempwolf current model.
