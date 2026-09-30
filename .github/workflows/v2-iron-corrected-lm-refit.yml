@@ -1,0 +1,30 @@
+name: V2 IRON Corrected Lm Refit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-corrected-lm-refit.yml'
+
+jobs:
+  refit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run corrected-Lm refit
+        run: python tools/smx3_v2_iron_refit_corrected_lm.py 2>&1 | tee iron-refit.log
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-IRON-Corrected-Lm-Refit
+          path: iron-refit.log
+          if-no-files-found: warn
