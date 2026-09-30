@@ -21,6 +21,7 @@ import math
 RP = 1450.0
 RS = 1550.0
 RL = 10000.0
+RSOURCE = 600.0
 TARGET_20HZ_REL_DB = -0.04
 
 
@@ -28,13 +29,23 @@ def parallel(a, b):
     return 1.0 / (1.0/a + 1.0/b)
 
 
-def transfer(f_hz, lm_h):
+def transformer_transfer(f_hz, lm_h):
+    """Transfer from transformer input terminals to the 10 kOhm load."""
     zload = complex(RS + RL, 0.0)
     zm = 1j * 2.0 * math.pi * f_hz * lm_h
     zbranch = parallel(zload, zm)
-
-    # Voltage at ideal-transformer primary branch, then secondary DCR/load divider.
     return zbranch/(RP + zbranch) * RL/(RS + RL)
+
+
+def source_transfer(f_hz, lm_h):
+    """Transfer from the test generator through Rs=600 Ohm to the load.
+
+    Jensen magnitude-response and DLP specs explicitly state test circuit 1
+    with Rs=600 Ohm. This is the correct transfer for the 20 Hz / 20 kHz
+    relative-response anchors.
+    """
+    zin = input_impedance(f_hz, lm_h)
+    return transformer_transfer(f_hz,lm_h) * zin/(RSOURCE+zin)
 
 
 def input_impedance(f_hz, lm_h):
@@ -48,7 +59,7 @@ def db(x):
 
 
 def relative_db(f_hz, lm_h, ref_hz=1000.0):
-    return db(transfer(f_hz,lm_h)) - db(transfer(ref_hz,lm_h))
+    return db(source_transfer(f_hz,lm_h)) - db(source_transfer(ref_hz,lm_h))
 
 
 def solve_lm():
@@ -68,6 +79,7 @@ def main():
     lm = solve_lm()
 
     print("SMX-3 V2 JT-11P-1 linear reference")
+    print("20 Hz response fit uses Jensen test circuit 1 with Rs=600 ohm.")
     print(f"Rp = {RP:.3f} ohm")
     print(f"Rs = {RS:.3f} ohm")
     print(f"RL = {RL:.3f} ohm")
@@ -76,13 +88,14 @@ def main():
 
     print("freq_hz,gain_db,relative_to_1k_db,input_Z_mag_ohm,phase_deg")
     for f in (20.0, 1000.0, 20000.0):
-        h = transfer(f,lm)
+        h = transformer_transfer(f,lm)
+        hs = source_transfer(f,lm)
         zin = input_impedance(f,lm)
-        phase = math.degrees(cmath.phase(h))
+        phase = math.degrees(cmath.phase(hs))
         print(f"{f:.1f},{db(h):.9f},{relative_db(f,lm):.9f},{abs(zin):.9f},{phase:.9f}")
 
     # Jensen low-level anchors.
-    gain_1k = db(transfer(1000.0,lm))
+    gain_1k = db(transformer_transfer(1000.0,lm))
     zin_1k = abs(input_impedance(1000.0,lm))
     rel_20 = relative_db(20.0,lm)
 
