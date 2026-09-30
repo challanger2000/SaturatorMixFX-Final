@@ -219,3 +219,15 @@ Not promoted because:
 - plate-current curve family not yet validated;
 - grid-current parameters are still borrowed provisionally from EHX-1;
 - large-signal distortion/output limits have not yet been reproduced.
+
+
+### Mullard-loaded ECC83 small-signal fit — large-signal status
+Status: RETAINED AS SMALL-SIGNAL FIT ONLY; REJECTED AS FINAL TRI0DE MODEL
+
+Reason:
+- excellent DC-current and loaded small-signal-gain agreement over Vb=200..400 V;
+- but at the documented positive-grid-current onset the model predicts about 36.6 Vrms and 6.44% H2-H10 THD;
+- Mullard documents about 26 Vrms and 3.9% total distortion.
+
+Consequence:
+TRI0DE model selection now requires simultaneous small-signal and large-signal agreement. A local operating-point fit is insufficient.
