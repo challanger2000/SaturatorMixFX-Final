@@ -1,4 +1,4 @@
-# revision: 12 - RSD-2 TRI0DE domain plus Stage-3 PENTODE cross-domain
+# revision: 13 - current fast gates with EF86 knee stages and RSD-2 grid-current cross-check
 name: V2 Offline Reference Suite
 
 on:
