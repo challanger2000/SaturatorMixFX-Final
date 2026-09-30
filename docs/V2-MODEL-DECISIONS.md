@@ -653,3 +653,21 @@ Staging:
 1. classical loss term proportional to dB/dt;
 2. only if required, add excess-loss term proportional to sign(dB/dt)*sqrt(abs(dB/dt));
 3. re-fit against Jensen DLP/magnitude while preserving exact THD and remanence gates.
+
+
+### IRON classical dynamic-loss term
+Status: REJECTED AS SUFFICIENT SINGLE MECHANISM
+
+Screen:
+A_v = 0..1 in the derivative-dependent classical loss field.
+
+Result:
+- Jensen DLP worst residual improves only from about 3.83 deg to about 3.67 deg;
+- coefficients large enough to move DLP materially also pull the exact +20 dBu / 20 Hz THD anchor down (to roughly 0.86% at A_v=1).
+
+Decision:
+classical eddy-current loss alone is structurally insufficient.
+
+Next:
+add the literature-supported excess/anomalous-loss term proportional to
+sign(dB/dt)*sqrt(abs(dB/dt)) and test the two dynamic coefficients jointly.
