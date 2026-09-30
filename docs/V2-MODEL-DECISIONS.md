@@ -515,3 +515,19 @@ Cross-source EF86/6267 data place Ig1≈0.3 uA near Vg1≈-1.3 V.
 
 Consequence:
 the final dynamic PENTODE model must include control-grid current and input-network state before production Drive calibration is frozen.
+
+
+### EF86 knee-aware static refit
+Status: REJECTED AS COMPLETE PENTODE MODEL; RETAINED AS STAGED IDENTIFIABILITY EVIDENCE
+
+Evidence:
+- Graph A screen-family NRMS ~0.78 sigma;
+- Graph B plateau NRMS ~0.71 sigma;
+- Graph B knee NRMS ~0.88 sigma;
+- exact device anchors remain close;
+- but out-of-fit Vo@5% envelope collapses badly (e.g. ~21.7 V vs Philips 50 V at 250 V).
+
+Consequence:
+- static/small-signal current surfaces and large-signal/kink behavior must be identified as separate parameter blocks;
+- do not let large-signal terms compensate Graph A/B current physics;
+- do not promote any parameter set with weakly identified screen-current constants merely because aggregate fit cost is low.
