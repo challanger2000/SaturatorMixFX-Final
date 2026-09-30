@@ -40,8 +40,13 @@ def langevin(x):
 
 
 def langevin_d(x):
-    if abs(x)<1e-4:
+    ax=abs(x)
+    if ax<1e-4:
         return 1.0/3.0
+    # For large |x|, csch(x)^2 is numerically negligible and sinh(x)
+    # would overflow long before the physical asymptote becomes inaccurate.
+    if ax>50.0:
+        return 1.0/(x*x)
     s=math.sinh(x)
     return 1.0/(x*x)-1.0/(s*s)
 
