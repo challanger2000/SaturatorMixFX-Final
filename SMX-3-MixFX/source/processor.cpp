@@ -143,6 +143,7 @@ tresult PLUGIN_API Processor::setupProcessing(ProcessSetup& s)
         return r;
 
     sampleRate_ = s.sampleRate > 1.0 ? s.sampleRate : 44100.0;
+    v1ReferenceCore_.prepare(sampleRate_);
     smoothCoeff_ = std::exp(-1.0 / (0.018 * sampleRate_));
     const double ir = sampleRate_ * kOversample;
     ironMemoryCoeff_ = std::exp(-2.0 * kPi * 95.0 / ir);
@@ -299,76 +300,8 @@ double Processor::dcBlock(double x, ChannelState& s)
 
 double Processor::processCoreSample(double x, ChannelState& s, const CoreParams& params)
 {
-    const double pos = clamp01(params.character) * 2.0;
-    const double wT = std::max(0.0, 1.0 - pos);
-    const double wI = std::max(0.0, pos - 1.0);
-    const double wP = 1.0 - wT - wI;
-
-    const double effectiveDrive = shapeDrive(params.drive);
-    const double driveDb = 24.0 * effectiveDrive;
-    const double inputGain = dbToGain(driveDb);
-    const double wet = clamp01(params.mix);
-    const double dry = 1.0 - wet;
-    const double outGain = dbToGain(-18.0 + 24.0 * clamp01(params.output));
-
-    const double trim = (-9.50 * wT - 19.00 * wP - 14.47 * wI) * effectiveDrive;
-    const double baseComp = (-.46 * wT - .52 * wP - .40 * wI) * driveDb;
-    const double polishTrimDb = (.73 * wT + 2.67 * wP - .06 * wI) * effectiveDrive;
-    const double smoothTrimDb = characterTrimDb(effectiveDrive, wT, wP, wI);
-    const double comp = dbToGain(trim + baseComp + polishTrimDb + smoothTrimDb);
-
-    const double protect = .18 * wT + .42 * wP + .30 * wI;
-    const double attackAmount = .08 * wT + .22 * wP + .15 * wI;
-
-    s.lowBand = lowCoeff_ * s.lowBand + (1.0 - lowCoeff_) * x;
-    s.highSmooth = highCoeff_ * s.highSmooth + (1.0 - highCoeff_) * x;
-    const double low = s.lowBand;
-    const double high = x - s.highSmooth;
-    const double mid = x - low - high;
-
-    const double triCol = .94 * low + 1.09 * mid + .84 * high;
-    const double penCol = .84 * low + 1.10 * mid + 1.07 * high;
-    const double ironCol = 1.13 * low + 1.025 * mid + .80 * high;
-    const double coloured = wT * triCol + wP * penCol + wI * ironCol;
-
-    const double a = std::abs(x);
-    s.envFast = envFastCoeff_ * s.envFast + (1.0 - envFastCoeff_) * a;
-    s.envSlow = envSlowCoeff_ * s.envSlow + (1.0 - envSlowCoeff_) * a;
-    const double transient = std::max(0.0, s.envFast - s.envSlow);
-    const double normTransient = clamp01(transient / (.06 + s.envSlow));
-    const double dynamicGain = inputGain * (1.0 - protect * normTransient);
-
-    double processedOs = 0.0;
-    double cleanOs = 0.0;
-    for (int os = 0; os < kOversample; ++os)
-    {
-        const double stuffed = (os == 0) ? (coloured * static_cast<double>(kOversample)) : 0.0;
-        const double cleanStuffed = (os == 0) ? (x * static_cast<double>(kOversample)) : 0.0;
-        const double up = runOversamplingFilter(stuffed, s.osUp);
-        const double cleanUp = runOversamplingFilter(cleanStuffed, s.cleanUp);
-        const double nlT = shapeTriode(up * dynamicGain, s);
-        const double nlP = shapePentode(up * dynamicGain, s);
-        const double nlI = shapeIron(up * dynamicGain, s);
-        const double nl = wT * nlT + wP * nlP + wI * nlI;
-        const double filtered = runOversamplingFilter(nl, s.osDown);
-        const double cleanFiltered = runOversamplingFilter(cleanUp, s.cleanDown);
-
-        if (os == kOversample - 1)
-        {
-            processedOs = filtered;
-            cleanOs = cleanFiltered;
-        }
-    }
-
-    double processed = processedOs * comp;
-    const double attackBlend = normTransient * attackAmount;
-    processed = processed * (1.0 - attackBlend) + cleanOs * attackBlend;
-    processed = peakProtect(processed);
-    processed = dcBlock(processed, s);
-
-    const double wetSignal = cleanOs + effectiveDrive * (processed - cleanOs);
-    const double mixed = dry * cleanOs + wet * wetSignal;
-    return mixed * outGain;
+    const V1Core::Params sharedParams{params.drive, params.character, params.mix, params.output};
+    return v1ReferenceCore_.processSample(x, s, sharedParams);
 }
 
 tresult PLUGIN_API Processor::process(ProcessData& d)
