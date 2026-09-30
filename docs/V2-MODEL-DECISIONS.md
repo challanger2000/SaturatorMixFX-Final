@@ -853,3 +853,46 @@ Therefore:
 - c, KI and LqS must be re-identified together;
 - dynamic-loss terms are added only if the simpler LqS/c/KI refit cannot close
   the independent THD + complex-admittance + DLP evidence.
+
+
+### IRON linear-target + nonlinear-JA residual architecture
+Status: PREFERRED UNIFIED IRON ARCHITECTURE AFTER FIRST-ORDER PASS
+
+Architecture:
+
+    y = L_Jensen{x} + [ y_JA - L_JA{x} ]
+
+where:
+- L_Jensen is the validated loss-aware JT-11P-1 small-signal target;
+- y_JA is the full stateful nonlinear Jiles-Atherton output;
+- L_JA is the low-level linearization of that same JA/circuit model.
+
+Why selected:
+- direct classical eddy-loss augmentation did not provide enough DLP leverage;
+- classical+excess field augmentation also failed the simultaneous THD/DLP envelope;
+- a passive parallel residual branch is structurally invalid because the corrected magnetic residual requires negative incremental conductance over part of the band;
+- replacing only the JA linear component preserves the nonlinear evidence essentially exactly.
+
+First-order measured result:
+- +4 dBu / 20 Hz THD: 0.025012259% JA -> 0.025010778% corrected;
+- +20 dBu / 20 Hz THD: 1.000001568% JA -> 1.000896406% corrected;
+- H2/H3 remains about -66.35 dB;
+- corrected 20->40 Hz THD ratio ~0.2583;
+- corrected 40->80 Hz THD ratio ~0.2543.
+
+Linear reference examples:
+- 20 Hz JA low-level: about -2.71085 dB / +5.495 deg;
+- 20 Hz Jensen target: about -2.71086 dB / +0.751 deg;
+- 40 Hz JA: +2.754 deg phase versus Jensen +0.381 deg;
+- 80 Hz JA: +1.378 deg versus Jensen +0.139 deg.
+
+Decision:
+promote this decomposition to the preferred unified offline IRON architecture.
+
+Next mandatory gate:
+derive causal realtime realizations for L_JA and L_Jensen and verify that the time-domain combined model preserves:
+- Jensen magnitude/DLP;
+- exact THD anchors;
+- remanence/DC-bias transients;
+- deterministic state lifecycle;
+- aliasing/CPU targets.
