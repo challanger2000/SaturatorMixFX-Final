@@ -1,4 +1,4 @@
-# revision: 2 - 4 Vrms stress and 2 s recovery
+# revision: 3 - full DC equilibrium recovery reference
 name: V2 TRI0DE Grid Sensitivity
 
 on:
