@@ -423,3 +423,20 @@ Decision:
 do not design IRON around fixed oversampling. Proceed with host-rate midpoint
 as the primary realtime candidate and require a direct band-limited waveform
 residual test before freezing 1x.
+
+
+### IRON direct 1x waveform checkpoint
+Status: HOST-RATE 1X PROMOTED TO PRIMARY PRODUCTION HYPOTHESIS
+
+Direct 48 kHz midpoint/RK2 output versus ideal band-limited high-rate RK4
+authority gives worst tested periodic-sine residual ~-87.7 dB.
+
+Together with:
+- negligible midpoint-vs-RK4 state error;
+- coherent alias-risk estimate <=~-108 dBc;
+
+this removes the technical justification for blanket IRON oversampling in the
+current model.
+
+Final 1x freeze still requires 44.1 kHz, multitone/transient and C++ realtime
+QA.
