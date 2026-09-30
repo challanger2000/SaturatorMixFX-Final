@@ -125,3 +125,17 @@ At present:
 - IRON: linear reference available; nonlinear reference incomplete.
 
 Therefore production DSP replacement remains intentionally blocked.
+
+
+## IRON realtime-reduction checkpoint
+
+Established:
+- RK4 offline magnetic authority candidate;
+- independent midpoint-method credibility;
+- host-rate midpoint/RK2 numerical residual at 48 kHz is negligible for tested low-frequency transformer cases.
+
+Remaining before realtime promotion:
+- 1x/2x/4x aliasing comparison;
+- CPU tail metrics;
+- transient/reset lifecycle;
+- final HF parasitic network.
