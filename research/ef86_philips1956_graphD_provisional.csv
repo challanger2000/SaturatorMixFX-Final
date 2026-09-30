@@ -1,0 +1,6 @@
+source,circuit,output_vrms,input_mvrms,distortion_percent,input_uncertainty_mV,distortion_uncertainty_pct,evidence,note
+Philips EF86 graph D,1,10,91,0.30,6,0.08,MANUAL_GRAPH_DIGITIZATION,provisional read from original manufacturer graph
+Philips EF86 graph D,1,20,184,0.75,8,0.12,MANUAL_GRAPH_DIGITIZATION,provisional read from original manufacturer graph
+Philips EF86 graph D,1,30,280,1.45,10,0.18,MANUAL_GRAPH_DIGITIZATION,provisional read from original manufacturer graph
+Philips EF86 graph D,1,40,378,2.55,12,0.25,MANUAL_GRAPH_DIGITIZATION,provisional read from original manufacturer graph
+Philips EF86 graph D,1,50,490,5.00,15,0.35,MANUAL_GRAPH_DIGITIZATION,50V/5pct endpoint cross-checked against manufacturer table
