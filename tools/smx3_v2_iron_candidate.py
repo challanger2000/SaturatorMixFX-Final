@@ -22,19 +22,19 @@ RP=1450.0
 RSEC=1550.0
 RL=10000.0
 RLOAD=RSEC+RL
-LM_TARGET=106.554
+LM_TARGET=143.999434
 
 P={
     "a":14.1,
     "alpha":5.0e-5,
-    "c":0.84,
+    "c":0.82,
     "k":17.8,
     "Ms":2.75e5,
 }
 
 # Field/current scale selected so the settled coupled model reaches
 # approximately 1% THD at Jensen's exact +20 dBu / 20 Hz anchor.
-KI=26174.31640625
+KI=40528.831481933594
 
 
 def langevin(x):
