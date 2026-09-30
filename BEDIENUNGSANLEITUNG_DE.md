@@ -1,13 +1,13 @@
-# 125A SMX-3 – Bedienungsanleitung
+# 125A SMX-3 V2 2.0.0 - Bedienungsanleitung
 
 ## 1. Überblick
 
 SMX-3 ist ein kostenloser Saturation-Prozessor von **125A**. Das Paket enthält zwei Plug-in-Varianten:
 
-- **SMX-3 Mix FX** für den Mix-FX-Slot in Studio One / Fender Studio.
-- **SMX-3 Channel** als normaler VST3-Insert für einzelne Kanäle und Busse.
+- **SMX-3 V2 Mix FX** für den Mix-FX-Slot in Studio One / Fender Studio.
+- **SMX-3 V2 Channel** als normaler VST3-Insert für einzelne Kanäle und Busse.
 
-Beide Varianten verwenden dieselbe grundlegende Saturation- und Klangformungs-Engine.
+Beide Varianten verwenden dieselbe V2-Saturation-Engine mit den Hardware-Charakteren Triode, Pentode und Iron. Drive besitzt eine kalibrierte interne Pegelkompensation; nur Bypass ist vollständig neutral.
 
 ## 2. Installation
 
@@ -19,11 +19,11 @@ Starte Studio One / Fender Studio anschließend neu oder führe bei Bedarf einen
 
 ## 3. Welche Version soll ich verwenden?
 
-### SMX-3 Channel
+### SMX-3 V2 Channel
 
 Diese Version wird wie ein normaler VST3-Effekt als Insert geladen. Sie eignet sich für Instrumente, Vocals, Drums, Busse oder den Master.
 
-### SMX-3 Mix FX
+### SMX-3 V2 Mix FX
 
 Diese Version ist speziell für den Mix-FX-Slot in Studio One / Fender Studio vorgesehen und wird dort nicht wie ein normaler Insert-Effekt verwendet.
 
@@ -63,13 +63,13 @@ Für subtile Bus- oder Master-Sättigung eignen sich niedrige bis mittlere Drive
 
 Für deutlich hörbare Färbung oder aggressivere Sounds kann Drive weiter erhöht und der passende Character-Modus gewählt werden.
 
-Beim Klangvergleich sollte Output so eingestellt werden, dass bearbeitetes und unbearbeitetes Signal ungefähr gleich laut sind. Dadurch lässt sich die tatsächliche Klangänderung besser beurteilen.
+Drive wird innerhalb der drei Character-Modi intern pegelkompensiert. Output dient dem abschließenden Gain-Staging oder einer bewusst gewünschten Pegelanpassung.
 
 ## 7. Systemvoraussetzungen
 
 - Windows x64
-- VST3-kompatibler Host für SMX-3 Channel
-- Studio One / Fender Studio für SMX-3 Mix FX
+- VST3-kompatibler Host für SMX-3 V2 Channel
+- Studio One / Fender Studio für SMX-3 V2 Mix FX
 
 ## 8. Freeware
 
