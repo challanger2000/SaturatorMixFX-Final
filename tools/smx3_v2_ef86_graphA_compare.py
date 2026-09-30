@@ -14,7 +14,8 @@ import csv
 import math
 import pathlib
 
-import smx3_v2_ef86_generalized_surrogate as compact
+import smx3_v2_ef86_provisional_fit as provisional
+import smx3_v2_ef86_generalized_surrogate as generalized
 import smx3_v2_ef86_extended_family_benchmark as extended
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
@@ -67,15 +68,14 @@ def main():
     print("DATA STATUS: provisional manual manufacturer-graph digitization")
     print()
 
-    a=print_model("generalized compact surrogate",compact.currents)
-    b=print_model("extended knee/kink family, community comparison parameters",extended.currents)
+    p=print_model("provisional compact multi-anchor fit",provisional.currents)
+    g=print_model("generalized beta compact surrogate",generalized.currents)
+    e=print_model("extended knee/kink family, community comparison parameters",extended.currents)
 
     print("INTERPRETATION:")
-    if b[0] < a[0]:
-        print("- extended family currently follows the screen-voltage family better in normalized RMS.")
-    else:
-        print("- compact family currently follows the screen-voltage family at least as well in normalized RMS.")
-
+    ranked=sorted([("provisional",p[0]),("generalized",g[0]),("extended-community",e[0])], key=lambda x:x[1])
+    print("- provisional Graph-A NRMS ranking: "+", ".join(f"{name}={score:.3f}σ" for name,score in ranked))
+    print("- beta improved local large-signal behavior but does not automatically improve screen-grid dependence.")
     print("- community extended parameters remain non-authoritative regardless of score.")
     print("- final decision waits for calibrated Graph-A extraction and independent refit.")
     return 0
