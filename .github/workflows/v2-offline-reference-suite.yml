@@ -1,4 +1,4 @@
-# revision: 3 - current reference suite including Graph-D shape check
+# revision: 4 - consolidated current V2 hardware-reference checkpoint
 name: V2 Offline Reference Suite
 
 on:
