@@ -592,3 +592,17 @@ RSD-2 is the current primary measured-specimen reference because the combined ma
 - distortion at the documented 26 Vrms point.
 
 No claim is made that RSD-2 is a universal ECC83/12AX7.
+
+
+### TRI0DE grid-current law after 4 Vrms dynamic sensitivity
+Status: RSD-2 RETAINED AS COHERENT REFERENCE SPECIMEN
+
+Evidence:
+- RSD-1/RSD-2/EHX-1/Danyuk grid-current laws were tested in the same RSD-2-plate/Mullard-network dynamic stage at 1 kHz / 4 Vrms;
+- peak grid-current range was only about 65-72 uA after the circuit reached periodic overload state;
+- recovery to a 10 mV bias criterion clustered tightly around 183-187 ms;
+- all tested laws substantially recovered by ~200 ms and were effectively converged by 500 ms.
+
+Decision:
+do not build a synthetic consensus grid-current law.
+Keep RSD-2 as the internally consistent measured-specimen reference and retain the other sources as strong-drive uncertainty bounds.
