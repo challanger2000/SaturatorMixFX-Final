@@ -283,3 +283,59 @@ After sufficient periodic-state warmup:
 The DAFx example parameter shape remains rejected as a JT-11P-1 fit because its low-level THD remains far too high (~0.158% vs ~0.025% at +4 dBu/20 Hz) while the +20 dBu point remains near 1%.
 
 Future IRON harmonic analysis requires explicit magnetic periodic-state convergence or an explicit demagnetization/state protocol.
+
+
+### EF86 staged manufacturer-data fit
+Status: STAGE-1 ACCEPTED; STAGE-2C ACCEPTED AS MINIMAL STATIC CANDIDATE; LARGE-SIGNAL STAGE STILL OPEN
+
+Stage 1:
+- independently fitted to Philips Graph A/B plus Ia/gm/ri anchors;
+- NRMS ~0.497 sigma;
+- Graph A ~0.460 sigma;
+- Graph B ~0.500 sigma;
+- no fit parameter within 2% of arbitrary search bounds.
+
+Accepted Stage-1 parameters:
+- MU = 42.1294068459
+- EX = 1.48016674106
+- KG1 = 2059.06189749
+- KP = 215.816749098
+- VCT = 0.761562843483
+- KVB_SCREEN = 430.818432714
+- LAMBDA = 0.000160501489918
+
+Stage 2 simple screen law:
+REJECTED.
+- NRMS ~2.484 sigma;
+- EX_G2 pinned to lower bound;
+- max gain error ~5.94%.
+
+Stage 2B coupled plate/screen knee:
+REJECTED AS PARAMETERIZATION.
+- Graph-B fit improved materially;
+- but KNEE and KG2 hit arbitrary search bounds;
+- therefore scale/shape terms were not independently identified.
+
+Stage 2C minimal reparameterization:
+ACCEPTED AS MINIMAL STATIC CANDIDATE.
+- KNEE = 3.35311366202 V
+- S0 = 9.02342723159e-5
+- S1 = 0
+
+Evidence:
+- objective NRMS ~0.832 sigma;
+- Graph B NRMS ~0.442 sigma;
+- max cathode-current error ~2.39%;
+- max small-signal gain error ~3.43%.
+
+Interpretation:
+the data identify a plate-voltage knee as the important missing mechanism.
+They do NOT identify an additional explicit plate-voltage-dependent screen-current correction: S1 collapses to zero.
+
+Remaining caution:
+- device Ig2 remains ~0.550 mA vs Philips ~0.600 mA;
+- inferred ri remains ~1.73 MOhm vs Philips typical ~2.5 MOhm;
+- these discrepancies remain visible and may not be hidden with output gain compensation.
+
+Next promotion gate:
+out-of-fit exact Philips 5%-THD envelope plus Graph-D compression/distortion trajectory. Only the minimum additional large-signal curvature justified by those residuals may be introduced.
