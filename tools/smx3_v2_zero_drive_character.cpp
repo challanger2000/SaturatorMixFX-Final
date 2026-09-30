@@ -66,53 +66,44 @@ static void measure(const std::string& material,double character)
 {
     constexpr int N=48000;
     constexpr int warm=4096;
-    Core core;
-    core.prepare(fs);
-    Core::ChannelState st{};
-    Core::Params p{0.0,character,1.0,0.75};
+    Core wetCore, dryCore;
+    wetCore.prepare(fs);
+    dryCore.prepare(fs);
+    Core::ChannelState wetState{}, dryState{};
+    Core::Params wetParams{0.0,character,1.0,0.75};
+    Core::Params dryParams{0.0,character,0.0,0.75};
 
     auto x=programme(material,N);
-    std::vector<double> y(N);
-    for(int i=0;i<N;++i) y[i]=core.processSampleV2Iron(x[i],st,p);
-
-    // Find best small integer lag before level matching. This prevents the
-    // oversampling path latency from being mistaken for hardware character.
-    int bestLag=0;
-    long double best=-1e300L;
-    for(int lag=-64;lag<=64;++lag)
+    std::vector<double> yWet(N), yDry(N);
+    for(int i=0;i<N;++i)
     {
-        long double c=0.0;
-        for(int i=warm+64;i<N-64;++i)
-        {
-            const int j=i+lag;
-            if(j>=0&&j<N) c+=x[i]*y[j];
-        }
-        if(c>best){best=c;bestLag=lag;}
+        yWet[i]=wetCore.processSampleV2Iron(x[i],wetState,wetParams);
+        yDry[i]=dryCore.processSampleV2Iron(x[i],dryState,dryParams);
     }
 
-    long double xx=0.0,yy=0.0;
-    for(int i=warm+64;i<N-64;++i)
+    // Wet and dry use the same oversampling/reconstruction topology, so this
+    // comparison isolates inserted hardware character instead of measuring
+    // the common filter delay against the raw source.
+    long double dd=0.0,ww=0.0;
+    for(int i=warm;i<N;++i)
     {
-        const int j=i+bestLag;
-        if(j<0||j>=N) continue;
-        xx+=x[i]*x[i];
-        yy+=y[j]*y[j];
+        dd+=yDry[i]*yDry[i];
+        ww+=yWet[i]*yWet[i];
     }
-    const double match=std::sqrt(static_cast<double>(xx/std::max<long double>(yy,1e-30L)));
+    const double match=std::sqrt(static_cast<double>(dd/std::max<long double>(ww,1e-30L)));
 
     long double er=0.0,ref=0.0;
     double pk=0.0;
-    for(int i=warm+64;i<N-64;++i)
+    for(int i=warm;i<N;++i)
     {
-        const int j=i+bestLag;
-        if(j<0||j>=N) continue;
-        const double e=match*y[j]-x[i];
+        const double e=match*yWet[i]-yDry[i];
         er+=e*e;
-        ref+=x[i]*x[i];
+        ref+=yDry[i]*yDry[i];
         pk=std::max(pk,std::abs(e));
     }
     const double residual=20*std::log10(std::max(std::sqrt(static_cast<double>(er/ref)),1e-30));
-    const double levelDelta=20*std::log10(std::max(rms(y,warm)/rms(x,warm),1e-30));
+    const double levelDelta=20*std::log10(std::max(rms(yWet,warm)/rms(yDry,warm),1e-30));
+    const int bestLag=0;
     const char* mode=character<.25?"TRIODE":(character<.75?"PENTODE":"IRON");
     std::cout<<std::fixed<<std::setprecision(3)
              <<material<<","<<mode
