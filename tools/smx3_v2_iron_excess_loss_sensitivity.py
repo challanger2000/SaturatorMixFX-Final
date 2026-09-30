@@ -36,6 +36,7 @@ import math
 import cmath
 
 import smx3_v2_iron_candidate as base
+from smx3_v2_dlp_utils import dlp_degrees
 
 
 FREQS=(20.0,30.0,50.0,100.0,200.0,500.0,1000.0,2000.0,5000.0,10000.0,20000.0)
@@ -127,26 +128,6 @@ def run(level_dbu,freq,av,bv,fs=None,warmup_cycles=16,analysis_cycles=4):
     return {"thd":thd,"hs":hs,"phase":phase,"rms":rms}
 
 
-def unwrap(vals):
-    out=[vals[0]]
-    for p in vals[1:]:
-        q=p
-        while q-out[-1]>math.pi:q-=2.0*math.pi
-        while q-out[-1]<-math.pi:q+=2.0*math.pi
-        out.append(q)
-    return out
-
-
-def fit_line(xs,ys):
-    n=len(xs)
-    sx=sum(xs); sy=sum(ys)
-    sxx=sum(x*x for x in xs)
-    sxy=sum(x*y for x,y in zip(xs,ys))
-    b=(n*sxy-sx*sy)/(n*sxx-sx*sx)
-    a=(sy-b*sx)/n
-    return a,b
-
-
 def evaluate(av,bv):
     low=run(4.0,20.0,av,bv)
     high=run(20.0,20.0,av,bv)
@@ -159,9 +140,8 @@ def evaluate(av,bv):
         phases.append(r["phase"])
         gains.append(r["rms"])
 
-    phases=unwrap(phases)
-    a,b=fit_line(FREQS,phases)
-    dlp=[math.degrees(p-(a+b*f)) for f,p in zip(FREQS,phases)]
+    d=dlp_degrees(FREQS,phases)
+    dlp=d["residual_deg"]
 
     i1=FREQS.index(1000.0)
     rel20=20.0*math.log10(gains[0]/gains[i1])
@@ -176,7 +156,7 @@ def evaluate(av,bv):
         "rel20k":rel20k,
         "dlp_min":min(dlp),
         "dlp_max":max(dlp),
-        "dlp_worst":max(abs(min(dlp)),abs(max(dlp))),
+        "dlp_worst":d["worst_abs_deg"],
     }
 
 
