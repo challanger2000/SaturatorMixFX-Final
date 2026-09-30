@@ -22,6 +22,7 @@ PY=sys.executable
 
 
 POSITIVE=[
+    ("IRON numerical-method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
     ("provisional Iron exact-anchor candidate", ["tools/smx3_v2_iron_candidate.py"]),
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
     ("ECC83 large signal", ["tools/smx3_v2_ecc83_large_signal.py"]),
@@ -34,6 +35,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 Graph-B model-family comparison", ["tools/smx3_v2_ef86_graphB_compare.py"]),
     ("EF86 Graph-A model-family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
     ("EF86 exact multi-supply envelope", ["tools/smx3_v2_ef86_full_envelope.py"]),
     ("EF86 Graph-D shape check", ["tools/smx3_v2_ef86_graphD_validate.py"]),
