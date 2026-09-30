@@ -1,4 +1,4 @@
-# revision: 9 - refined Graph-D plus Iron numerical/state gates
+# revision: 10 - cleaned current reference suite with kink sensitivity
 name: V2 Offline Reference Suite
 
 on:
