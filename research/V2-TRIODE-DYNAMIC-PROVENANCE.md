@@ -9,7 +9,7 @@ The current dynamic TRI0DE reference intentionally combines two independent evid
 ### Tube device law
 Dempwolf & Zoelzer, DAFx-2011:
 - measured/fitted practical 12AX7 specimen parameters;
-- EHX-1 selected as the current measured-specimen starting point;
+- RSD-2 selected as the current primary measured-specimen reference after manufacturer-loaded and dynamic cross-check;
 - explicit grid-current law;
 - published parasitic capacitances Cak=0.9 pF, Cgk=2.3 pF, Cag=2.4 pF.
 
@@ -61,7 +61,7 @@ They are NOT:
 
 The correct name for the current solver is:
 
-"EHX-1 measured 12AX7 device model embedded in a documented Mullard/Philips ECC83 R-C amplifier network."
+"RSD-2 measured 12AX7 device model embedded in a documented Mullard/Philips ECC83 R-C amplifier network."
 
 It is not:
 
@@ -76,6 +76,29 @@ The current dynamic reference may be promoted as SMX-3's TRI0DE offline authorit
 3. grid voltage/current and low-anode-voltage excursions are reported;
 4. frequency/level fixtures are frozen;
 5. the chosen Drive operating domain avoids relying materially on known invalid Dempwolf regions (positive grid combined with Va below about 20 V);
-6. the distinction between measured EHX-1 specimen behavior and Mullard average production data remains explicit.
+6. the distinction between measured RSD-2 specimen behavior and Mullard average production data remains explicit.
 
 Exact Dempwolf Figure-9 residual comparison is optional and becomes valid only if the original laboratory component values are recovered.
+
+
+## Specimen-selection correction — 2026-09-30
+
+A direct same-network comparison was run for EHX-1 and RSD-2.
+
+RSD-2 remains numerically stable in the full dynamic circuit and is closer to the Mullard loaded reference on the combined static criteria:
+- idle cathode current;
+- loaded small-signal gain;
+- distortion at the 26 Vrms manufacturer output point.
+
+Representative settled dynamic results:
+- 1 kHz / 10 mVrms: RSD-2 gain ~56.40, THD ~0.0747%; EHX-1 gain ~49.44, THD ~0.0431%;
+- 1 kHz / 0.5 Vrms: RSD-2 THD ~4.19%; EHX-1 ~2.42%;
+- 1 kHz / 0.7 Vrms: RSD-2 THD ~6.60%; EHX-1 ~3.90%.
+
+These differences are specimen behavior, not a reason to choose 'more distortion'.
+
+Selection is based on the independent manufacturer-loaded circuit comparison, with the dynamic comparison used to confirm stability and plausible progression.
+
+Dempwolf/Zoelzer state that the same tubes used during fitting were operated in their test circuit, but the paper text does not establish EHX-1 as the unique Figure-9 specimen. Therefore there is no primary-source requirement to retain EHX-1 as SMX-3's primary specimen.
+
+EHX-1 remains a mandatory independent measured-specimen cross-check.
