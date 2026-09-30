@@ -100,22 +100,71 @@ def analyze(out,start,fs,freq,vin_peak):
     }
 
 
-def simulate_midpoint(freq,vin_rms,fs,cycles=8):
-    samples=max(1,int(round(cycles*fs/freq)))
-    dt=1.0/fs
+def simulate_midpoint(freq,vin_rms,fs,cycles=8,warmup_seconds=0.4):
     x=solve_dc()
     vin_peak=vin_rms*math.sqrt(2.0)
-    out=[]
     max_newton=0
 
+    warm_fs=min(fs,max(192000.0,24.0*freq))
+    warm_samples=max(0,int(round(warmup_seconds*warm_fs)))
+    warm_dt=1.0/warm_fs
+
+    for n in range(warm_samples):
+        x,it=midpoint_step(n*warm_dt,x,warm_dt,vin_peak,freq)
+        max_newton=max(max_newton,it)
+
+    t0=warm_samples/warm_fs if warm_samples else 0.0
+
+    samples=max(1,int(round(cycles*fs/freq)))
+    dt=1.0/fs
+    out=[]
+
     for n in range(samples):
-        x,it=midpoint_step(n*dt,x,dt,vin_peak,freq)
+        x,it=midpoint_step(t0+n*dt,x,dt,vin_peak,freq)
         max_newton=max(max_newton,it)
         out.append(x[O])
 
     samples_per_cycle=max(1,int(round(fs/freq)))
     keep=min(len(out),4*samples_per_cycle)
-    r=analyze(out,len(out)-keep,fs,freq,vin_peak)
+    # analyze() assumes sample zero starts at absolute time zero; compensate
+    # for the preconditioning interval by rotating the known sine phase into
+    # the output buffer through an equivalent absolute-time projection below.
+    start=len(out)-keep
+    y=out[start:]
+    mean=sum(y)/len(y)
+    y=[v-mean for v in y]
+    N=len(y)
+    times=[t0+(start+i+1)/fs for i in range(N)]
+
+    mags=[]
+    phases=[]
+    max_h=min(10,int((0.49*fs)//freq))
+    for h in range(1,max_h+1):
+        re=0.0
+        im=0.0
+        for t,v in zip(times,y):
+            a=2.0*math.pi*h*freq*t
+            re+=v*math.cos(a)
+            im-=v*math.sin(a)
+        mags.append(2.0*math.hypot(re,im)/N)
+        phases.append(math.atan2(im,re))
+
+    in_re=0.0
+    in_im=0.0
+    for t in times:
+        v=vin_peak*math.sin(2.0*math.pi*freq*t)
+        a=2.0*math.pi*freq*t
+        in_re+=v*math.cos(a)
+        in_im-=v*math.sin(a)
+    input_phase=math.atan2(in_im,in_re)
+
+    rel_phase=phases[0]-input_phase
+    while rel_phase>math.pi: rel_phase-=2.0*math.pi
+    while rel_phase<-math.pi: rel_phase+=2.0*math.pi
+
+    fund=mags[0]
+    thd=math.sqrt(sum(m*m for m in mags[1:]))/fund if len(mags)>1 else 0.0
+    r={"gain":fund/vin_peak,"phase_deg":math.degrees(rel_phase),"thd":thd}
     r["max_newton"]=max_newton
     return r
 
