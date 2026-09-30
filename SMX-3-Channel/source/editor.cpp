@@ -119,7 +119,7 @@ public:
         ctx->setDrawMode(VSTGUI::kAntiAliasing);
         ctx->setFont(VSTGUI::kNormalFontSmall);
         ctx->setFontColor({205,210,218,210});
-        ctx->drawString("V2 · 2.0.0",r,VSTGUI::kRightText);
+        ctx->drawString("V2  2.0.0",r,VSTGUI::kRightText);
         setDirty(false);
     }
 };
