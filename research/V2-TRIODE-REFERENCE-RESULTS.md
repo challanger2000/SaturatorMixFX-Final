@@ -1,3 +1,11 @@
+> SUPERSEDED NOTE — 2026-09-30
+>
+> The original selection of EHX-1 below used an unloaded small-signal gain comparison.
+> Mullard's documented 330 kOhm following-stage grid resistor is an AC plate load in the
+> midband. Including that load changes the comparison materially. The corrected analysis
+> is in research/V2-ECC83-MULLARD-FIT.md. EHX-1 remains a measured-specimen cross-check,
+> not the current primary TRI0DE reference candidate.
+
 # SMX-3 V2 TRI0DE Reference Baseline — corrected loaded-circuit comparison
 
 Date: 2026-09-30
