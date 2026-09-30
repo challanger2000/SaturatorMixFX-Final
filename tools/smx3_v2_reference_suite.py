@@ -35,6 +35,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 Stage-2C out-of-fit large-signal", ["tools/smx3_v2_ef86_stage2c_large_signal.py"]),
     ("EF86 Graph-B model-family comparison", ["tools/smx3_v2_ef86_graphB_compare.py"]),
     ("EF86 Graph-A model-family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
     ("EF86 exact multi-supply envelope", ["tools/smx3_v2_ef86_full_envelope.py"]),
