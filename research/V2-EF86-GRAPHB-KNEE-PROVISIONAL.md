@@ -65,3 +65,23 @@ Do not:
 - override exact DC/gain/5%-THD table anchors when conflict is within graph-read uncertainty.
 
 Final promotion still requires calibrated coordinate extraction or an equivalently strong independent primary source.
+
+
+## Correction — axis orientation
+
+The first 20/40/60/80 V manual read was superseded after direct visual re-check of the original Philips Graph B raster.
+
+Cause:
+the scanned page is rotated, and the first read interpreted the low-Va grid geometry too aggressively toward low current.
+
+The corrected read:
+- follows the actual Va axis orientation;
+- yields substantially higher current in the 20-80 V knee region;
+- uses rounded values rather than pseudo-precision;
+- keeps deliberately broad uncertainties.
+
+This is a source-reading correction, not a model-driven data adjustment.
+
+The corrected machine-readable CSV is authoritative for the current provisional knee dataset.
+
+No model parameter or gate tolerance was changed merely to accommodate the corrected read.
