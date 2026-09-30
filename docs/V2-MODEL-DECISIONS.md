@@ -630,3 +630,26 @@ Consequence:
 
 No nonlinear Iron parameter is promoted until the exact +4/+20 dBu THD anchors
 are reproduced again on the corrected skeleton.
+
+
+### IRON dynamic-loss architecture after residual decomposition
+Status: PASSIVE PARALLEL AUXILIARY BRANCH REJECTED
+
+A corrected reference-plane decomposition compared:
+- transformer input terminal impedance with the 600-ohm generator excluded on both sides;
+- magnetic-branch admittance separately from HF leakage/capacitance.
+
+Result:
+- the magnetic residual requires negative conductance above roughly 80 Hz if it is interpreted as a simple added parallel branch;
+- residual susceptance is also structurally inconsistent with a single passive RL/RC add-on.
+
+Decision:
+do not add an arbitrary passive parallel loss branch to the accepted JA core.
+
+Next architecture:
+dynamic Jiles-Atherton effective-field/core-loss augmentation, where derivative-dependent loss vanishes at DC and therefore does not replace static hysteresis/remanence.
+
+Staging:
+1. classical loss term proportional to dB/dt;
+2. only if required, add excess-loss term proportional to sign(dB/dt)*sqrt(abs(dB/dt));
+3. re-fit against Jensen DLP/magnitude while preserving exact THD and remanence gates.
