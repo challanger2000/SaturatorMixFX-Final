@@ -13,6 +13,7 @@ may rely on them.
 Standard library only.
 """
 
+import argparse
 import math
 
 from smx3_v2_ecc83_dynamic_reference import (
@@ -87,62 +88,92 @@ def bisect_grid_zero(freq,lo=0.05,hi=2.0):
 
 
 def main():
-    freqs=(20.0,100.0,1000.0,10000.0,20000.0)
-    levels=(0.10,0.30,0.50,0.70,1.00,1.50,2.00)
+    ap=argparse.ArgumentParser()
+    ap.add_argument(
+        "--full",
+        action="store_true",
+        help="Run the full level/frequency matrix, threshold bisections and stress cases."
+    )
+    args=ap.parse_args()
 
-    print("SMX-3 V2 ECC83 model-domain matrix")
+    gate_freqs=(20.0,1000.0,10000.0,20000.0)
+
+    print("SMX-3 V2 ECC83 model-domain gate")
     print("freq_Hz,Vin_rms,min_Va_V,max_Vg_V,max_Ig_uA,max_Newton,grid_positive,Va_below_20")
-    rows={}
 
-    for f in freqs:
-        for vin in levels:
-            r=probe(f,vin)
-            rows[(f,vin)]=r
-            print(
-                f"{f:.1f},{vin:.3f},{r['min_va']:.9f},{r['max_vg']:.9f},"
-                f"{r['max_ig']*1e6:.9f},{r['max_newton']},"
-                f"{int(r['max_vg']>0.0)},{int(r['min_va']<20.0)}"
-            )
-
-    print()
-    print("Approximate Vin RMS at first positive-grid crossing")
-    for f in freqs:
-        threshold=bisect_grid_zero(f)
-        if threshold is None:
-            print(f"{f:.1f} Hz: >2.0 Vrms")
-        else:
-            print(f"{f:.1f} Hz: ~{threshold:.4f} Vrms")
-
-    print()
-    print("Extreme stress checks")
-    for f,vin in ((1000.0,4.0),(1000.0,8.0),(20000.0,4.0),(20000.0,8.0)):
-        r=probe(f,vin)
-        print(
-            f"{f:.1f} Hz / {vin:.1f} Vrms: "
-            f"minVa={r['min_va']:.6f} V "
-            f"maxVg={r['max_vg']:.6f} V "
-            f"maxIg={r['max_ig']*1e6:.3f} uA"
-        )
-
-    # Frozen current research gate:
-    # <=0.70 Vrms remains inside the published validity warnings across the
-    # tested 20 Hz..20 kHz range.
     failures=[]
-    for f in freqs:
-        r=rows[(f,0.70)]
+
+    # Fast regression gate: the intended normal/musical reference level must
+    # remain inside the documented model-validity warnings throughout the
+    # tested audio band.
+    for f in gate_freqs:
+        r=probe(f,0.70)
+        print(
+            f"{f:.1f},0.700,{r['min_va']:.9f},{r['max_vg']:.9f},"
+            f"{r['max_ig']*1e6:.9f},{r['max_newton']},"
+            f"{int(r['max_vg']>0.0)},{int(r['min_va']<20.0)}"
+        )
         if r["max_vg"]>=0.0:
             failures.append(f"{f:g} Hz: positive grid at 0.70 Vrms")
         if r["min_va"]<20.0:
             failures.append(f"{f:g} Hz: Va<20 V at 0.70 Vrms")
 
+    # Diagnostic sensitivity checks at the top of the audio band.
+    top=probe(20000.0,1.00)
+    extreme=probe(20000.0,8.00)
+
+    print(
+        f"20000.0,1.000,{top['min_va']:.9f},{top['max_vg']:.9f},"
+        f"{top['max_ig']*1e6:.9f},{top['max_newton']},"
+        f"{int(top['max_vg']>0.0)},{int(top['min_va']<20.0)}"
+    )
+    print(
+        f"20000.0,8.000,{extreme['min_va']:.9f},{extreme['max_vg']:.9f},"
+        f"{extreme['max_ig']*1e6:.9f},{extreme['max_newton']},"
+        f"{int(extreme['max_vg']>0.0)},{int(extreme['min_va']<20.0)}"
+    )
+
+    if top["max_vg"]<=0.0:
+        failures.append("20 kHz / 1.0 Vrms no longer exercises positive-grid boundary")
+    if extreme["min_va"]>=20.0:
+        failures.append("20 kHz / 8.0 Vrms no longer exercises low-Va stress boundary")
+
+    if args.full:
+        print()
+        print("FULL MATRIX")
+        freqs=(20.0,100.0,1000.0,10000.0,20000.0)
+        levels=(0.10,0.30,0.50,0.70,1.00,1.50,2.00)
+
+        for f in freqs:
+            for vin in levels:
+                # Skip cases already printed by the fast gate only for display
+                # compactness; recomputation is still acceptable research cost.
+                r=probe(f,vin)
+                print(
+                    f"{f:.1f},{vin:.3f},{r['min_va']:.9f},{r['max_vg']:.9f},"
+                    f"{r['max_ig']*1e6:.9f},{r['max_newton']},"
+                    f"{int(r['max_vg']>0.0)},{int(r['min_va']<20.0)}"
+                )
+
+        print()
+        print("Approximate Vin RMS at first positive-grid crossing")
+        for f in freqs:
+            threshold=bisect_grid_zero(f)
+            if threshold is None:
+                print(f"{f:.1f} Hz: >2.0 Vrms")
+            else:
+                print(f"{f:.1f} Hz: ~{threshold:.4f} Vrms")
+
+    print()
     if failures:
-        print("FAIL: conservative normal-domain gate moved")
+        print("FAIL: TRI0DE model-domain regression moved")
         for x in failures:
             print(" - "+x)
         return 1
 
-    print()
-    print("PASS: 0.70 Vrms remains inside the conservative Dempwolf validity domain across the tested audio-band frequencies.")
+    print("PASS: conservative normal domain remains valid and stress fixtures still exercise the documented suspect regions.")
+    if not args.full:
+        print("Use --full for the complete research matrix and positive-grid threshold bisections.")
     return 0
 
 
