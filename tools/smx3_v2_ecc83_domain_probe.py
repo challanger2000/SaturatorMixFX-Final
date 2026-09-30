@@ -20,23 +20,34 @@ from smx3_v2_ecc83_dynamic_reference import (
 )
 
 
-def probe(freq,vin_rms,cycles=8,fs=None):
+def probe(freq,vin_rms,cycles=8,fs=None,warmup_seconds=0.4):
     if fs is None:
         fs=max(192000.0,96.0*freq)
+
+    x=solve_dc()
+    vin_peak=vin_rms*math.sqrt(2.0)
+
+    warm_fs=min(fs,max(192000.0,24.0*freq))
+    warm_samples=max(0,int(round(warmup_seconds*warm_fs)))
+    warm_dt=1.0/warm_fs
+    max_newton=0
+
+    for n in range(warm_samples):
+        x,it=trapezoid_step(n*warm_dt,x,warm_dt,vin_peak,freq)
+        max_newton=max(max_newton,it)
+
+    t0=warm_samples/warm_fs if warm_samples else 0.0
 
     samples=max(1,int(round(cycles*fs/freq)))
     keep=max(1,int(round(4.0*fs/freq)))
     dt=1.0/fs
-    x=solve_dc()
-    vin_peak=vin_rms*math.sqrt(2.0)
 
     min_va=float("inf")
     max_vg=-float("inf")
     max_ig=0.0
-    max_newton=0
 
     for n in range(samples):
-        x,it=trapezoid_step(n*dt,x,dt,vin_peak,freq)
+        x,it=trapezoid_step(t0+n*dt,x,dt,vin_peak,freq)
         max_newton=max(max_newton,it)
 
         if n >= samples-keep:
