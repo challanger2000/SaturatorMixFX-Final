@@ -178,7 +178,10 @@ public:
         const double baseComp = (-.46*wT - .52*wP - .40*wI) * driveDb;
         const double polishTrimDb = (.73*wT + 2.67*wP - .06*wI) * effectiveDrive;
         const double smoothTrimDb = characterTrimDb(effectiveDrive,wT,wP,wI);
-        const double comp = dbToGain(trim + baseComp + polishTrimDb + smoothTrimDb);
+        const double driveLevelComp =
+            hardwareDriveLevelCompDb(clamp01(params.drive),wT,wP,wI);
+        const double comp = dbToGain(
+            trim + baseComp + polishTrimDb + smoothTrimDb + driveLevelComp);
 
         const double protect = .18*wT + .42*wP + .30*wI;
         const double attackAmount = .08*wT + .22*wP + .15*wI;
