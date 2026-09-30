@@ -1,4 +1,4 @@
-# revision: 9 - canonical classical-plus-excess screen only
+# revision: 10 - joint low-field-L and dynamic-loss architecture screen
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -61,6 +61,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_excess_loss_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run joint low-field-L dynamic-loss screen
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_loss_lm_screen.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Upload log
         if: always()
