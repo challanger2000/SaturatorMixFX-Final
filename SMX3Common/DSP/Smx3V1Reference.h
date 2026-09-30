@@ -233,7 +233,14 @@ public:
         processed=peakProtect(processed);
         processed=dcBlock(processed,s);
 
-        const double wetSignal=cleanOs+effectiveDrive*(processed-cleanOs);
+        // Hardware is already present at minimum Drive. Drive increases
+        // excitation/intensity; only bypass is truly neutral.
+        // Provisional floor: verify against level-matched programme material.
+        constexpr double kHardwareFloor=.12;
+        const double hardwareAmount=
+            kHardwareFloor+(1.0-kHardwareFloor)*effectiveDrive;
+        const double wetSignal=
+            cleanOs+hardwareAmount*(processed-cleanOs);
         const double mixed=dry*cleanOs+wet*wetSignal;
         return mixed*outGain;
     }
