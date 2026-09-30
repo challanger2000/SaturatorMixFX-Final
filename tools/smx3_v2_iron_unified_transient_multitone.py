@@ -129,23 +129,46 @@ def source_burst():
 
 
 def source_step_chirp():
+    """Fast but band-limited-ish transient followed by a continuous chirp.
+
+    The former version used ideal voltage steps. Those contain infinite
+    bandwidth, so host-rate and 8x renderers were not being driven by the same
+    realizable audio-band stimulus. Raised-cosine edges keep this a valid
+    realtime architecture comparison while remaining deliberately abrupt.
+    """
     vrms=0.775*10.0**(LEVEL_DBU/20.0)
     amp=vrms*math.sqrt(2.0)
-    def src(t):
-        if t<0.04:
+
+    def rc(x):
+        if x<=0.0:
             return 0.0
-        if t<0.08:
-            return amp*0.85
-        if t<0.12:
-            return -amp*0.85
-        tt=t-0.12
-        if tt<0.38:
+        if x>=1.0:
+            return 1.0
+        return 0.5-0.5*math.cos(math.pi*x)
+
+    def pulse(t,start,hold,edge,sign):
+        a=rc((t-start)/edge)
+        b=rc((start+edge+hold+edge-t)/edge)
+        return sign*a*b
+
+    def src(t):
+        # Two opposite, fast 2 ms raised-cosine transients.
+        p=0.78*pulse(t,0.040,0.030,0.002,+1.0)
+        p+=0.78*pulse(t,0.085,0.030,0.002,-1.0)
+
+        # Continuous raised-cosine-gated chirp, 30 Hz -> 12 kHz.
+        start=0.140
+        dur=0.360
+        tt=t-start
+        if 0.0<=tt<=dur:
+            gate=rc(tt/0.003)*rc((dur-tt)/0.003)
             f0=30.0
             f1=12000.0
-            k=(f1-f0)/0.38
+            k=(f1-f0)/dur
             ph=2.0*math.pi*(f0*tt+0.5*k*tt*tt)
-            return amp*0.65*math.sin(ph)
-        return 0.0
+            p+=0.65*gate*math.sin(ph)
+
+        return amp*p
     return src
 
 
@@ -153,7 +176,7 @@ def main():
     cases=(
         ("multitone",source_multitone(),0.50),
         ("burst",source_burst(),0.55),
-        ("step_chirp",source_step_chirp(),0.55),
+        ("fast_transient_chirp",source_step_chirp(),0.55),
     )
 
     print("SMX-3 V2 unified IRON transient/multitone host-rate residual gate")
