@@ -29,6 +29,13 @@ def main():
     ga,gaw=m.graph_score(m.A_POINTS,p,"A")
     gb,gbw=m.graph_score(m.B_POINTS,p,"B")
 
+    # Exact Philips local plate resistance anchor: Ri ~= 2.5 MOhm at
+    # Va=250 V, Vg2=140 V, Vg1=-2 V.
+    h=0.1
+    gp=(m.ia(250.0+h,140.0,-2.0,*p[:3]) - m.ia(250.0-h,140.0,-2.0,*p[:3]))/(2.0*h)
+    ri=1.0/gp
+    ri_err=100.0*(ri-2.5e6)/2.5e6
+
     ikerrs=[]
     gerrs=[]
     voerrs=[]
@@ -37,6 +44,7 @@ def main():
     print(f"VCT={vct:.12g} KG1={kg1:.12g} S0={s0:.12g}")
     print(f"Graph A NRMS={ga:.6f} sigma worst={gaw:.6f}")
     print(f"Graph B NRMS={gb:.6f} sigma worst={gbw:.6f}")
+    print(f"Ri={ri/1e6:.9f} MOhm vs Philips 2.500000000 MOhm error={ri_err:+.6f}%")
     print()
     print("Vb,Ik_err_pct,Gain_err_pct,Vo5_err_pct")
 
@@ -68,6 +76,7 @@ def main():
     failures=[]
     if ga>0.8 or gaw>1.8: failures.append("Graph A")
     if gb>0.8 or gbw>1.8: failures.append("Graph B")
+    if abs(ri_err)>12.0: failures.append("exact Ri anchor")
     if mi>6.0: failures.append("cathode-current sweep")
     if mg>5.0: failures.append("gain sweep")
     if mv>5.0: failures.append("exact 5%-THD envelope")
