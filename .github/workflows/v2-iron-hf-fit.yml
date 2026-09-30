@@ -21,6 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run reduced HF fit
+        shell: bash
         run: python tools/smx3_v2_jensen_hf_fit.py 2>&1 | tee iron-hf-fit.log
       - name: Upload log
         if: always()
