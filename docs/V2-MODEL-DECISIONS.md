@@ -339,3 +339,30 @@ Remaining caution:
 
 Next promotion gate:
 out-of-fit exact Philips 5%-THD envelope plus Graph-D compression/distortion trajectory. Only the minimum additional large-signal curvature justified by those residuals may be introduced.
+
+
+### TRI0DE measured-specimen authority correction — RSD-2
+Status: RSD-2 PROMOTED TO PRIMARY OFFLINE SPECIMEN; EHX-1 RETAINED AS CROSS-CHECK
+
+Reason:
+- the earlier EHX-1 authority choice was historical rather than the result of the final loaded manufacturer comparison;
+- RSD-2 gives the best current combined match to Mullard idle current, documented 330 kOhm-loaded gain and the 26 Vrms distortion anchor;
+- RSD-2 remains numerically stable in the same complete dynamic network;
+- Dempwolf/Zoelzer do not establish EHX-1 as the uniquely authoritative circuit-test specimen in the paper text.
+
+Current static manufacturer comparison at 250 V:
+- RSD-2 Ik error ~-2.86%;
+- loaded gain error ~+5.52%;
+- distortion at 26 Vrms ~3.70% versus Mullard ~3.9%.
+
+Representative dynamic comparison:
+- RSD-2 low-level midband gain ~1.14 dB above EHX-1;
+- RSD-2 harmonic growth is stronger, consistent with its closer manufacturer large-signal result.
+
+This supersedes any earlier Decision Log section that names EHX-1 as the primary TRI0DE tube authority.
+
+Required after promotion:
+- rerun dynamic convergence;
+- rerun independent integration-method cross-check;
+- rerun operating-domain boundary;
+- keep EHX-1 as specimen-variation fixture.
