@@ -26,6 +26,7 @@ jobs:
         run: python -m py_compile tools/smx3_v2_iron_candidate.py tools/smx3_v2_iron_coupled_full.py
 
       - name: Run coupled IRON reference
+        shell: bash
         run: python tools/smx3_v2_iron_coupled_full.py 2>&1 | tee iron-coupled-full.log
 
       - name: Upload log
