@@ -86,7 +86,7 @@ Established linear skeleton:
 - 10 kOhm load;
 - circuit-derived ~13 kOhm input impedance;
 - circuit-derived ~-2.28 dB insertion gain;
-- effective low-level Lm ~106.55 H from 20 Hz droop.
+- effective low-level Lm ~144.0 H from the 20 Hz droop measured with Rs=600 Ohm.
 
 Magnetic model family:
 Jiles-Atherton stateful hysteresis.
@@ -95,8 +95,8 @@ Rejected:
 - unmodified DAFx example magnetic shape scaled only by geometry.
 
 Strong provisional candidate:
-- reversible fraction c ~0.84;
-- field scale re-derived against exact +20 dBu / 20 Hz anchor;
+- reversible fraction c ~0.820 after correcting the Rs=600 LF reference;
+- field scale KI ~40528.8 A/m per A re-derived against the exact +20 dBu / 20 Hz anchor;
 - low-level magnetizing-inductance constraint retained.
 
 Hard evidence currently matched:
@@ -141,3 +141,25 @@ All work in this checkpoint is confined to:
 - branch: v2.0.0-development
 
 V1/main remains intentionally untouched.
+
+
+### IRON LF-reference correction
+
+The former ~106.55 H magnetizing-inductance value was derived by applying the -0.04 dB / 20 Hz manufacturer response directly to the transformer port.
+
+The Jensen datasheet explicitly specifies that magnitude-response measurement as:
+test circuit 1, Rs=600 Ohm.
+
+Re-deriving the magnetizing branch with the source resistance included gives approximately:
+- Lm = 144.0 H
+
+The separate 1 kHz transformer-port quantities remain consistent:
+- Zi ~13 kOhm
+- voltage gain ~-2.28 dB vs manufacturer typical -2.3 dB
+
+The magnetic candidate was therefore re-identified rather than keeping stale fitted numbers:
+- c ~0.820
+- KI ~40528.8 A/m per A
+- KPHI re-derived from the corrected Lm.
+
+All earlier IRON candidate numbers based on Lm ~106.55 H are superseded.
