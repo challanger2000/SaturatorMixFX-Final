@@ -16,16 +16,21 @@ import cmath
 import smx3_v2_iron_candidate as ref
 
 HOST=48000.0
-AUTH_FS=768000.0
+AUTH_FS_TARGET=768000.0
 FACTORS=(1,2,4)
 
 
 def render(level_dbu,freq,warmup_cycles=30,analysis_cycles=4):
     vrms=0.775*10.0**(level_dbu/20.0)
     amp=vrms*math.sqrt(2.0)
-    fs=AUTH_FS
-    n=int(round((warmup_cycles+analysis_cycles)*fs/freq))
-    warm=int(round(warmup_cycles*fs/freq))
+
+    # Make the analysis EXACTLY coherent: integer samples per fundamental
+    # cycle. The former fixed 768 kHz rate gave 153.6 samples/cycle at 5 kHz
+    # and 76.8 at 10 kHz, which leaked fundamental energy into harmonic bins.
+    spc=max(32,int(round(AUTH_FS_TARGET/freq)))
+    fs=spc*freq
+    n=(warmup_cycles+analysis_cycles)*spc
+    warm=warmup_cycles*spc
     dt=1.0/fs
     H=M=0.0
     y=[]
@@ -41,13 +46,12 @@ def render(level_dbu,freq,warmup_cycles=30,analysis_cycles=4):
         if i>=warm:
             y.append(v1)
 
-    return y
+    return y,fs
 
 
-def harmonic_coeffs(y,freq,max_h):
-    # The analysis window contains an integer number of cycles.
+def harmonic_coeffs(y,freq,fs,max_h):
+    # The analysis window contains an exact integer number of cycles.
     N=len(y)
-    fs=AUTH_FS
     coeff={}
     for h in range(1,max_h+1):
         re=im=0.0
@@ -103,16 +107,16 @@ def main():
     ]
 
     print("SMX-3 V2 IRON harmonic-folding alias-risk estimate")
-    print("Host=48k; authority waveform=768k; ideal return LPF assumed for 2x/4x.")
+    print("Host=48k; authority uses coherent ~768k integration; ideal return LPF assumed for 2x/4x.")
     print()
     print("level_dBu,freq_Hz,factor,alias_dBc,contributors")
 
     worst={f:-300.0 for f in FACTORS}
 
     for level,freq in cases:
-        y=render(level,freq)
-        max_h=max(16,int((0.45*AUTH_FS)//freq))
-        coeff=harmonic_coeffs(y,freq,max_h)
+        y,auth_fs=render(level,freq)
+        max_h=max(16,int((0.45*auth_fs)//freq))
+        coeff=harmonic_coeffs(y,freq,auth_fs,max_h)
 
         for factor in FACTORS:
             db,contrib=alias_ratio(coeff,freq,factor)
