@@ -1,0 +1,43 @@
+name: V2 IRON Narrow LqS Sweep
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-narrow-lm-sweep.yml'
+
+jobs:
+  narrow-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check
+        run: |
+          python -m py_compile \
+            tools/smx3_v2_dlp_utils.py \
+            tools/smx3_v2_iron_lm_constrained_refit.py \
+            tools/smx3_v2_iron_narrow_lm_sweep.py
+
+      - name: Run narrow first-order sweep
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_narrow_lm_sweep.py 2>&1 | tee iron-narrow-lm-sweep.log
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-IRON-Narrow-Lm-Sweep
+          path: iron-narrow-lm-sweep.log
+          if-no-files-found: warn
