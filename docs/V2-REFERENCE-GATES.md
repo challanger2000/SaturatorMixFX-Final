@@ -22,14 +22,18 @@ Established:
 - grid-current model;
 - idle operating point in selected 250 V / 100 kOhm / 1.5 kOhm circuit;
 - published parasitic capacitance values;
+- documented Philips/Mullard input/cathode/output network;
+- dynamic MNA reference with Cag/Cgk/Cak;
+- corrected relative-phase measurement;
+- aggregate integration convergence through 20 kHz;
 - loaded amplifier comparison against Mullard;
 - documented specimen-vs-average differences.
 
 Remaining blockers:
-- dynamic circuit with Cag/Cgk/Cak;
-- cathode/output network values frozen from an explicit documented circuit;
-- reproduce Dempwolf dynamic waveform cases;
-- harmonic spectrum versus level/frequency;
+- independent second numerical-method cross-check;
+- waveform/grid-current/low-Va domain diagnostics;
+- harmonic spectrum versus level/frequency matrix;
+- Dempwolf 2/4/8 V and burst signals only as stress cases unless the unpublished Figure-8 laboratory component values are recovered;
 - oversampling/aliasing/realtime solver comparison.
 
 Important:
