@@ -1,4 +1,4 @@
-# revision: 12 - current fast gates plus deep grid-sensitivity registration
+# revision: 13 - corrected Jensen Rs600 LF reference propagated through IRON
 name: V2 Offline Reference Suite
 
 on:
