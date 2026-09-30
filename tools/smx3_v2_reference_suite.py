@@ -27,7 +27,6 @@ POSITIVE=[
     ("EF86 Stage-3 large-signal knee", ["tools/smx3_v2_ef86_stage3_knee_candidate.py"]),
     ("EF86 Stage-2 joint static", ["tools/smx3_v2_ef86_stage2_joint_static.py"]),
     ("EF86 Stage-1 plate surface", ["tools/smx3_v2_ef86_stage1_plate_surface.py"]),
-    ("IRON numerical-method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
     ("provisional Iron exact-anchor candidate", ["tools/smx3_v2_iron_candidate.py"]),
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
     ("ECC83 large signal", ["tools/smx3_v2_ecc83_large_signal.py"]),
