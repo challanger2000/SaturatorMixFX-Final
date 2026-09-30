@@ -1,4 +1,4 @@
-# revision: 2 - measure recovery convergence before freezing state gate
+# revision: 3 - add nonlinear time-domain magnetic transfer gate
 name: V2 IRON Unified Regression
 
 on:
@@ -28,7 +28,8 @@ jobs:
           python -m py_compile \
             tools/smx3_v2_iron_unified_candidate.py \
             tools/smx3_v2_iron_unified_recovery_convergence.py \
-            tools/smx3_v2_iron_unified_method_crosscheck.py
+            tools/smx3_v2_iron_unified_method_crosscheck.py \
+            tools/smx3_v2_iron_unified_time_domain.py
 
       - name: Measure recovery convergence
         shell: bash
@@ -39,6 +40,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_unified_method_crosscheck.py 2>&1 | tee -a iron-unified-regression.log
+
+      - name: Run nonlinear time-domain magnetic transfer gate
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_unified_time_domain.py 2>&1 | tee -a iron-unified-regression.log
 
       - name: Upload log
         if: always()
