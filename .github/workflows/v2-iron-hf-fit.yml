@@ -1,4 +1,4 @@
-# revision: 7 - Jensen-conformant DLP extraction
+# revision: 7 - classical dynamic-loss sensitivity
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -51,6 +51,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_loss_residual.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run classical dynamic-loss sensitivity
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_classical_loss_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Upload log
         if: always()
