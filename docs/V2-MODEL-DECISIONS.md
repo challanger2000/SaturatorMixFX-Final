@@ -407,3 +407,19 @@ Graph-D THD residual does not materially improve across eligible KP candidates, 
 
 Decision:
 retain EX≈1.40 and the Stage-1 KP region. Do not tune the pentode model against uncertain Graph-D low-level points.
+
+
+### IRON oversampling — coherent harmonic-fold checkpoint
+Status: DEFAULT 1X HYPOTHESIS STRENGTHENED
+
+Corrected coherent high-rate analysis at +20 dBu gives worst estimated
+nonlinear foldback near -108.4 dBc at 1x/48 kHz, improving to about -117 dBc
+at 2x and -127.8 dBc at 4x.
+
+At 5-10 kHz the 1x estimate is already below about -127 dBc because magnetic
+distortion falls strongly with frequency.
+
+Decision:
+do not design IRON around fixed oversampling. Proceed with host-rate midpoint
+as the primary realtime candidate and require a direct band-limited waveform
+residual test before freezing 1x.
