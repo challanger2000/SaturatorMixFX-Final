@@ -20,6 +20,7 @@ import pathlib
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 GRAPHA=ROOT/"research"/"ef86_philips_graphA_provisional.csv"
 GRAPHB=ROOT/"research"/"ef86_philips1956_platecurve_provisional.csv"
+GRAPHB_KNEE=ROOT/"research"/"ef86_philips1956_platecurve_knee_provisional.csv"
 
 P={
     "MU":43.5199389,
@@ -88,12 +89,23 @@ def main():
     a_rms,a_worst=score_grapha()
     b_rms,b_worst=score_graphb()
 
+    rows=list(csv.DictReader(GRAPHB_KNEE.open(encoding="utf-8")))
+    knee_sig=[]
+    for r in rows:
+        m=1e3*ia(float(r["va_v"]),140.0,float(r["curve_vg1_v"]))
+        y=float(r["ia_ma"])
+        u=float(r["uncertainty_ma"])
+        knee_sig.append((m-y)/u)
+    k_rms=math.sqrt(sum(s*s for s in knee_sig)/len(knee_sig))
+    k_worst=max(abs(s) for s in knee_sig)
+
     print("SMX-3 V2 EF86 Stage-1 plate-current surface")
     print(f"Ia @250/140/-2 = {ia0*1e3:.9f} mA (Philips 3.000 mA)")
     print(f"gm @250/140/-2 = {gm*1e3:.9f} mA/V (Philips 2.000 mA/V)")
     print(f"Ri @250/140/-2 = {ri/1e6:.9f} MOhm (Philips 2.500 MOhm)")
     print(f"Graph A NRMS = {a_rms:.6f} sigma; worst = {a_worst:.6f} sigma")
-    print(f"Graph B NRMS = {b_rms:.6f} sigma; worst = {b_worst:.6f} sigma")
+    print(f"Graph B plateau NRMS = {b_rms:.6f} sigma; worst = {b_worst:.6f} sigma")
+    print(f"Graph B knee NRMS = {k_rms:.6f} uncertainty-units; worst = {k_worst:.6f}")
 
     ia_err=100.0*(ia0-0.003)/0.003
     gm_err=100.0*(gm-0.002)/0.002
@@ -108,7 +120,9 @@ def main():
     if a_rms>1.0 or a_worst>2.0:
         raise SystemExit("FAIL: Graph A screen-family surface")
     if b_rms>1.0 or b_worst>2.0:
-        raise SystemExit("FAIL: Graph B plate-current surface")
+        raise SystemExit("FAIL: Graph B plate-current plateau surface")
+    if k_rms>1.0:
+        raise SystemExit("FAIL: Graph B low-Va knee surface")
 
     print("PASS: Stage-1 plate-current surface stays inside current provisional Philips uncertainties.")
     print("WARNING: screen-current submodel and amplifier large-signal behavior are intentionally NOT part of Stage 1.")
