@@ -1,7 +1,7 @@
 # SMX-3 V2 IRON Reduced HF Network — Phase Rejection
 
 Date: 2026-09-30
-Status: REJECTED AS FINAL HF NETWORK
+Status: LINEAR-SKELETON HF FIT REJECTED IN ISOLATION; full magnetic+HF combination still pending
 
 ## Candidate under test
 
@@ -62,3 +62,28 @@ Promotion still requires simultaneous:
 - ~95 kHz -3 dB point;
 - Jensen DLP inside +/-2 degrees;
 - no artificial resonance.
+
+
+## Methodological clarification
+
+Jensen's DLP specification is measured on the real transformer at +4 dBu.
+
+The stateful magnetic core itself has loss/hysteresis and therefore contributes
+to fundamental phase. A pure ideal magnetizing inductance cannot represent that
+complex permeability.
+
+Therefore this document rejects only the **linear reduced HF network evaluated
+with an ideal reactive Lm**.
+
+It does NOT yet prove that:
+- the same parasitic network combined with the refitted Jiles-Atherton core
+  fails Jensen DLP.
+
+Final DLP must be evaluated on:
+1. corrected 600-ohm test circuit;
+2. corrected ~144 H low-field basis;
+3. refitted magnetic core;
+4. HF parasitic network;
+5. fundamental phase after periodic magnetic settling.
+
+This clarification prevents over-interpreting the linear-only phase residual.
