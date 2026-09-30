@@ -1,4 +1,4 @@
-# revision: 3 - identical discrete host-sample authority
+# revision: 4 - transient substep requirement matrix
 name: V2 IRON Unified Transient Multitone
 
 on:
