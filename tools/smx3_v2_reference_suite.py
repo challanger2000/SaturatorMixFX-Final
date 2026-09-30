@@ -34,6 +34,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 Graph-A model-family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
     ("EF86 exact multi-supply envelope", ["tools/smx3_v2_ef86_full_envelope.py"]),
     ("EF86 Graph-D shape check", ["tools/smx3_v2_ef86_graphD_validate.py"]),
     ("physical level calibration candidate", ["tools/smx3_v2_level_calibration.py"]),
