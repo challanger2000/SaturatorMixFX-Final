@@ -55,6 +55,10 @@ def langevin_d(x):
     ax=abs(x)
     if ax<1e-4:
         return 1.0/3.0
+    # For large |x|, csch(x)^2 is exponentially negligible and direct
+    # sinh(x) can overflow numerically. The asymptotic derivative is 1/x^2.
+    if ax>20.0:
+        return 1.0/(x*x)
     s=math.sinh(x)
     return 1.0/(x*x)-1.0/(s*s)
 
