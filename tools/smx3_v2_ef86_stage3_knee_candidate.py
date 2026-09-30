@@ -20,7 +20,7 @@ import pathlib
 import smx3_v2_ef86_stage2_joint_static as base
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-GRAPHD=ROOT/"research"/"ef86_philips1956_graphD_provisional.csv"
+GRAPHD=ROOT/"research"/"ef86_philips1956_graphD_refined_provisional.csv"
 
 A0=0.558549505811
 P_SCREEN=0.533215365718
@@ -163,7 +163,7 @@ def main():
     rows=list(csv.DictReader(GRAPHD.open(encoding="utf-8")))
 
     print()
-    print("Graph-D provisional shape:")
+    print("Graph-D refined provisional shape:")
     print("Vo_target,Vi_model_mV,Vi_graph_mV,THD_model_pct,THD_graph_pct")
 
     for r in rows:
