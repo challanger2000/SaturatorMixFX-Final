@@ -32,6 +32,11 @@ LLK=2.756645114219e-3
 CX=1.155036777196e-9
 CSEC=CS+CX
 
+# Newton normalization scales. The five states differ by many orders of
+# magnitude; solving the raw residual with one absolute tolerance is poorly
+# conditioned and can report false non-convergence.
+STATE_SCALE=(100.0,3.0e5,10.0,1.0e-3,10.0)
+
 
 def deriv(t,state,amp,freq):
     H,M,Vp,Ilk,Vsec=state
@@ -80,34 +85,70 @@ def solve_linear(A,b):
 
 def trapezoid_step(t,x,dt,amp,freq):
     f0=deriv(t,x,amp,freq)
-    z=list(x)
 
-    for iteration in range(14):
+    # Work in dimensionless Newton coordinates y=z/scale.
+    y=[x[i]/STATE_SCALE[i] for i in range(5)]
+
+    def physical(yy):
+        return [yy[i]*STATE_SCALE[i] for i in range(5)]
+
+    def residual(yy):
+        z=physical(yy)
         f1=deriv(t+dt,z,amp,freq)
-        F=[z[i]-x[i]-0.5*dt*(f0[i]+f1[i]) for i in range(5)]
+        return [
+            (z[i]-x[i]-0.5*dt*(f0[i]+f1[i]))/STATE_SCALE[i]
+            for i in range(5)
+        ]
 
-        if max(abs(v) for v in F)<1e-11:
-            return tuple(z),iteration
+    for iteration in range(18):
+        F=residual(y)
+
+        if max(abs(v) for v in F)<1e-9:
+            return tuple(physical(y)),iteration
 
         J=[[0.0]*5 for _ in range(5)]
         for j in range(5):
-            eps=1e-7*max(1.0,abs(z[j]))
-            zz=z[:]
-            zz[j]+=eps
-            ff=deriv(t+dt,zz,amp,freq)
-            FF=[zz[i]-x[i]-0.5*dt*(f0[i]+ff[i]) for i in range(5)]
+            eps=1e-7*max(1.0,abs(y[j]))
+            yy=y[:]
+            yy[j]+=eps
+            FF=residual(yy)
             for i in range(5):
                 J[i][j]=(FF[i]-F[i])/eps
 
         delta=solve_linear(J,[-v for v in F])
-        z=[z[i]+delta[i] for i in range(5)]
 
-        if not all(math.isfinite(v) for v in z):
-            raise RuntimeError("non-finite coupled IRON Newton state")
-        if max(abs(v) for v in delta)<1e-10:
-            return tuple(z),iteration+1
+        # Conservative Newton damping if a full step increases the residual.
+        base=max(abs(v) for v in F)
+        step=1.0
+        accepted=False
+        for _ in range(8):
+            trial=[y[i]+step*delta[i] for i in range(5)]
+            Ft=residual(trial)
+            if max(abs(v) for v in Ft)<base:
+                y=trial
+                accepted=True
+                break
+            step*=0.5
 
-    raise RuntimeError("coupled IRON Newton solver did not converge")
+        if not accepted:
+            # The solution may already be close enough that finite-difference
+            # noise prevents a strict decrease. Accept only under a looser but
+            # still tiny normalized residual; otherwise report the real failure.
+            if base<1e-7:
+                return tuple(physical(y)),iteration+1
+            raise RuntimeError(
+                f"coupled IRON Newton line search failed at t={t:.9g}s "
+                f"residual={base:.9g}"
+            )
+
+        if max(abs(step*d) for d in delta)<1e-9:
+            return tuple(physical(y)),iteration+1
+
+    final=max(abs(v) for v in residual(y))
+    raise RuntimeError(
+        f"coupled IRON Newton solver did not converge at t={t:.9g}s "
+        f"residual={final:.9g}"
+    )
 
 
 def analyze(y,freq,fs):
