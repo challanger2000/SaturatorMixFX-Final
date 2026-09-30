@@ -5,6 +5,16 @@ on:
     branches:
       - v2.0.0-development
     paths:
+      - 'SMX3Common/**'
+      - 'SMX-3-Channel/**'
+      - 'SMX-3-MixFX/**'
+      - 'README.md'
+      - 'INSTALL_DE.txt'
+      - 'INSTALL_EN.txt'
+      - 'BEDIENUNGSANLEITUNG_DE.md'
+      - 'MANUAL_EN.md'
+      - 'LICENSE.txt'
+      - 'tools/generate_v2_manuals.py'
       - '.github/workflows/package-gumroad.yml'
   workflow_dispatch:
 
