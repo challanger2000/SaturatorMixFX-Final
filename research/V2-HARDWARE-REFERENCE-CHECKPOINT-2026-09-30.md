@@ -85,14 +85,14 @@ This 144 H value is a LOSSLESS-EQUIVALENT BASELINE, not a unique physical magnet
 
 ### Corrected nonlinear magnetic candidate
 
-Refit on corrected 144 H baseline:
-- Jiles-Atherton c = 0.814375;
-- KI = 40891.896218061 A/m per A;
-- KPHI ≈ 4.88989141336e-7.
+Current authoritative candidate on corrected 144 H lossless-equivalent baseline:
+- Jiles-Atherton c = 0.820000;
+- KI = 40528.831481933594 A/m per A;
+- KPHI is derived from the candidate's low-field slope and corrected Lm.
 
-High-resolution anchors:
-- +4 dBu / 20 Hz THD ≈ 0.0261%;
-- +20 dBu / 20 Hz THD ≈ 1.0000%;
+Current extended-gate anchors:
+- +4 dBu / 20 Hz THD ≈ 0.025012%;
+- +20 dBu / 20 Hz THD ≈ 1.000002%;
 - settled baseline remains overwhelmingly H3-dominant.
 
 Extended QA on corrected candidate:
