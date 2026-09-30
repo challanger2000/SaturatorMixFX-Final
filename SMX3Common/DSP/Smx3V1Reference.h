@@ -38,6 +38,7 @@ public:
         double ironV2H=0.0, ironV2M=0.0, ironV2Relax=0.0;
         std::array<BiquadState,kOversampleSections> osUp{};
         std::array<BiquadState,kOversampleSections> osDown{};
+        std::array<BiquadState,kOversampleSections> ironV2Up{};
         std::array<BiquadState,kOversampleSections> cleanUp{};
         std::array<BiquadState,kOversampleSections> cleanDown{};
     };
@@ -137,7 +138,13 @@ public:
         processed=peakProtect(processed);
         processed=dcBlock(processed,s);
 
-        const double wetSignal=cleanOs+effectiveDrive*(processed-cleanOs);
+        // Hardware-mode policy: Drive=0 means minimum excitation, not that
+        // the selected hardware path disappears. Bypass is the only truly
+        // neutral state. The 12% floor is provisional and must be verified
+        // against level-matched programme-material measurements.
+        constexpr double kHardwareFloor=.12;
+        const double hardwareAmount=kHardwareFloor+(1.0-kHardwareFloor)*effectiveDrive;
+        const double wetSignal=cleanOs+hardwareAmount*(processed-cleanOs);
         const double mixed=dry*cleanOs+wet*wetSignal;
         return mixed*outGain;
     }
@@ -191,9 +198,11 @@ public:
         const double normTransient = clamp01(transient/(.06+s.envSlow));
         const double dynamicGain = inputGain*(1.0-protect*normTransient);
 
-        // The physical branch is intentionally host-rate. Feed its result
-        // through the already-existing downsampling path as a ZOH signal so
-        // character interpolation remains time-aligned with TRI/PENT.
+        // The physical magnetic solve stays at host rate. Its output is then
+        // passed through the same oversampling input filter topology as the
+        // TRI/PENT branches, but without re-running the magnetic solver at 4x.
+        // This preserves practical 1x RK2 cost while aligning phase/latency
+        // before the shared downsampling filter.
         const double ironHost = shapeIronV2(ironCol*dynamicGain,s);
 
         double processedOs=0.0;
@@ -201,12 +210,14 @@ public:
         for(int os=0;os<kOversample;++os)
         {
             const double stuffed=(os==0)?(coloured*static_cast<double>(kOversample)):0.0;
+            const double ironStuffed=(os==0)?(ironHost*static_cast<double>(kOversample)):0.0;
             const double cleanStuffed=(os==0)?(x*static_cast<double>(kOversample)):0.0;
             const double up=runOversamplingFilter(stuffed,s.osUp);
+            const double ironUp=runOversamplingFilter(ironStuffed,s.ironV2Up);
             const double cleanUp=runOversamplingFilter(cleanStuffed,s.cleanUp);
             const double nlT=shapeTriode(up*dynamicGain,s);
             const double nlP=shapePentode(up*dynamicGain,s);
-            const double nl=wT*nlT+wP*nlP+wI*ironHost;
+            const double nl=wT*nlT+wP*nlP+wI*ironUp;
             const double filtered=runOversamplingFilter(nl,s.osDown);
             const double cleanFiltered=runOversamplingFilter(cleanUp,s.cleanDown);
             if(os==kOversample-1)
