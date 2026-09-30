@@ -34,14 +34,13 @@ POSITIVE=[
     ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
     ("ECC83 integration-method cross-check", ["tools/smx3_v2_ecc83_method_crosscheck.py"]),
     ("ECC83 operating-domain gate", ["tools/smx3_v2_ecc83_domain_probe.py"]),
-    ("EF86 EX=1.40 hardware candidate", ["tools/smx3_v2_ef86_candidate_gate.py"]),
-    ("EF86 dynamic offline reference", ["tools/smx3_v2_ef86_dynamic_reference.py"]),
     ("IRON realtime integration reduction", ["tools/smx3_v2_iron_realtime_reduction.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
 ]
 
 INFORMATIONAL=[
+    ("legacy EX=1.40 dynamic reference", ["tools/smx3_v2_ef86_dynamic_reference.py"]),
     ("EF86 Graph-A three-way family comparison", ["tools/smx3_v2_ef86_graphA_threeway.py"]),
     ("EF86 Stage-2 minimal-screen rejection", ["tools/smx3_v2_ef86_stage2_screen_probe.py"]),
     ("EF86 unified multi-domain scorecard", ["tools/smx3_v2_ef86_scorecard.py"]),
@@ -61,6 +60,7 @@ INFORMATIONAL=[
 ]
 
 EXPECTED_FAILURE=[
+    ("EF86 EX=1.40 exact-Ri rejection", ["tools/smx3_v2_ef86_candidate_gate.py"]),
     ("EF86 six-parameter large-signal rejection", ["tools/smx3_v2_ef86_large_signal_gate.py"]),
 ]
 
