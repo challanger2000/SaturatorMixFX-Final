@@ -29,12 +29,17 @@ POSITIVE=[
     ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
     ("ECC83 integration-method cross-check", ["tools/smx3_v2_ecc83_method_crosscheck.py"]),
     ("ECC83 operating-domain gate", ["tools/smx3_v2_ecc83_domain_probe.py"]),
-    ("EF86 provisional table/device fit", ["tools/smx3_v2_ef86_provisional_fit.py"]),
+    ("EF86 EX=1.40 hardware candidate", ["tools/smx3_v2_ef86_candidate_gate.py"]),
+    ("EF86 dynamic offline reference", ["tools/smx3_v2_ef86_dynamic_reference.py"]),
+    ("IRON realtime integration reduction", ["tools/smx3_v2_iron_realtime_reduction.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
 ]
 
 INFORMATIONAL=[
+    ("IRON reset convergence", ["tools/smx3_v2_iron_reset_convergence.py"]),
+    ("EF86 dynamic Graph-D probe", ["tools/smx3_v2_ef86_dynamic_graphD.py"]),
+    ("EF86 EX=1.40 Graph-D out-of-fit", ["tools/smx3_v2_ef86_ex140_graphD.py"]),
     ("EF86 Stage-2C out-of-fit large-signal", ["tools/smx3_v2_ef86_stage2c_large_signal.py"]),
     ("EF86 Graph-B model-family comparison", ["tools/smx3_v2_ef86_graphB_compare.py"]),
     ("EF86 Graph-A model-family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
