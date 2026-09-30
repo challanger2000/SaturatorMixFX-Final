@@ -47,9 +47,11 @@ Current compact candidate:
 - generalized Koren-style surrogate with empirical beta knee exponent.
 
 Current status:
-STRONG PROVISIONAL SURROGATE.
+LOCAL PROVISIONAL SURROGATE ONLY.
 NOT FINAL HARDWARE REFERENCE.
 NOT PRODUCTION DSP.
+
+Full Philips 5%-THD supply-sweep recheck shows the surrogate remains close at 200-250 V but increasingly underestimates the documented output envelope at 300-400 V (worst case about -15.4% at 400 V).
 
 Established:
 - device-point Ia/Ig2/gm near Philips anchor;
