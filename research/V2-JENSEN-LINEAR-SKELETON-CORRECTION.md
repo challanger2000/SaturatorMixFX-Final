@@ -99,3 +99,27 @@ Do not combine:
 - or source-loaded response quantities
 
 unless the source/load network is explicitly represented.
+
+
+## Important interpretation refinement
+
+The corrected ~144 H value is the effective magnetizing inductance under a
+**purely reactive one-inductor assumption**.
+
+It should NOT be described as the unique physical JT-11P-1 magnetizing
+inductance once core loss / complex permeability is modeled.
+
+Jensen also constrains deviation from linear phase. A lossless shunt inductor
+that is adjusted to produce -0.04 dB at 20 Hz creates substantially more
+low-frequency phase curvature than the manufacturer DLP allows.
+
+Therefore:
+
+- ~144 H remains the authoritative **lossless-equivalent baseline**;
+- a loss-aware magnetic branch may require a different inductive value together
+  with a dissipative/dynamic core-loss term;
+- any such richer model must still reproduce the same 20 Hz magnitude anchor,
+  1 kHz impedance/gain anchors, THD behavior and DLP.
+
+This distinction prevents the lossless baseline from becoming an unjustified
+physical-material claim.
