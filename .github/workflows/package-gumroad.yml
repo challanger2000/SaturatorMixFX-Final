@@ -26,7 +26,7 @@ jobs:
       - name: Configure Channel
         shell: pwsh
         run: >-
-          cmake -S SMX-3-V2-Channel -B build-channel
+          cmake -S SMX-3-Channel -B build-channel
           -G "Visual Studio 17 2022" -A x64
           -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
           -DSMTG_CREATE_PLUGIN_LINK=0
@@ -37,13 +37,26 @@ jobs:
       - name: Configure Mix FX
         shell: pwsh
         run: >-
-          cmake -S SMX-3-V2-MixFX -B build-mixfx
+          cmake -S SMX-3-MixFX -B build-mixfx
           -G "Visual Studio 17 2022" -A x64
           -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
           -DSMTG_CREATE_PLUGIN_LINK=0
 
       - name: Build Mix FX
         run: cmake --build build-mixfx --config Release --target SMX-3-V2-MixFX
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate V2 PDF manuals
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check reportlab
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/generate_v2_manuals.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Assemble release package
         shell: pwsh
@@ -56,7 +69,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $root | Out-Null
           Copy-Item -Path $channel.FullName -Destination $root -Recurse -Force
           Copy-Item -Path $mixfx.FullName -Destination $root -Recurse -Force
-          Copy-Item README.md, LICENSE.txt, INSTALL_DE.txt, INSTALL_EN.txt -Destination $root
+          Copy-Item README.md, LICENSE.txt, INSTALL_DE.txt, INSTALL_EN.txt, BEDIENUNGSANLEITUNG_DE.md, MANUAL_EN.md -Destination $root
           Copy-Item docs/SMX-3_Handbuch_DE.pdf, docs/SMX-3_Manual_EN.pdf -Destination $root
           Get-ChildItem $root -Recurse -File | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
