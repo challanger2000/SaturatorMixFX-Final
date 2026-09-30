@@ -2,10 +2,10 @@
 
 ## English
 
-**SMX-3 0.1.1** is a free saturation processor by **125A** for Studio One / Fender Studio. The package contains two Windows x64 VST3 plug-ins:
+**SMX-3 V2 2.0.0** is a free saturation processor by **125A** for Studio One / Fender Studio. The package contains two Windows x64 VST3 plug-ins:
 
-- **SMX-3 Mix FX** — dedicated Mix FX build for Studio One / Fender Studio.
-- **SMX-3 Channel** — conventional VST3 channel insert using the same saturation engine.
+- **SMX-3 V2 Mix FX** — dedicated Mix FX build for Studio One / Fender Studio.
+- **SMX-3 V2 Channel** — conventional VST3 channel insert using the same saturation engine.
 
 ### Controls
 
@@ -17,7 +17,7 @@
 
 ### Installation
 
-Copy both `.vst3` bundles to `C:\Program Files\Common Files\VST3`, then restart or rescan the host. Use **SMX-3 Channel** as a normal insert effect. Use **SMX-3 Mix FX** in the host's Mix FX slot.
+Copy both `.vst3` bundles to `C:\Program Files\Common Files\VST3`, then restart or rescan the host. Use **SMX-3 V2 Channel** as a normal insert effect. Use **SMX-3 V2 Mix FX** in the host's Mix FX slot.
 
 ### Documentation
 
@@ -32,8 +32,8 @@ Copy both `.vst3` bundles to `C:\Program Files\Common Files\VST3`, then restart 
 ### Platform / QA
 
 - Windows x64 / VST3
-- Channel: **46 PASS / 0 WARNING / 0 FAIL**, Steinberg validator **47/47**
-- Mix FX: **46 PASS / 0 WARNING / 0 FAIL**; raw Steinberg validator **0/0 is expected for the Audio Mix Processor class**
+- Channel: Steinberg validator **47/47 PASS**; V2 release matrix and state/recall gates **PASS**
+- Mix FX: host-specific **Audio Mix Processor** class scan **PASS**; raw Steinberg validator **0/0 is expected** for this class
 
 SMX-3 is provided free of charge by **125A**. The product-specific freeware terms in `LICENSE.txt` remain authoritative.
 
@@ -41,10 +41,10 @@ SMX-3 is provided free of charge by **125A**. The product-specific freeware term
 
 ## Deutsch
 
-**SMX-3 0.1.1** ist ein kostenloser Saturation-Prozessor von **125A** für Studio One / Fender Studio. Das Paket enthält zwei Windows-x64-VST3-Plug-ins:
+**SMX-3 V2 2.0.0** ist ein kostenloser Saturation-Prozessor von **125A** für Studio One / Fender Studio. Das Paket enthält zwei Windows-x64-VST3-Plug-ins:
 
-- **SMX-3 Mix FX** — spezielle Mix-FX-Version für Studio One / Fender Studio.
-- **SMX-3 Channel** — normales VST3-Kanal-Plug-in mit derselben Saturation-Engine.
+- **SMX-3 V2 Mix FX** — spezielle Mix-FX-Version für Studio One / Fender Studio.
+- **SMX-3 V2 Channel** — normales VST3-Kanal-Plug-in mit derselben Saturation-Engine.
 
 ### Bedienelemente
 
@@ -56,7 +56,7 @@ SMX-3 is provided free of charge by **125A**. The product-specific freeware term
 
 ### Installation
 
-Beide `.vst3`-Bundles nach `C:\Program Files\Common Files\VST3` kopieren und den Host neu starten bzw. einen Plug-in-Scan ausführen. **SMX-3 Channel** als normalen Insert verwenden. **SMX-3 Mix FX** gehört in den Mix-FX-Slot des Hosts.
+Beide `.vst3`-Bundles nach `C:\Program Files\Common Files\VST3` kopieren und den Host neu starten bzw. einen Plug-in-Scan ausführen. **SMX-3 V2 Channel** als normalen Insert verwenden. **SMX-3 V2 Mix FX** gehört in den Mix-FX-Slot des Hosts.
 
 ### Dokumentation
 
@@ -71,7 +71,7 @@ Beide `.vst3`-Bundles nach `C:\Program Files\Common Files\VST3` kopieren und den
 ### Plattform / QA
 
 - Windows x64 / VST3
-- Channel: **46 PASS / 0 WARNING / 0 FAIL**, Steinberg Validator **47/47**
-- Mix FX: **46 PASS / 0 WARNING / 0 FAIL**; beim speziellen Klassentyp Audio Mix Processor sind im rohen Steinberg Validator **0/0 Tests erwartungsgemäß**
+- Channel: Steinberg Validator **47/47 PASS**; V2-Release-Matrix und State/Recall-Gates **PASS**
+- Mix FX: Host-spezifischer Klassenscan **Audio Mix Processor PASS**; im rohen Steinberg Validator sind für diese Klasse **0/0 Tests erwartungsgemäß**
 
 Die produktspezifische Freeware-Lizenz in `LICENSE.txt` bleibt maßgeblich.
