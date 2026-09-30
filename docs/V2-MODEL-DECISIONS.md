@@ -721,3 +721,50 @@ the fixed quasi-static candidate.
 Next accepted architecture under test:
 one explicit magnetic-relaxation state whose dynamic field vanishes in the
 quasi-static limit while its conductance contribution decays with frequency.
+
+
+### IRON one-state magnetic relaxation
+Status: ARCHITECTURE ACCEPTED FOR NONLINEAR EMBEDDING; PARAMETER SET NOT YET UNIQUE
+
+A one-state relaxation architecture
+
+    tau*dHloss/dt + Hloss = K*dB/dt
+
+with small-signal magnetic admittance
+
+    Ymag = 1/(s*Lstat) + Gloss/(1+s*tau)
+
+can reproduce simultaneously:
+- Jensen 1 kHz gain;
+- 1 kHz input impedance;
+- 20 Hz response;
+- 20 kHz response;
+- ~95 kHz bandwidth;
+- Jensen-conformant DLP.
+
+Independent reproducible solutions include substantially different:
+- Lstat;
+- Gloss;
+- tau
+
+while producing nearly indistinguishable manufacturer-domain residuals.
+
+Therefore:
+- the one-state relaxation MODEL FORM is strongly supported;
+- its individual effective parameters are not uniquely identified by the
+  current low-level small-signal anchors alone.
+
+Decision:
+do not freeze Lstat/Gloss/tau from small-signal fitting alone.
+
+Next identification stage:
+embed the relaxation state around the nonlinear JA equilibrium model and use
+independent nonlinear/state evidence to discriminate parameter sets:
+- +4 dBu / 20 Hz THD;
+- +20 dBu / 20 Hz THD;
+- H3 parity;
+- DC-bias/remanence;
+- Jensen DLP/magnitude;
+- numerical convergence.
+
+Only the minimum parameter set that survives all domains may be promoted.
