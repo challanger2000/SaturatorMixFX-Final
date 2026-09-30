@@ -1,0 +1,142 @@
+name: V2 Release Candidate QA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - 'SMX3Common/**'
+      - 'SMX-3-Channel/**'
+      - 'SMX-3-MixFX/**'
+      - 'tools/smx3_v2_state_codec_test.cpp'
+      - 'tools/smx3_v2_release_matrix.cpp'
+      - '.github/workflows/v2-release-candidate-qa.yml'
+
+jobs:
+  release-candidate:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Steinberg VST3 SDK
+        uses: actions/checkout@v4
+        with:
+          repository: steinbergmedia/vst3sdk
+          ref: 3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96
+          path: vst3sdk
+          submodules: recursive
+
+      - name: Configure Channel
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-Channel -B build-channel-v2-rc
+          -G "Visual Studio 17 2022" -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Channel and Validator
+        shell: pwsh
+        run: |
+          cmake --build build-channel-v2-rc --config Release --target SMX-3-V2-Channel
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build build-channel-v2-rc --config Release --target validator
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate Channel
+        shell: pwsh
+        run: |
+          $validator = Get-ChildItem build-channel-v2-rc -Recurse -File -Filter validator.exe | Select-Object -First 1
+          $plugin = Get-ChildItem build-channel-v2-rc -Recurse -Directory -Filter SMX-3-V2-Channel.vst3 | Select-Object -First 1
+          if (-not $validator -or -not $plugin) { throw "Channel validator/plugin missing" }
+          & $validator.FullName $plugin.FullName 2>&1 | Tee-Object validator-channel-v2-rc.log
+          $code=$LASTEXITCODE
+          $log=Get-Content validator-channel-v2-rc.log -Raw
+          if ($log -match 'Result:\s+0 tests passed,\s+0 tests failed') { throw "Channel validator created zero tests" }
+          if ($code -ne 0) { exit $code }
+
+      - name: Configure Mix FX
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-MixFX -B build-mixfx-v2-rc
+          -G "Visual Studio 17 2022" -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Mix FX
+        shell: pwsh
+        run: |
+          cmake --build build-mixfx-v2-rc --config Release --target SMX-3-V2-MixFX
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate Mix FX class scan
+        shell: pwsh
+        run: |
+          $validator = Get-ChildItem build-channel-v2-rc -Recurse -File -Filter validator.exe | Select-Object -First 1
+          $plugin = Get-ChildItem build-mixfx-v2-rc -Recurse -Directory -Filter SMX-3-V2-MixFX.vst3 | Select-Object -First 1
+          if (-not $validator -or -not $plugin) { throw "Mix FX validator/plugin missing" }
+          & $validator.FullName $plugin.FullName 2>&1 | Tee-Object validator-mixfx-v2-rc.log
+          $code=$LASTEXITCODE
+          $log=Get-Content validator-mixfx-v2-rc.log -Raw
+          $isMix=$log -match 'category\s*=\s*Audio Mix Processor'
+          $zero=$log -match 'Result:\s+0 tests passed,\s+0 tests failed'
+          if ($zero -and $isMix) {
+            Write-Host "PASS: Mix FX host-specific Audio Mix Processor class scan"
+          } elseif ($zero) {
+            throw "Unexpected zero-test non-Mix-FX validator result"
+          } elseif ($code -ne 0) {
+            exit $code
+          }
+
+      - name: Compile standalone QA tools
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vs) { throw 'Visual Studio C++ toolchain not found' }
+          $devcmd = Join-Path $vs 'Common7\Tools\VsDevCmd.bat'
+          foreach ($item in @(
+            @('tools\smx3_v2_state_codec_test.cpp','smx3_v2_state_codec_test.exe'),
+            @('tools\smx3_v2_release_matrix.cpp','smx3_v2_release_matrix.exe')
+          )) {
+            $cmd = '"{0}" -arch=x64 -host_arch=x64 && cl /nologo /std:c++17 /O2 /EHsc {1} /Fe:{2}' -f $devcmd,$item[0],$item[1]
+            cmd /d /s /c $cmd
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: State codec QA
+        shell: pwsh
+        run: |
+          .\smx3_v2_state_codec_test.exe 2>&1 | Tee-Object state-codec-v2-rc.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: DSP release matrix QA
+        shell: pwsh
+        run: |
+          .\smx3_v2_release_matrix.exe 2>&1 | Tee-Object release-matrix-v2-rc.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify V2 identity
+        shell: pwsh
+        run: |
+          $channelCmake=Get-Content SMX-3-Channel/CMakeLists.txt -Raw
+          $mixCmake=Get-Content SMX-3-MixFX/CMakeLists.txt -Raw
+          $channelFactory=Get-Content SMX-3-Channel/source/factory.cpp -Raw
+          $mixFactory=Get-Content SMX-3-MixFX/source/factory.cpp -Raw
+          if ($channelCmake -notmatch 'VERSION 2\.0\.0' -or $mixCmake -notmatch 'VERSION 2\.0\.0') { throw "Version is not 2.0.0" }
+          if ($channelFactory -notmatch 'SMX-3 V2 Channel') { throw "Channel V2 identity missing" }
+          if ($mixFactory -notmatch 'SMX-3 V2 Mix FX') { throw "Mix FX V2 identity missing" }
+          Write-Host "PASS: V2 identity/version"
+
+      - name: Upload RC QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-Release-Candidate-QA
+          path: |
+            validator-channel-v2-rc.log
+            validator-mixfx-v2-rc.log
+            state-codec-v2-rc.log
+            release-matrix-v2-rc.log
+          if-no-files-found: warn
