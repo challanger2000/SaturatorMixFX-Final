@@ -1,0 +1,30 @@
+name: V2 IRON HF Reduced Fit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-hf-fit.yml'
+
+jobs:
+  hf-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run reduced HF fit
+        run: python tools/smx3_v2_jensen_hf_fit.py 2>&1 | tee iron-hf-fit.log
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-IRON-HF-Fit
+          path: iron-hf-fit.log
+          if-no-files-found: warn
