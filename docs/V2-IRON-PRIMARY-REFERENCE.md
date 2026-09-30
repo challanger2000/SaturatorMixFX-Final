@@ -197,3 +197,20 @@ Required additional fixtures:
 This gives a second dimension of hardware fidelity:
 - THD magnitude vs level/frequency;
 - harmonic composition vs magnetic history.
+
+
+## Parameter-identifiability limitation
+
+The JT-11P-1 data sheet exposes audio-domain input/output measurements, but not a complete measured B-H loop, core geometry, turns count, magnetic path length or material certificate.
+
+Consequently:
+- a Jiles-Atherton parameter set can be fitted to reproduce the audio evidence;
+- it cannot automatically be interpreted as the unique physical material parameter set of the proprietary transformer.
+
+The V2 IRON goal is therefore:
+an electrically and magnetically plausible stateful model that simultaneously reproduces the documented transformer behaviour.
+
+It is NOT:
+reverse-engineering undocumented Jensen core construction and presenting fitted numbers as manufacturer facts.
+
+This distinction is mandatory in code comments, research documentation and marketing claims.
