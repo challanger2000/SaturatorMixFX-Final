@@ -1,4 +1,4 @@
-# revision: 8 - classical plus excess dynamic-loss sensitivity
+# revision: 9 - canonical classical-plus-excess screen only
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -56,11 +56,6 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_classical_loss_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
-
-      - name: Run classical plus excess dynamic-loss sensitivity
-        shell: bash
-        run: |
-          python tools/smx3_v2_iron_classical_excess_sensitivity.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Run classical plus excess loss sensitivity
         shell: bash
