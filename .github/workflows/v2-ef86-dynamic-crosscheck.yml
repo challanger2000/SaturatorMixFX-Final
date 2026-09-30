@@ -1,0 +1,23 @@
+name: V2 EF86 Dynamic Method Crosscheck
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-ef86-dynamic-crosscheck.yml'
+
+jobs:
+  crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: python -m py_compile tools/smx3_v2_ef86_dynamic_crosscheck.py
+      - name: Run EF86 dynamic crosscheck
+        run: python tools/smx3_v2_ef86_dynamic_crosscheck.py
