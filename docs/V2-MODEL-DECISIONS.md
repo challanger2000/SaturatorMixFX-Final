@@ -531,3 +531,64 @@ Consequence:
 - static/small-signal current surfaces and large-signal/kink behavior must be identified as separate parameter blocks;
 - do not let large-signal terms compensate Graph A/B current physics;
 - do not promote any parameter set with weakly identified screen-current constants merely because aggregate fit cost is low.
+
+
+## 2026-09-30 current-candidate promotion notes
+
+### EF86 Stage-3 localized low-Va correction
+Status: STRONG PROVISIONAL PENTODE OFFLINE CANDIDATE
+
+Foundation:
+- Stage 1 constrains plate-current surface with Philips Graph A/B plus Ia/gm/Ri.
+- Stage 2 jointly constrains screen-current partition, DC current and gain sweep.
+- Stage 3 adds only a localized low-Va correction.
+
+Exact large-signal envelope:
+- 200 V: ~38.58 V vs 40 V
+- 250 V: ~50.15 V vs 50 V
+- 300 V: ~61.36 V vs 64 V
+- 350 V: ~72.30 V vs 75 V
+- 400 V: ~83.41 V vs 87 V
+- worst error ~4.13%
+
+Cross-domain rule:
+- exact Vo@5% envelope is a hard gate;
+- provisional low-Va Graph-B knee normalized RMS is a hard screening gate;
+- individual manually digitized graph-point residuals remain diagnostic until calibrated extraction.
+
+Reason:
+manual raster uncertainties are heuristic/correlated and cannot be interpreted as formal independent Gaussian sigma tests.
+
+Still not production DSP:
+- calibrated Graph A/B/D extraction;
+- dynamic screen/cathode/coupling network;
+- numerical dynamic reference;
+- realtime reduction and antialiasing
+remain open.
+
+### TRI0DE positive-grid domain correction
+Status: PRIMARY-SOURCE SEMANTICS CORRECTED
+
+Dempwolf/Zoelzer measured approximately:
+- Va=20..300 V
+- Vg=-5..+3 V.
+
+Positive-grid operation is therefore valid measured/modelled territory.
+
+The documented limitation is specifically:
+- Vg>0 together with Va<~20 V.
+
+Consequence:
+- first positive-grid crossing is NOT a product Drive ceiling;
+- grid conduction may be used as authentic extreme triode behavior;
+- the final extreme-Drive model must still resolve specimen-dependent grid-current magnitude and blocking/recovery.
+
+### TRI0DE dynamic specimen
+Status: RSD-2 PRIMARY; EHX-1/RSD-1 CROSS-CHECKS
+
+RSD-2 is the current primary measured-specimen reference because the combined manufacturer-loaded comparison is strongest across:
+- idle current;
+- loaded small-signal gain;
+- distortion at the documented 26 Vrms point.
+
+No claim is made that RSD-2 is a universal ECC83/12AX7.
