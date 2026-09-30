@@ -1,4 +1,4 @@
-# revision: 6 - corrected loss residual reference planes
+# revision: 7 - Jensen-conformant DLP extraction
 name: V2 IRON HF Reduced Fit
 
 on:
