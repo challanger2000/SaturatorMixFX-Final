@@ -130,7 +130,8 @@ State continues evolving during a bypass transition only if explicitly chosen an
 
 ### TRI0DE
 Reference:
-- EHX-1 Dempwolf/Zoelzer 12AX7 current model;
+- RSD-2 Dempwolf/Zoelzer measured 12AX7 current model as primary reference;
+- EHX-1 retained as independent measured-specimen cross-check;
 - selected Mullard ECC83 common-cathode circuit.
 
 Production candidate may be:
