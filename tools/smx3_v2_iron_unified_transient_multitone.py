@@ -44,12 +44,14 @@ def sample_input(source,duration,fs):
     return [source(i/fs) for i in range(n)]
 
 
-def render_host(samples,fs):
-    dt=1.0/fs
+def render_host(samples,fs,factor):
+    dt=1.0/(fs*factor)
     H=M=I=0.0
     y=[]
     for x in samples:
-        H,M,I,v=step_mid_sample(H,M,I,dt,x)
+        v=None
+        for _ in range(factor):
+            H,M,I,v=step_mid_sample(H,M,I,dt,x)
         y.append(v)
     return y
 
@@ -185,39 +187,50 @@ def main():
         ("fast_transient_chirp",source_step_chirp(),0.55),
     )
 
-    print("SMX-3 V2 unified IRON transient/multitone host-rate residual gate")
-    print("host,case,rms_residual_dBc,peak_residual_dBc")
+    print("SMX-3 V2 unified IRON transient/multitone substep matrix")
+    print("host,case,factor,rms_residual_dBc,peak_residual_dBc")
 
-    failures=[]
-    worst_rms=-300.0
-    worst_peak=-300.0
+    FACTORS=(1,2,4)
+    worst={(fs,f):{"rms":-300.0,"peak":-300.0} for fs in HOSTS for f in FACTORS}
 
     for fs in HOSTS:
         for name,source,duration in cases:
             samples=sample_input(source,duration,fs)
             auth=render_auth_at_host_times(samples,fs)
-            host=render_host(samples,fs)
-            rdb,pdb=residual_metrics(auth,host)
-            worst_rms=max(worst_rms,rdb)
-            worst_peak=max(worst_peak,pdb)
-            print(f"{fs:.0f},{name},{rdb:.6f},{pdb:.6f}")
-
-            if rdb>-90.0:
-                failures.append(f"{fs:.0f} {name} RMS residual above -90 dBc")
-            if pdb>-70.0:
-                failures.append(f"{fs:.0f} {name} peak residual above -70 dBc")
+            for factor in FACTORS:
+                host=render_host(samples,fs,factor)
+                rdb,pdb=residual_metrics(auth,host)
+                worst[(fs,factor)]["rms"]=max(worst[(fs,factor)]["rms"],rdb)
+                worst[(fs,factor)]["peak"]=max(worst[(fs,factor)]["peak"],pdb)
+                print(f"{fs:.0f},{name},{factor}x,{rdb:.6f},{pdb:.6f}")
 
     print()
-    print(f"WORST RMS residual = {worst_rms:.6f} dBc")
-    print(f"WORST peak residual = {worst_peak:.6f} dBc")
+    for fs in HOSTS:
+        for factor in FACTORS:
+            w=worst[(fs,factor)]
+            print(
+                f"WORST host={fs:.0f} factor={factor}x "
+                f"RMS={w['rms']:.6f} dBc peak={w['peak']:.6f} dBc"
+            )
 
-    if failures:
-        print("FAIL:")
-        for item in failures:
-            print(" - "+item)
+    # Promotion decision: the cheapest factor that clears both residual limits
+    # at both host rates is the realtime state-update candidate.
+    selected=None
+    for factor in FACTORS:
+        ok=True
+        for fs in HOSTS:
+            w=worst[(fs,factor)]
+            if w["rms"]>-90.0 or w["peak"]>-70.0:
+                ok=False
+        if ok:
+            selected=factor
+            break
+
+    if selected is None:
+        print("FAIL: 1x/2x/4x midpoint substeps do not clear transient residual limits.")
         return 1
 
-    print("PASS: host-rate midpoint/RK2 tracks 8x RK4 authority on transient and multitone excitation.")
+    print(f"PASS: minimum midpoint state-update factor clearing transient limits = {selected}x.")
     return 0
 
 
