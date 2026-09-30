@@ -1,186 +1,171 @@
 # SMX-3 V2 Hardware Reference Checkpoint — 2026-09-30
 
-This checkpoint records the current authoritative research status for the three SMX-3 V2 hardware modes.
-
-It is not a release declaration.
+Status: current authoritative research checkpoint. Not a release declaration.
 
 ## TRI0DE
 
-Current reference architecture:
-- Dempwolf/Zoelzer measured 12AX7 current-law family;
-- RSD-2 is the current dynamic measured-specimen authority;
-- RSD-1 / EHX-1 remain measured-specimen cross-checks;
-- Philips/Mullard documented ECC83 surrounding network;
-- full dynamic MNA/capacitance model;
-- corrected physical-time settling;
-- corrected relative-phase measurement.
+Current authority:
+- Dempwolf/Zoelzer RSD-2 measured 12AX7 specimen law;
+- documented Philips/Mullard ECC83 surrounding RC network;
+- full dynamic capacitance model;
+- physical-time settling;
+- corrected relative phase;
+- positive-grid domain handled according to Dempwolf's measured range.
 
-Established:
-- DC operating-point reference;
-- loaded small-signal comparisons;
-- dynamic parasitics Cag/Cgk/Cak;
-- aggregate integration convergence;
-- trapezoid vs implicit-midpoint numerical agreement;
-- settled-state operating-domain probe;
-- positive-grid validity monitoring;
-- explicit provenance split between measured tube specimen and manufacturer amplifier network.
+Validated:
+- operating point / loaded gain;
+- dynamic numerical convergence;
+- trapezoid vs implicit-midpoint agreement;
+- measured-domain gate;
+- strong-overload grid-current sensitivity.
 
-Rejected/superseded:
-- original unloaded EHX gain comparison as final selection;
-- small-signal-only Mullard refit as complete large-signal model;
-- short fixed-cycle HF THD measurements.
+4 Vrms / 1 kHz dynamic sensitivity:
+- RSD-1 / RSD-2 / EHX-1 / Danyuk grid-current laws recover to the 10 mV criterion in approximately 183-187 ms;
+- complete AC-coupled stage compresses specimen differences strongly.
 
-Current blocker:
-- authoritative positive-grid / extreme large-signal extension;
-- final multi-level/frequency fixture matrix;
-- realtime reduction / aliasing / CPU comparison;
-- final Drive calibration.
+Decision:
+- retain coherent RSD-2 specimen;
+- do not synthesize a hybrid/consensus grid-current law;
+- other measured laws remain uncertainty bounds for Drive 75-100%.
 
-Current status:
-STRONG OFFLINE REFERENCE, NOT YET PRODUCTION DSP.
+Current TRI0DE status:
+STRONG OFFLINE REFERENCE.
+Production still needs realtime reduction, aliasing, CPU and final Drive mapping.
 
 ## PENTODE
 
 Primary authority:
-Philips EF86 original manufacturer data.
+Philips EF86 manufacturer data.
 
-Evidence now includes:
-- exact device Ia/Ig2/gm anchor;
-- exact circuit-1 component values;
-- exact DC-current and gain supply sweep;
-- exact Vo@5% THD envelope across Vb=200..400 V;
-- Graph A screen-voltage transfer families;
-- Graph B high-Va plate family;
-- supplemental Graph B 20/40/60/80 V knee-region samples;
-- refined Graph D Vi->Vo / distortion->Vo trajectory.
+Current staged architecture:
+- Stage 1: plate-surface identification;
+- Stage 2: joint static/device/amplifier fit;
+- Stage 3: localized low-Va / large-signal correction.
 
-Rejected/superseded:
-- third-party CC0 compact parameter set as final reference;
-- generalized beta surrogate as final reference;
-- unrestricted extended-family static fit;
-- knee-aware static fit without large-signal terms.
+Evidence domains:
+- exact device Ia / Ig2 / gm;
+- exact circuit-1 DC current / gain sweep;
+- Graph A screen families;
+- Graph B plateau;
+- corrected Graph B 20/40/60/80 V knee region;
+- exact 5% THD output envelope 200..400 V;
+- refined Graph D compression/distortion trajectory.
 
-Important structural result:
-- Graph A/B static current physics can be matched reasonably well;
-- a static-only model fails the large-signal 5%-THD envelope severely;
-- therefore static/small-signal and large-signal/kink degrees of freedom must be identified in separate stages;
-- large-signal improvement must not degrade Graph A/B.
+Stage-3 cross-domain status:
+- exact 5% envelope worst error approximately 4.1%;
+- corrected Graph-B knee remains inside the provisional cross-domain gate;
+- Stage-3 does not materially damage Graph A / plateau behavior.
 
-Current status:
-MODEL FAMILY / DATA ARCHITECTURE DEFINED, FINAL PENTODE PARAMETER SET NOT YET ACCEPTED.
+Rejected:
+- third-party CC0 final-reference use;
+- generalized compact beta surrogate as final model;
+- unrestricted overparameterized static fits;
+- static-only knee fit without large-signal terms.
 
-Next blocker:
-- staged extended knee/kink refit against all primary domains;
-- screen-current identifiability;
-- refined large-signal residual;
-- dynamic capacitance/network model after static acceptance.
+Current PENTODE status:
+STRONG PROVISIONAL STATIC/LARGE-SIGNAL REFERENCE FAMILY.
+Dynamic capacitance/network, aliasing/realtime and final Drive mapping remain.
 
 ## IRON
 
 Primary hardware archetype:
-Jensen JT-11P-1 line-input transformer.
+Jensen JT-11P-1.
 
-Established linear skeleton:
-- 1:1 turns ratio;
-- Rp=1.45 kOhm;
-- Rs=1.55 kOhm;
-- 10 kOhm load;
-- circuit-derived ~13 kOhm input impedance;
-- circuit-derived ~-2.28 dB insertion gain;
-- effective low-level Lm ~144.0 H from the 20 Hz droop measured with Rs=600 Ohm.
+### Corrected test-condition basis
 
-Magnetic model family:
-Jiles-Atherton stateful hysteresis.
+Important correction:
+Jensen's 20 Hz / 20 kHz response and DLP test explicitly use Rs=600 Ohm.
 
-Rejected:
-- unmodified DAFx example magnetic shape scaled only by geometry.
+The former ~106.55 H derivation omitted this source resistance and is superseded.
 
-Strong provisional candidate:
-- reversible fraction c ~0.820 after correcting the Rs=600 LF reference;
-- field scale KI ~40528.8 A/m per A re-derived against the exact +20 dBu / 20 Hz anchor;
-- low-level magnetizing-inductance constraint retained.
+A lossless one-inductor interpretation gives:
+- effective lossless-equivalent Lm ≈ 143.999434 H.
 
-Hard evidence currently matched:
-- +4 dBu / 20 Hz ~0.025% THD;
-- +20 dBu / 20 Hz ~1% THD;
-- settled H3-dominant / negligible-H2 symmetry;
-- low-level distortion approximately quarters per octave from 20->40->80 Hz;
-- stateful DC-bias/remanence behavior;
-- DC bias naturally creates strong H2 rather than using an artificial even-harmonic shaper.
+This 144 H value is a LOSSLESS-EQUIVALENT BASELINE, not a unique physical magnetizing inductance.
 
-Numerical QA:
-- RK4 reference;
-- independent higher-rate midpoint cross-check added to the positive suite.
+### Corrected nonlinear magnetic candidate
 
-Current status:
-STRONG PROVISIONAL OFFLINE IRON CANDIDATE.
+Refit on corrected 144 H baseline:
+- Jiles-Atherton c = 0.814375;
+- KI = 40891.896218061 A/m per A;
+- KPHI ≈ 4.88989141336e-7.
 
-Remaining blockers:
-- final calibrated Jensen multi-frequency/multi-level curve extraction;
-- HF parasitic / phase network;
-- deterministic state recall policy;
-- realtime reduction;
-- aliasing / CPU QA.
+High-resolution anchors:
+- +4 dBu / 20 Hz THD ≈ 0.0261%;
+- +20 dBu / 20 Hz THD ≈ 1.0000%;
+- settled baseline remains overwhelmingly H3-dominant.
 
-## Cross-product rules now frozen
+Extended QA on corrected candidate:
+- RK4 vs midpoint cross-method residuals essentially negligible;
+- midpoint at 48 kHz remains STRONG versus 192 kHz RK4;
+- DC pre-bias naturally creates strong H2;
+- symmetric AC cycling returns to deterministic H3-dominant orbit.
 
-1. No hardware mode is accepted from one headline number.
-2. Exact manufacturer tables outrank manual graph reads.
-3. Manual graph reads retain explicit uncertainty.
-4. No data point is moved to make a model fit better.
-5. Numerical convergence and physical agreement are separate gates.
-6. A more complex model wins only if it improves independent evidence.
-7. Empirically fitted parameters are never described as undocumented hardware facts.
-8. Drive calibration remains unfrozen until the corresponding physical reference is accepted.
-9. Bypass remains the neutral reference; Drive=0 may retain authentic active-circuit character.
-10. Mix=0 remains targeted as true dry.
+### Phase / core-loss finding
+
+Pure-lossless magnetic skeleton fails Jensen DLP:
+- linear HF/magnitude-fit topology worst DLP ≈ 4.39°;
+- magnetic-only quasi-static Jiles-Atherton candidate worst DLP ≈ 3.83°;
+- Jensen maximum is ±2° and typical low-frequency deviation is about +0.6°.
+
+Therefore the missing behavior is not simply more leakage-L or capacitance.
+
+### Loss-aware Jensen small-signal target
+
+A passive reduced target including magnetic loss was identified using:
+- documented Rp/Rs/RL;
+- documented 98 pF / 110 pF shield capacitances;
+- effective magnetic-loss R-L branch;
+- leakage inductance;
+- effective additional shunt/interwinding capacitance.
+
+Effective research target:
+- Lmag ≈ 922.4107 H;
+- Rmag ≈ 38.991 kOhm;
+- Llk ≈ 2.7504 mH;
+- effective Cx ≈ 1.15485 nF.
+
+These are EFFECTIVE FIT PARAMETERS, not manufacturer construction values.
+
+Manufacturer agreement:
+- 1 kHz transformer gain ≈ -2.27845 dB;
+- 1 kHz input impedance ≈ 12.939 kOhm;
+- 20 Hz relative response ≈ -0.039994 dB;
+- 20 kHz ≈ -0.049900 dB;
+- 95 kHz ≈ -2.99879 dB;
+- DLP min ≈ -0.134°;
+- DLP max ≈ +0.598°.
+
+This target passes the selected Jensen magnitude, impedance and phase constraints simultaneously.
+
+Current IRON conclusion:
+- nonlinear Jiles-Atherton state model is strong for THD/hysteresis/remanence;
+- quasi-static core alone misses low-field complex permeability / dynamic loss;
+- next reference stage is a causal dynamic-loss augmentation that approaches the loss-aware target without double-counting hysteresis.
+
+Current IRON status:
+STRONG NONLINEAR MAGNETIC REFERENCE + STRONG SMALL-SIGNAL LOSS TARGET,
+NOT YET A SINGLE UNIFIED PRODUCTION MODEL.
+
+## Frozen cross-product rules
+
+1. Exact manufacturer tables outrank graph digitization.
+2. Graph digitization retains explicit uncertainty.
+3. No source point is moved to improve a model.
+4. Numerical convergence and hardware agreement are separate gates.
+5. More complexity is accepted only when it improves independent evidence.
+6. Fitted parameters are never presented as undocumented hardware facts.
+7. Every manufacturer value carries its source/load/test-circuit conditions.
+8. Drive mapping remains unfrozen until each physical reference is accepted.
+9. Bypass is neutral; active Drive=0 may retain genuine physical baseline behavior.
+10. Mix=0 target remains true dry.
 
 ## Repository scope
 
-All work in this checkpoint is confined to:
-- challanger2000/SaturatorMixFX-Final
-- branch: v2.0.0-development
+Repository:
+challanger2000/SaturatorMixFX-Final
+
+Development branch:
+v2.0.0-development
 
 V1/main remains intentionally untouched.
-
-
-### IRON LF-reference correction
-
-The former ~106.55 H magnetizing-inductance value was derived by applying the -0.04 dB / 20 Hz manufacturer response directly to the transformer port.
-
-The Jensen datasheet explicitly specifies that magnitude-response measurement as:
-test circuit 1, Rs=600 Ohm.
-
-Re-deriving the magnetizing branch with the source resistance included gives approximately:
-- Lm = 144.0 H
-
-The separate 1 kHz transformer-port quantities remain consistent:
-- Zi ~13 kOhm
-- voltage gain ~-2.28 dB vs manufacturer typical -2.3 dB
-
-The magnetic candidate was therefore re-identified rather than keeping stale fitted numbers:
-- c ~0.820
-- KI ~40528.8 A/m per A
-- KPHI re-derived from the corrected Lm.
-
-All earlier IRON candidate numbers based on Lm ~106.55 H are superseded.
-
-
-### TRI0DE dynamic-authority clarification
-
-The active dynamic solver uses the complete Dempwolf/Zoelzer **RSD-2** parameter
-set for both plate/cathode current and its native grid-current law.
-
-RSD-2 is currently preferred because the multi-domain recheck provided the best
-documented compromise for the selected Mullard/Philips surrounding circuit.
-
-RSD-1 and EHX-1 are retained as measured specimen-variation references.
-Danyuk AES overload data is retained as an independent grid-current cross-check.
-
-The 4 Vrms / 1 kHz grid-law sensitivity test shows that the complete
-AC-coupled circuit compresses much of the static grid-current spread:
-- peak Ig ~65-72 uA across the tested laws;
-- recovery to the 10 mV criterion ~183-187 ms;
-- larger differences remain in max Vg, min Va and shifted operating point.
-
-Therefore no synthetic consensus grid-current law is currently justified.
