@@ -1,0 +1,6 @@
+source,circuit,output_vrms,input_mvrms,distortion_percent,input_uncertainty_mV,distortion_uncertainty_pct,evidence,note
+Philips EF86 Graph D,1,10,98,0.45,8,0.12,MANUAL_GRAPH_DIGITIZATION_REFINED,direct read from high-resolution original manufacturer graph
+Philips EF86 Graph D,1,20,195,0.95,10,0.15,MANUAL_GRAPH_DIGITIZATION_REFINED,direct read from high-resolution original manufacturer graph
+Philips EF86 Graph D,1,30,292,1.70,12,0.20,MANUAL_GRAPH_DIGITIZATION_REFINED,direct read from high-resolution original manufacturer graph
+Philips EF86 Graph D,1,40,390,2.70,15,0.30,MANUAL_GRAPH_DIGITIZATION_REFINED,direct read from high-resolution original manufacturer graph
+Philips EF86 Graph D,1,50,485,5.00,18,0.35,MIXED_GRAPH_AND_TABLE,Vi from graph; distortion endpoint fixed to exact manufacturer table 5 percent
