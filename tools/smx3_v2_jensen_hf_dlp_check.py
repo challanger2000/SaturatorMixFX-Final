@@ -17,30 +17,8 @@ import math
 import cmath
 
 import smx3_v2_jensen_hf_fit as hf
+from smx3_v2_dlp_utils import dlp_degrees
 
-
-
-def unwrap(phases):
-    out=[phases[0]]
-    for p in phases[1:]:
-        q=p
-        while q-out[-1] > math.pi:
-            q-=2.0*math.pi
-        while q-out[-1] < -math.pi:
-            q+=2.0*math.pi
-        out.append(q)
-    return out
-
-
-def fit_line(xs,ys):
-    n=len(xs)
-    sx=sum(xs); sy=sum(ys)
-    sxx=sum(x*x for x in xs)
-    sxy=sum(x*y for x,y in zip(xs,ys))
-    den=n*sxx-sx*sx
-    b=(n*sxy-sx*sy)/den
-    a=(sy-b*sx)/n
-    return a,b
 
 
 def main():
@@ -59,23 +37,14 @@ def main():
         for i in range(n)
     ]
 
-    phases=unwrap([
-        cmath.phase(hf.transfer(f,llk,cx))
-        for f in freqs
-    ])
-
-    a,b=fit_line(freqs,phases)
-    residual=[
-        math.degrees(p-(a+b*f))
-        for f,p in zip(freqs,phases)
-    ]
-
-    lo=min(residual)
-    hi=max(residual)
-    worst=max(abs(lo),abs(hi))
+    phases=[cmath.phase(hf.transfer(f,llk,cx)) for f in freqs]
+    d=dlp_degrees(freqs,phases)
+    residual=d["residual_deg"]
+    lo=d["min_deg"]
+    hi=d["max_deg"]
+    worst=d["worst_abs_deg"]
     span=hi-lo
-
-    tau=-b/(2.0*math.pi)
+    tau=d["delay_s"]
 
     print("SMX-3 V2 reduced IRON HF-network DLP check")
     print(f"best-fit delay = {1e6*tau:.9f} us")
