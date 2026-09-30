@@ -1,4 +1,4 @@
-# revision: 5 - include dynamic-loss residual decomposition
+# revision: 6 - corrected loss residual reference planes
 name: V2 IRON HF Reduced Fit
 
 on:
