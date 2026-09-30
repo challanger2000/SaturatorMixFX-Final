@@ -58,18 +58,56 @@ def deriv(t,state,amp,freq):
     return (dH,dM,dVp,dIlk,dVsec)
 
 
-def rk4_step(t,x,dt,amp,freq):
-    k1=deriv(t,x,amp,freq)
-    x2=tuple(x[i]+0.5*dt*k1[i] for i in range(5))
-    k2=deriv(t+0.5*dt,x2,amp,freq)
-    x3=tuple(x[i]+0.5*dt*k2[i] for i in range(5))
-    k3=deriv(t+0.5*dt,x3,amp,freq)
-    x4=tuple(x[i]+dt*k3[i] for i in range(5))
-    k4=deriv(t+dt,x4,amp,freq)
-    return tuple(
-        x[i]+dt*(k1[i]+2.0*k2[i]+2.0*k3[i]+k4[i])/6.0
-        for i in range(5)
-    )
+def solve_linear(A,b):
+    n=len(A)
+    m=[A[i][:]+[b[i]] for i in range(n)]
+    for col in range(n):
+        pivot_row=max(range(col,n),key=lambda r:abs(m[r][col]))
+        m[col],m[pivot_row]=m[pivot_row],m[col]
+        pivot=m[col][col]
+        if abs(pivot)<1e-30:
+            raise RuntimeError("singular coupled IRON Newton matrix")
+        for j in range(col,n+1):
+            m[col][j]/=pivot
+        for r in range(n):
+            if r==col:
+                continue
+            q=m[r][col]
+            for j in range(col,n+1):
+                m[r][j]-=q*m[col][j]
+    return [m[i][n] for i in range(n)]
+
+
+def trapezoid_step(t,x,dt,amp,freq):
+    f0=deriv(t,x,amp,freq)
+    z=list(x)
+
+    for iteration in range(14):
+        f1=deriv(t+dt,z,amp,freq)
+        F=[z[i]-x[i]-0.5*dt*(f0[i]+f1[i]) for i in range(5)]
+
+        if max(abs(v) for v in F)<1e-11:
+            return tuple(z),iteration
+
+        J=[[0.0]*5 for _ in range(5)]
+        for j in range(5):
+            eps=1e-7*max(1.0,abs(z[j]))
+            zz=z[:]
+            zz[j]+=eps
+            ff=deriv(t+dt,zz,amp,freq)
+            FF=[zz[i]-x[i]-0.5*dt*(f0[i]+ff[i]) for i in range(5)]
+            for i in range(5):
+                J[i][j]=(FF[i]-F[i])/eps
+
+        delta=solve_linear(J,[-v for v in F])
+        z=[z[i]+delta[i] for i in range(5)]
+
+        if not all(math.isfinite(v) for v in z):
+            raise RuntimeError("non-finite coupled IRON Newton state")
+        if max(abs(v) for v in delta)<1e-10:
+            return tuple(z),iteration+1
+
+    raise RuntimeError("coupled IRON Newton solver did not converge")
 
 
 def analyze(y,freq,fs):
@@ -92,10 +130,11 @@ def analyze(y,freq,fs):
 
 
 def simulate(level_dbu,freq,fs=None,warmup_cycles=40,analysis_cycles=4):
-    # The HF electrical network is much faster than the magnetic state.
-    # Keep a generous fixed oversampling density for offline authority.
+    # Implicit trapezoid handles the stiff pF network without requiring an
+    # explicit-step rate above its fastest RC pole. Keep at least 32 samples
+    # per fundamental at HF and 96 kHz at LF; convergence is checked separately.
     if fs is None:
-        fs=max(768000.0,256.0*freq)
+        fs=max(96000.0,32.0*freq)
 
     vrms=0.775*10.0**(level_dbu/20.0)
     amp=vrms*math.sqrt(2.0)
@@ -108,14 +147,16 @@ def simulate(level_dbu,freq,fs=None,warmup_cycles=40,analysis_cycles=4):
     x=(0.0,0.0,0.0,0.0,0.0)
     out=[]
 
+    max_newton=0
     for i in range(n):
-        x=rk4_step(i*dt,x,dt,amp,freq)
+        x,it=trapezoid_step(i*dt,x,dt,amp,freq)
+        max_newton=max(max_newton,it)
         if not all(math.isfinite(v) for v in x):
             raise RuntimeError("non-finite coupled IRON state")
         if i>=start:
             out.append(x[4]*mag.RL/RLOAD)
 
-    return analyze(out,freq,fs)
+    return (*analyze(out,freq,fs),max_newton)
 
 
 def main():
@@ -130,21 +171,21 @@ def main():
     base=None
     rows=[]
     for f in (20.0,1000.0,20000.0,95000.0):
-        rms,fund,phase,thd,hs=simulate(4.0,f)
+        rms,fund,phase,thd,hs,max_newton=simulate(4.0,f)
         if f==1000.0:
             base=fund
-        rows.append((f,rms,fund,phase,thd))
+        rows.append((f,rms,fund,phase,thd,max_newton))
 
     # base is known now; print relative fundamental magnitude.
-    for f,rms,fund,phase,thd in rows:
+    for f,rms,fund,phase,thd,max_newton in rows:
         rel=20.0*math.log10(fund/base)
-        print(f"{f:.1f}Hz rel={rel:.9f}dB phase={phase:.6f}deg THD={100*thd:.9f}%")
+        print(f"{f:.1f}Hz rel={rel:.9f}dB phase={phase:.6f}deg THD={100*thd:.9f}% NewtonMax={max_newton}")
 
     print()
     print("20 Hz nonlinear anchors")
     anchors={}
     for level in (4.0,20.0):
-        rms,fund,phase,thd,hs=simulate(level,20.0)
+        rms,fund,phase,thd,hs,max_newton=simulate(level,20.0)
         anchors[level]=100.0*thd
         print(
             f"{level:+.1f}dBu THD={100*thd:.9f}% "
@@ -152,7 +193,7 @@ def main():
         )
 
     # Frozen first coupled-model gates.
-    rels={f:20.0*math.log10(fund/base) for f,_,fund,_,_ in rows}
+    rels={f:20.0*math.log10(fund/base) for f,_,fund,_,_,_ in rows}
     if abs(rels[20.0]-(-0.04))>0.015:
         raise SystemExit("FAIL: coupled model misses 20 Hz magnitude anchor")
     if abs(rels[20000.0]-(-0.05))>0.015:
