@@ -4,17 +4,20 @@
 > Jensen's response test explicitly includes Rs=600 Ohm; the corrected effective Lm is
 > ~143.999434 H. The IRON candidate has been refit on that corrected skeleton.
 >
-> Current corrected parameters:
-> - Lm = 143.999433995 H
-> - c = 0.814375
-> - KI = 40891.896218061 A/m per A
-> - KPHI = 4.88989141336e-7
+> Current authoritative corrected candidate:
+> - Lm = 143.999434 H
+> - c = 0.820000
+> - KI = 40528.831481933594 A/m per A
+> - KPHI = derived by tools/smx3_v2_iron_candidate.py from Lm/KI/low-field slope
 >
-> High-resolution corrected-anchor results:
-> - +4 dBu / 20 Hz: ~0.0261236% THD
-> - +20 dBu / 20 Hz: ~0.999992% THD
-> - +4 dBu H2: ~0.0000126%
-> - +4 dBu H3: ~0.0257491%
+> Current extended-gate results:
+> - +4 dBu / 20 Hz: ~0.0250123% THD
+> - +20 dBu / 20 Hz: ~1.0000016% THD
+> - +4 dBu H2: ~0.0000119%
+> - +4 dBu H3: ~0.0246506%
+>
+> The earlier c≈0.814375 / KI≈40891.9 result was an intermediate corrected-Lm refit.
+> It is superseded by the later explicitly committed and fully re-gated candidate above.
 >
 > The original c~0.84 / KI~26174 section is retained only as superseded research history.
 >
