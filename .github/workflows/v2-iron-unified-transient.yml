@@ -1,4 +1,4 @@
-# revision: 4 - transient substep requirement matrix
+# revision: 5 - RK2 vs RK4 transient candidate matrix
 name: V2 IRON Unified Transient Multitone
 
 on:
