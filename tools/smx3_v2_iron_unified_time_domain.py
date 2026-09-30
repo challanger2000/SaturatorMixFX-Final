@@ -33,7 +33,17 @@ def simulate_transfer(freq):
 
     vrms=0.775*10.0**(4.0/20.0)
     amp=vrms*math.sqrt(2.0)
-    in_phasor=complex(0.0,-0.5*amp)
+    # r["fundamental"] is an unnormalized DFT sum over output samples that
+    # correspond to the END of each RK4 step. After 2/N normalization the
+    # phasor magnitude equals the sine peak amplitude, not A/2.
+    #
+    # Because the first analyzed output sample is one dt after an integer
+    # number of warm-up cycles, the matching input reference carries +w*dt
+    # phase. Omitting this produces a false 360/(fs/f) degree phase lead
+    # (3.75 deg when fs=96*f) and corrupts cross-frequency DLP.
+    dt=1.0/fs
+    sample_phase=2.0*math.pi*freq*dt
+    in_phasor=amp*cmath.exp(1j*(sample_phase-math.pi/2.0))
 
     n=int(round(cycles*fs/freq))
     out_phasor=(2.0/n)*r["fundamental"]
