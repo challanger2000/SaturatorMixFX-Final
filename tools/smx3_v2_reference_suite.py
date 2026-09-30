@@ -24,6 +24,9 @@ PY=sys.executable
 POSITIVE=[
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
     ("ECC83 large signal", ["tools/smx3_v2_ecc83_large_signal.py"]),
+    ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
+    ("ECC83 integration-method cross-check", ["tools/smx3_v2_ecc83_method_crosscheck.py"]),
+    ("ECC83 operating-domain gate", ["tools/smx3_v2_ecc83_domain_probe.py"]),
     ("EF86 provisional table/device fit", ["tools/smx3_v2_ef86_provisional_fit.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
