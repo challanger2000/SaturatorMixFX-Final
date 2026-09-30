@@ -20,7 +20,7 @@ Key properties:
 - LSTAT fixes the low-field equilibrium JA inductance;
 - c and KI are re-fit ONLY to the two exact Jensen 20 Hz THD anchors.
 
-This is an OFFLINE candidate / fitting tool, not production DSP.
+This is an OFFLINE candidate / fitting tool, not production DSP.\n\nSettling rule: the 20 Hz fit uses 120 complete warm-up cycles because shorter\n20-40-cycle windows were empirically shown to bias the low-level THD upward.
 """
 
 import math
@@ -106,7 +106,7 @@ def make_model(c,ki):
     return dmdh,deriv,kphi,slope0
 
 
-def simulate(c,ki,level_dbu,freq=20.0,fs=24000.0,warmup_cycles=20,analysis_cycles=4):
+def simulate(c,ki,level_dbu,freq=20.0,fs=4000.0,warmup_cycles=120,analysis_cycles=4):
     _,deriv,_,_=make_model(c,ki)
 
     vrms=0.775*10.0**(level_dbu/20.0)
@@ -184,8 +184,8 @@ def simulate(c,ki,level_dbu,freq=20.0,fs=24000.0,warmup_cycles=20,analysis_cycle
 
 
 def fit_ki(c):
-    lo=1000.0
-    hi=800000.0
+    lo=100000.0
+    hi=2000000.0
 
     dlo=simulate(c,lo,20.0)["thd"]
     dhi=simulate(c,hi,20.0)["thd"]
@@ -193,7 +193,7 @@ def fit_ki(c):
     if not (dlo<0.01<dhi):
         return None
 
-    for _ in range(27):
+    for _ in range(18):
         mid=0.5*(lo+hi)
         d=simulate(c,mid,20.0)["thd"]
         if d<0.01:
@@ -222,8 +222,10 @@ def score_c(c):
 def fit():
     candidates=[]
 
-    for i in range(35):
-        c=0.60+i*(0.38/34.0)
+    # Settled-state research narrowed the physically useful c region.
+    # Keep a deterministic coarse scan wide enough to detect regressions.
+    for i in range(10):
+        c=0.44+i*(0.18/9.0)
         r=score_c(c)
         if r is not None:
             candidates.append((r[0],c,r[1],r[2],r[3]))
@@ -234,7 +236,7 @@ def fit():
     candidates.sort(key=lambda x:x[0])
     _,c,ki,_,_=candidates[0]
 
-    step=.015
+    step=.010
     for _ in range(20):
         current=score_c(c)
         best=(current[0],c,current[1],current[2],current[3])
@@ -264,8 +266,8 @@ def fit():
 def high_res(c,ki,level,freq=20.0):
     return simulate(
         c,ki,level,freq,
-        fs=max(96000.0,192.0*freq),
-        warmup_cycles=40,
+        fs=max(48000.0,96.0*freq),
+        warmup_cycles=120,
         analysis_cycles=6
     )
 
