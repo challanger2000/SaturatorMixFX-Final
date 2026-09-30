@@ -1,0 +1,23 @@
+name: V2 IRON Unified Realtime Matrix
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-unified-realtime.yml'
+
+jobs:
+  realtime-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: python -m py_compile tools/smx3_v2_iron_unified_realtime_matrix.py
+      - name: Run unified host-rate matrix
+        run: python tools/smx3_v2_iron_unified_realtime_matrix.py
