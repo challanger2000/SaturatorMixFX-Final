@@ -16,7 +16,7 @@ import smx3_v2_ef86_generalized_surrogate as model
 
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-CSV=ROOT/"research"/"ef86_philips1956_graphD_provisional.csv"
+CSV=ROOT/"research"/"ef86_philips1956_graphD_refined_provisional.csv"
 
 
 def solve_input_for_output(target_vrms):
@@ -49,7 +49,7 @@ def main():
     rows=list(csv.DictReader(CSV.open(encoding="utf-8")))
 
     print("SMX-3 V2 EF86 generalized-surrogate Graph-D shape check")
-    print("Graph samples are provisional manufacturer-graph reads.")
+    print("Graph samples are refined provisional manufacturer-graph reads; the 50 V / 5% endpoint is exact table authority.")
     print()
     print("Vo_target_V,Vi_model_mV,Vi_graph_mV,Vi_sigma,THD_model_pct,THD_graph_pct,THD_sigma")
 
