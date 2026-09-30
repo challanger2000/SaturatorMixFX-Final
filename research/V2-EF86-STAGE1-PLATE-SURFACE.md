@@ -85,3 +85,44 @@ This is the first EF86 candidate in the project whose plate-current surface is c
 It is therefore the correct foundation for the next PENTODE identification stage.
 
 It is NOT yet a complete pentode model.
+
+
+## Revision — Philips internal resistance added
+
+Primary Philips typical characteristics also document:
+
+- Ri = 2.5 MOhm at Va=250 V, Vg2=140 V, Vg1=-2 V.
+
+This exact manufacturer anchor was added because it directly constrains plate slope/output resistance and therefore helps separate knee/slope parameters that were previously correlated.
+
+Updated Stage-1 parameters:
+
+- MU = 43.5199389
+- KG1 = 1998.32070
+- KP = 200.286916
+- KVB = 1083.75004
+- VCT = 0.365171210
+- EX = 1.27822810
+- KNEE = 12.9196481
+- KNEE2 = 1.45283944
+- KNEX = 0
+- KLAMG = 1.00015581e-7
+
+Updated anchor reproduction:
+
+- Ia ≈ 2.975 mA vs 3.000 mA
+- gm ≈ 1.995 mA/V vs 2.000 mA/V
+- Ri ≈ 2.475 MOhm vs 2.500 MOhm
+
+Graph A+B normalized residual remains approximately 0.41 sigma with worst point below about 0.94 sigma.
+
+Interpretation:
+
+This is a materially better Stage-1 surface because it now constrains:
+- control-grid transfer;
+- screen-grid dependence;
+- plate-voltage knee/slope;
+- local transconductance;
+- local plate resistance.
+
+The previous Stage-1 parameter set is superseded by this Ri-constrained revision.
