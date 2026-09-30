@@ -362,3 +362,24 @@ Mullard documents approximately:
 - 3.9 % total distortion
 
 Therefore EHX-1 remains the best currently tested published measured specimen, but it is not a final Mullard-matched reference.
+
+
+## Philips EF86 circuit-1 AC network clarification — 2026-09-30
+
+Direct inspection of the original Philips operating-characteristics circuit confirms for the selected circuit (1):
+
+- input coupling capacitor: 0.01 uF
+- control-grid leak: 1 MOhm
+- cathode bypass capacitor: 50 uF
+- screen-grid bypass capacitor: 0.5 uF
+- output coupling capacitor: 0.01 uF
+- Ra = 100 kOhm
+- Rg2 = 390 kOhm
+- Rk = 1 kOhm
+- following-stage grid resistor = 330 kOhm
+
+Evidence class:
+DOCUMENTED manufacturer circuit.
+
+Engineering consequence:
+for ordinary midband reference measurements, treating cathode and screen as substantially AC-bypassed is justified. A persistent ~5-6% small-signal gain error in a model should therefore not be 'fixed' by inventing missing bypass loss without frequency-domain evidence.
