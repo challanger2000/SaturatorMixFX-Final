@@ -55,3 +55,56 @@ If it changes materially:
 - or use a separately justified consensus/bounded grid-current law.
 
 Do not hide specimen uncertainty inside arbitrary Drive tuning.
+
+
+## Measured 4 Vrms / 1 kHz result after full DC-equilibrium correction
+
+Targeted GitHub run:
+- run 36698300058
+- conclusion: success
+
+The dynamic reference DC solver now includes the grid-leak equilibrium:
+Vg/Rg + Ig = 0.
+
+This removed the former artificial long-time recovery offset.
+
+### Sustained overload
+
+| grid-current law | min Va | max Vg | peak Ig | avg Vg | avg Vk | recovery to <10 mV |
+|---|---:|---:|---:|---:|---:|---:|
+| RSD-1 | 75.65 V | +0.176 V | 71.02 uA | -5.384 V | 0.697 V | 183.74 ms |
+| RSD-2 | 73.69 V | +0.206 V | 72.42 uA | -5.352 V | 0.709 V | 183.79 ms |
+| EHX-1 | 71.10 V | +0.244 V | 65.35 uA | -5.324 V | 0.720 V | 183.38 ms |
+| Danyuk-poly hybrid | 82.44 V | +0.075 V | 68.67 uA | -5.491 V | 0.658 V | 186.88 ms |
+
+## Interpretation
+
+The static grid-current curves differ materially, but the complete AC-coupled,
+cathode-biased amplifier self-regulates strongly under sustained overload.
+
+Consequences:
+
+- peak grid current converges into a relatively narrow ~65-72 uA range;
+- the strongest observable specimen dependence is in clamp level / max Vg,
+  minimum Va and shifted average bias;
+- recovery time to the 10 mV criterion is remarkably insensitive to the
+  tested grid-current law (~183-187 ms);
+- the Danyuk hybrid clamps the grid more strongly and keeps Va higher, but does
+  not create a radically different recovery time.
+
+## Current decision
+
+RSD-2 remains a defensible measured-specimen archetype for the dynamic TRI0DE
+reference.
+
+There is currently no measurement-based reason to invent an arbitrary
+"consensus grid-current" law merely to equalize recovery.
+
+Retain RSD-1 / EHX-1 / Danyuk as uncertainty bounds for:
+- clamp behavior;
+- grid-current charge;
+- bias shift;
+- extreme-drive harmonic shape.
+
+If production Drive 75-100% is later tuned materially around clamp level,
+repeat this comparison on the exact production realtime solver.
