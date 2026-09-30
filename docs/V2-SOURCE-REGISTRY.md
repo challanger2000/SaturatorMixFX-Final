@@ -341,3 +341,23 @@ Use:
 - dynamic-state design.
 
 Do not infer ambiguous input-grid-return resistance from OCR.
+
+
+### Dimitri Danyuk — Triode Emulator: Part 2
+AES Convention 137, Paper 9124, 2014
+AES record: https://aes2.org/publications/elibrary-page/?id=17447
+Author-uploaded copy indexed at ResearchGate:
+https://www.researchgate.net/publication/290534843_Triode_emulator_-_Part_2
+Evidence use: measured positive-grid / overload behavior cross-check
+
+Relevant measured observations for 12AX7:
+- grid-current regions include negative, transitional and positive Vgk operation;
+- measured grid current near Vgk=+0.3 V is about 200 uA for the tested stage/specimen;
+- AC-coupling capacitor charging creates blocking/bias-shift behavior under overload;
+- sustained Vgk above roughly +0.2..+0.3 V is difficult in the discussed AC-coupled stage.
+
+SMX-3 use:
+- confirm that positive grid is real overload behavior, not automatically invalid;
+- validate importance of grid-current/coupling-capacitor interaction;
+- design blocking/recovery fixtures;
+- cross-check extreme Drive behavior independently from Dempwolf.
