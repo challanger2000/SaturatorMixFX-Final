@@ -188,10 +188,17 @@ def simulate(freq,vin_rms,fs=None,cycles=8):
 
     samples_per_cycle=max(1,int(round(fs/freq)))
     keep=min(len(out),4*samples_per_cycle)
-    y=out[-keep:]
+    start=len(out)-keep
+    y=out[start:]
     mean=sum(y)/len(y)
     y=[v-mean for v in y]
     N=len(y)
+
+    # out[n] is the converged state at t=(n+1)/fs because trapezoid_step()
+    # advances from n*dt to (n+1)*dt before the output sample is stored.
+    # Project both output and the known input on those SAME absolute time
+    # instants. This avoids a sample-rate-dependent one-step phase bias.
+    times=[(start+i+1)/fs for i in range(N)]
 
     mags=[]
     phases=[]
@@ -199,12 +206,29 @@ def simulate(freq,vin_rms,fs=None,cycles=8):
     for h in range(1,max_h+1):
         re=0.0
         im=0.0
-        for i,v in enumerate(y):
-            a=2.0*math.pi*h*freq*i/fs
+        for t,v in zip(times,y):
+            a=2.0*math.pi*h*freq*t
             re+=v*math.cos(a)
             im-=v*math.sin(a)
         mags.append(2.0*math.hypot(re,im)/N)
         phases.append(math.atan2(im,re))
+
+    # Relative phase is output fundamental minus input fundamental. Measuring
+    # both on the same absolute time grid also makes the reported phase
+    # independent of where the kept analysis window begins.
+    in_re=0.0
+    in_im=0.0
+    for t in times:
+        v=vin_peak*math.sin(2.0*math.pi*freq*t)
+        a=2.0*math.pi*freq*t
+        in_re+=v*math.cos(a)
+        in_im-=v*math.sin(a)
+    input_phase=math.atan2(in_im,in_re)
+    rel_phase=phases[0]-input_phase
+    while rel_phase>math.pi:
+        rel_phase-=2.0*math.pi
+    while rel_phase<-math.pi:
+        rel_phase+=2.0*math.pi
 
     fund=mags[0]
     thd=math.sqrt(sum(m*m for m in mags[1:]))/fund if len(mags)>1 else 0.0
@@ -214,7 +238,7 @@ def simulate(freq,vin_rms,fs=None,cycles=8):
     return {
         "out_rms":out_rms,
         "gain":gain,
-        "phase_deg":math.degrees(phases[0]),
+        "phase_deg":math.degrees(rel_phase),
         "thd":thd,
         "harmonics":[m/fund for m in mags[1:]],
         "max_newton":max_newton,
