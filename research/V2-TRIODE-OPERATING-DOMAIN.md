@@ -1,3 +1,9 @@
+> SPECIMEN UPDATE — 2026-09-30
+>
+> The settled-state values below were measured with EHX-1. RSD-2 is now the primary
+> dynamic specimen. The domain methodology remains authoritative, but numerical
+> boundaries must be re-established for RSD-2 before Drive calibration.
+
 # SMX-3 V2 TRI0DE Operating-Domain Probe
 
 Date: 2026-09-30
