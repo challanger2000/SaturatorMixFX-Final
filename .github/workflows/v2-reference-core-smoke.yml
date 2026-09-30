@@ -9,6 +9,7 @@ on:
       - 'SMX3Common/DSP/Smx3V1Reference.h'
       - 'tools/smx3_v1_core_smoke.cpp'
       - 'tools/smx3_v2_zero_drive_character.cpp'
+      - 'tools/smx3_v2_input_level_matrix.cpp'
       - '.github/workflows/v2-reference-core-smoke.yml'
 
 jobs:
@@ -52,6 +53,23 @@ jobs:
           .\smx3_v2_zero_drive_character.exe 2>&1 | Tee-Object -FilePath v2-zero-drive-character.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Compile input-level drive matrix
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vs) { throw 'Visual Studio C++ toolchain not found' }
+          $devcmd = Join-Path $vs 'Common7\Tools\VsDevCmd.bat'
+          $cmd = '"{0}" -arch=x64 -host_arch=x64 && cl /nologo /std:c++17 /O2 /EHsc tools\smx3_v2_input_level_matrix.cpp /Fe:smx3_v2_input_level_matrix.exe' -f $devcmd
+          cmd /d /s /c $cmd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Measure input-level drive matrix
+        shell: pwsh
+        run: |
+          .\smx3_v2_input_level_matrix.exe 2>&1 | Tee-Object -FilePath v2-input-level-drive-matrix.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Upload result
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,4 +78,5 @@ jobs:
           path: |
             v1-core-smoke.log
             v2-zero-drive-character.log
+            v2-input-level-drive-matrix.log
           if-no-files-found: warn
