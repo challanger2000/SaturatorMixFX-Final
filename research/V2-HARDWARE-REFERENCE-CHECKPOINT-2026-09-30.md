@@ -8,7 +8,8 @@ It is not a release declaration.
 
 Current reference architecture:
 - Dempwolf/Zoelzer measured 12AX7 current-law family;
-- EHX-1 specimen retained as measured-device reference/cross-check;
+- RSD-2 is the current dynamic measured-specimen authority;
+- RSD-1 / EHX-1 remain measured-specimen cross-checks;
 - Philips/Mullard documented ECC83 surrounding network;
 - full dynamic MNA/capacitance model;
 - corrected physical-time settling;
@@ -163,3 +164,23 @@ The magnetic candidate was therefore re-identified rather than keeping stale fit
 - KPHI re-derived from the corrected Lm.
 
 All earlier IRON candidate numbers based on Lm ~106.55 H are superseded.
+
+
+### TRI0DE dynamic-authority clarification
+
+The active dynamic solver uses the complete Dempwolf/Zoelzer **RSD-2** parameter
+set for both plate/cathode current and its native grid-current law.
+
+RSD-2 is currently preferred because the multi-domain recheck provided the best
+documented compromise for the selected Mullard/Philips surrounding circuit.
+
+RSD-1 and EHX-1 are retained as measured specimen-variation references.
+Danyuk AES overload data is retained as an independent grid-current cross-check.
+
+The 4 Vrms / 1 kHz grid-law sensitivity test shows that the complete
+AC-coupled circuit compresses much of the static grid-current spread:
+- peak Ig ~65-72 uA across the tested laws;
+- recovery to the 10 mV criterion ~183-187 ms;
+- larger differences remain in max Vg, min Va and shifted operating point.
+
+Therefore no synthetic consensus grid-current law is currently justified.
