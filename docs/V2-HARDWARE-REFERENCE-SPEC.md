@@ -48,7 +48,7 @@ Ia = Ik - Ig
 
 Voltages Va and Vg are referred to cathode potential.
 
-### Selected measured-tube parameter set for the first reference solver
+### Measured-tube parameter sets for independent cross-checking
 
 Use Dempwolf/Zoelzer EHX-1 as the initial measured-tube realization:
 
@@ -64,8 +64,11 @@ Use Dempwolf/Zoelzer EHX-1 as the initial measured-tube realization:
 Evidence class:
 MEASURED/PUBLISHED-PARAMETER DERIVED from the paper's fitted EHX-1 specimen.
 
-Reason for selecting EHX-1 rather than silently averaging the three specimens:
-with the Mullard 250 V / 100 kOhm / 1.5 kOhm cathode-bias circuit, the EHX-1 fitted model reproduces the Mullard average operating point and gain substantially better than the two RSD parameter sets.
+Important correction:
+the first comparison used the unloaded plate-node gain. With the documented 330 kOhm following-stage AC load included, no Dempwolf/Zoelzer specimen is a sufficiently close all-around match to the full Mullard table.
+
+Current primary TRI0DE candidate:
+a provisional refit of the same equation family to the complete Mullard 100 kOhm amplifier table. The measured EHX/RSD specimens remain independent cross-checks and priors, not the final target.
 
 ### Reproduced DC reference using EHX-1
 
