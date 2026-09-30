@@ -87,10 +87,11 @@ def deriv(t,H,M,amp,freq):
     return dH,dM,vout
 
 
-def simulate(level_dbu,freq=20.0,fs=96000.0,cycles=12):
+def simulate(level_dbu,freq=20.0,fs=96000.0,cycles=8,warmup_cycles=40):
     vrms=0.775*10.0**(level_dbu/20.0)
     amp=vrms*math.sqrt(2.0)
-    n=int(round(cycles*fs/freq))
+    total_cycles=warmup_cycles+cycles
+    n=int(round(total_cycles*fs/freq))
     H=0.0; M=0.0
     out=[0.0]*n
     dt=1.0/fs
@@ -105,7 +106,8 @@ def simulate(level_dbu,freq=20.0,fs=96000.0,cycles=12):
         M += dt*(k1m+2*k2m+2*k3m+k4m)/6.0
         out[i]=v1
 
-    # Harmonic projection on the last four complete cycles; avoids external FFT dependencies.
+    # Harmonic projection on the final four complete cycles after magnetic
+    # periodic-state warmup; avoids treating startup/remanence settling as H2.
     samples_per_cycle=int(round(fs/freq))
     start=n-4*samples_per_cycle
     y=out[start:]
@@ -131,6 +133,7 @@ def simulate(level_dbu,freq=20.0,fs=96000.0,cycles=12):
 def main():
     print("SMX-3 V2 coupled IRON probe")
     print("DAFx Jiles-Atherton example shape; scaled to Jensen high-level anchor.")
+    print("Each measurement includes 40 magnetic warm-up cycles before analysis.")
     print(f"KI={KI:.6f} A/m per A")
     print(f"KPHI={KPHI:.12g} Wb-turn per (A/m)")
     print(f"small-signal Lm target={LM_TARGET:.6f} H")
