@@ -1,3 +1,11 @@
+> SUPERSEDED-NUMBERS NOTE — 2026-09-30
+>
+> Earlier values in this document using Lm≈106.554 H, c≈0.84 and KI≈26174
+> were based on a source-condition mistake. Jensen specifies Rs=600 Ohm for
+> the 20 Hz magnitude-response test. The corrected current candidate uses
+> Lm≈143.999 H, c≈0.820 and KI≈40528.8. Historical text below is retained
+> for auditability; current values are listed in the correction section.
+
 # SMX-3 V2 Provisional IRON Magnetic Candidate
 
 Date: 2026-09-30
@@ -136,3 +144,30 @@ These values are strikingly close to the documented qualitative ~0.25-per-octave
 This is independent of the two exact Jensen anchors used to tune the candidate and therefore strengthens the model-form evidence.
 
 The automated candidate gate now requires each low-level octave ratio to remain within a deliberately broad 0.18..0.35 interval. That tolerance reflects the qualitative nature of the handbook statement and does not pretend the quartering law is an exact JT-11P-1 datasheet specification.
+
+
+## Corrected current candidate after Rs=600 re-derivation
+
+Manufacturer test-condition correction:
+- magnitude response at 20 Hz and 20 kHz is specified for test circuit 1 with Rs=600 Ohm;
+- the corresponding effective low-level magnetizing inductance is ~143.999 H, not ~106.554 H.
+
+The magnetic candidate was re-identified against the exact 20 Hz THD anchors.
+
+Current values:
+- a = 14.1
+- alpha = 5e-5
+- k = 17.8
+- Ms = 2.75e5
+- c ≈ 0.820
+- KI ≈ 40528.83 A/m per A
+- KPHI derived from Lm≈143.999 H and the low-field slope.
+
+Current recalibration target:
+- +20 dBu / 20 Hz ≈ 1.0% THD
+- +4 dBu / 20 Hz ≈ 0.025% THD
+
+The current candidate tool is the numerical authority:
+tools/smx3_v2_iron_candidate.py
+
+All old c/KI/KPHI measurements in this file must be treated as superseded until the corrected candidate has re-run the complete positive IRON gate set.
