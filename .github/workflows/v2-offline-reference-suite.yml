@@ -1,4 +1,4 @@
-# revision: 2 - settled-state TRI0DE fixes
+# revision: 3 - current reference suite including Graph-D shape check
 name: V2 Offline Reference Suite
 
 on:
