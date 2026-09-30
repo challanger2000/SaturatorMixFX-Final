@@ -89,3 +89,32 @@ Regardless of chosen policy:
 - no unbounded remanence drift;
 - no hidden dependence on thread/channel order;
 - project-state versioning must remain independent of internal solver representation where possible.
+
+
+## Measured startup-convergence update
+
+Measured canonical H=M=0 startup shows that periodic-state convergence is not instantaneous.
+
+Worst tested:
+- first-cycle waveform residual ~-15 dB;
+- low-frequency convergence to <-80 dB may require ~0.4-0.9 s;
+- at 1 kHz the same criterion is reached in ~44 ms.
+
+Therefore the lifecycle policy is strengthened:
+
+### Preserve magnetic state through
+- transport stop/start;
+- bypass;
+- editor open/close;
+- ordinary processing pauses where the same processor instance continues.
+
+### Demagnetize only on
+- fresh processor creation;
+- deterministic fresh offline start;
+- hard structural reset / incompatible sample-rate reinitialization.
+
+Do not reset H/M merely because a host calls setProcessing(false).
+
+If a host destroys the processor object, deterministic reconstruction from H=M=0 is expected.
+
+Any click-safe wet ramp is a transition aid only; it must not repeatedly erase physical history.
