@@ -768,3 +768,88 @@ independent nonlinear/state evidence to discriminate parameter sets:
 - numerical convergence.
 
 Only the minimum parameter set that survives all domains may be promoted.
+
+
+## IRON dynamic-loss architecture decisions — 2026-09-30
+
+### Authoritative corrected quasi-static candidate
+Status: CURRENT REFERENCE UNTIL SUPERSEDED BY A FULLY RE-GATED UNIFIED MODEL
+
+Current tool authority:
+tools/smx3_v2_iron_candidate.py
+
+Current parameters:
+- lossless-equivalent Lm = 143.999434 H
+- c = 0.820000
+- k = 17.8
+- a = 14.1
+- alpha = 5e-5
+- Ms = 2.75e5
+- KI = 40528.831481933594 A/m per A
+
+Current extended-gate anchors:
+- +4 dBu / 20 Hz THD ~0.025012%
+- +20 dBu / 20 Hz THD ~1.000002%
+- H3 strongly dominates baseline H2
+- DC-bias/remanence gate PASS
+- independent integration-method gate PASS
+- realtime midpoint reduction PASS
+
+### Passive parallel loss-residual branch
+Status: REJECTED
+
+Reason:
+after correcting the electrical reference plane and separating magnetic behavior
+from HF parasitics, the residual magnetic admittance versus the accepted Jensen
+loss-aware target requires negative residual conductance from roughly 80 Hz upward.
+
+A passive added parallel branch therefore cannot represent the missing behavior
+without forcing a non-physical negative-resistance contribution.
+
+Consequence:
+do not add an arbitrary passive RL/RC loss branch in parallel with the existing
+magnetizing state.
+
+### Classical dynamic-loss term added to fixed 144 H candidate
+Status: REJECTED AS A COMPLETE SOLUTION
+
+A field term proportional to dB/dt / core voltage:
+- moves DLP only slightly;
+- materially reduces the already-correct +20 dBu THD before Jensen DLP is reached.
+
+Therefore the classical term cannot simply be layered onto the frozen 144 H
+candidate.
+
+### Classical + excess dynamic-loss terms added to fixed 144 H candidate
+Status: REJECTED AS A FIXED-BASE SOLUTION
+
+The literature-consistent field separation:
+- classical ~ dB/dt
+- excess ~ sign(dB/dt)*sqrt(abs(dB/dt))
+
+was screened over broad effective coefficients.
+
+At fixed c/KI/LqS:
+- DLP improves only modestly;
+- low-level harmonic balance and/or exact THD anchors drift strongly;
+- no screened point enters the full Jensen THD+DLP acceptance region.
+
+This does NOT reject dynamic Jiles-Atherton as a model family.
+It rejects only the practice of attaching dynamic-loss terms to an already
+frozen quasi-static fit.
+
+### Low-field inductive scale
+Status: MUST BE JOINTLY IDENTIFIED ONCE MAGNETIC LOSS IS MODELED
+
+The ~143.999 H value is the inductance required under a lossless-equivalent
+interpretation of Jensen's 20 Hz response.
+
+The accepted loss-aware Jensen small-signal target uses a much larger effective
+inductive scale together with magnetic loss and reproduces magnitude, impedance
+and DLP simultaneously.
+
+Therefore:
+- LqS is not frozen at 144 H for the future unified loss-aware model;
+- c, KI and LqS must be re-identified together;
+- dynamic-loss terms are added only if the simpler LqS/c/KI refit cannot close
+  the independent THD + complex-admittance + DLP evidence.
