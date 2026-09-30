@@ -71,3 +71,25 @@ All fitted equation parameters:
 EMPIRICALLY TUNED TO DOCUMENTED / PROVISIONALLY DIGITIZED MANUFACTURER DATA.
 
 No fitted coefficient is claimed to be a physical EF86 construction parameter.
+
+
+## Low-Va knee gate added
+
+The corrected Philips Graph-B supplemental dataset at:
+- 20 V
+- 40 V
+- 60 V
+- 80 V
+
+is now part of the automated static-stage QA.
+
+Evidence quality:
+MANUAL_GRAPH_DIGITIZATION_REFINED with deliberately broad uncertainties.
+
+The gate uses normalized RMS across the full low-Va set, not a formal per-point statistical sigma claim.
+
+Purpose:
+- prevent later screen/large-signal refinements from silently degrading the pentode knee;
+- keep the high-Va plateau and low-Va knee as separately visible error domains.
+
+Exact manufacturer table anchors remain higher authority than these raster-derived points.
