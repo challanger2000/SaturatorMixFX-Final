@@ -163,3 +163,37 @@ The digitized CSV must include:
 - reading uncertainty estimate.
 
 No hand-entered 'looks about right' points are accepted as final fitting data.
+
+
+## Harmonic-structure / magnetization acceptance gate
+
+Jensen/Whitlock's audio-transformer engineering chapter gives an important qualitative hardware diagnostic:
+
+- an unmagnetized core exhibits nearly pure third-harmonic distortion with very little even-order distortion;
+- residual DC magnetization can produce significant even-order distortion, in some cases H2 exceeding H3;
+- a low-frequency test 30-40 dB below rated maximum operating level is described as particularly revealing for hysteresis distortion.
+
+Evidence class:
+DOCUMENTED qualitative manufacturer/engineering behavior.
+
+SMX-3 consequence:
+
+The IRON fit must not be accepted solely on total THD.
+
+Required additional fixtures:
+1. demagnetized symmetric low-frequency excitation:
+   - record H2, H3, H4, H5 separately;
+   - H3 should dominate the low-level magnetic distortion reference unless contrary JT-11P-1-specific evidence is found.
+2. controlled DC-bias / remanence fixture:
+   - intentionally offset magnetic state;
+   - verify even-order growth, especially H2.
+3. de-magnetization/reset fixture:
+   - perform symmetric decaying excitation or explicit state reset;
+   - verify return to the deterministic low-even-harmonic baseline.
+4. project state policy:
+   - do not accidentally preserve an arbitrary remanent core state across unrelated sessions;
+   - if magnetic state is serialized, it must be deliberate and deterministic.
+
+This gives a second dimension of hardware fidelity:
+- THD magnitude vs level/frequency;
+- harmonic composition vs magnetic history.
