@@ -466,3 +466,20 @@ Dynamic numerical accuracy also improves from 1x -> 2x -> 4x.
 
 Decision:
 benchmark 4x as the reference production architecture and compare against any lower-cost 2x + targeted antialias method. Do not ship the strong EF86 path at 1x.
+
+
+### TRI0DE realtime numerical architecture
+Status: BRUTE-FORCE FULL-MNA OVERSAMPLING REJECTED
+
+The full dynamic ECC83 MNA requires roughly:
+- 8x for merely plausible strict HF numerical agreement;
+- 16x for strong full-band agreement under the current benchmark.
+
+This is driven by Miller/interelectrode-network discretization, not proven
+alias requirements.
+
+Decision:
+do not implement TRI0DE by simply running the full offline MNA at 16x.
+Develop a reduced/exactly discretized linear-capacitive network around the
+validated nonlinear tube current law, then select oversampling separately from
+alias measurements.
