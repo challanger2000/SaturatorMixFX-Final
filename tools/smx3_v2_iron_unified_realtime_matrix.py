@@ -10,6 +10,7 @@ Standard library only.
 
 import math
 import cmath
+from fractions import Fraction
 import smx3_v2_iron_unified_candidate as ref
 
 RATES=(44100.0,48000.0,96000.0,192000.0)
@@ -49,13 +50,21 @@ def step_mid(t,H,M,I,dt,source):
     return H2,M2,I2,vout
 
 
+def coherent_cycles(freq,fs,minimum):
+    ratio=Fraction(int(round(fs)),int(round(freq)))
+    quantum=ratio.denominator
+    return max(quantum, int(math.ceil(minimum/quantum))*quantum)
+
+
 def render_mid(level_dbu,freq,fs,warmup_cycles=40,analysis_cycles=6):
+    warmup_cycles=coherent_cycles(freq,fs,warmup_cycles)
+    analysis_cycles=coherent_cycles(freq,fs,analysis_cycles)
     vrms=0.775*10.0**(level_dbu/20.0)
     amp=vrms*math.sqrt(2.0)
     dt=1.0/fs
-    total=warmup_cycles+analysis_cycles
-    n=int(round(total*fs/freq))
     warm=int(round(warmup_cycles*fs/freq))
+    count=int(round(analysis_cycles*fs/freq))
+    n=warm+count
     source=lambda t: amp*math.sin(2.0*math.pi*freq*t)
 
     H=M=I=0.0
@@ -68,12 +77,14 @@ def render_mid(level_dbu,freq,fs,warmup_cycles=40,analysis_cycles=6):
 
 
 def render_rk4(level_dbu,freq,fs,warmup_cycles=40,analysis_cycles=6):
+    warmup_cycles=coherent_cycles(freq,fs,warmup_cycles)
+    analysis_cycles=coherent_cycles(freq,fs,analysis_cycles)
     vrms=0.775*10.0**(level_dbu/20.0)
     amp=vrms*math.sqrt(2.0)
     dt=1.0/fs
-    total=warmup_cycles+analysis_cycles
-    n=int(round(total*fs/freq))
     warm=int(round(warmup_cycles*fs/freq))
+    count=int(round(analysis_cycles*fs/freq))
+    n=warm+count
     source=lambda t: amp*math.sin(2.0*math.pi*freq*t)
 
     H=M=I=0.0
@@ -85,7 +96,7 @@ def render_rk4(level_dbu,freq,fs,warmup_cycles=40,analysis_cycles=6):
     return y
 
 
-def harmonic_metrics(y,freq,fs,max_h=10):
+def harmonic_metrics(y,freq,fs,max_h):
     N=len(y)
     coeff=[]
     for h in range(1,max_h+1):
@@ -113,13 +124,24 @@ def main():
         for level,freq in CASES:
             y_ref=render_rk4(level,freq,auth_fs)
             y_mid=render_mid(level,freq,fs)
-            c_ref,t_ref,h_ref=harmonic_metrics(y_ref,freq,auth_fs)
-            c_mid,t_mid,h_mid=harmonic_metrics(y_mid,freq,fs)
+            # Only compare harmonics representable at the host rate. Aliasing
+            # above host Nyquist is covered by a separate direct alias gate.
+            max_h=max(1,min(10,int((0.5*fs-1e-9)//freq)))
+            c_ref,t_ref,h_ref=harmonic_metrics(y_ref,freq,auth_fs,max_h)
+            c_mid,t_mid,h_mid=harmonic_metrics(y_mid,freq,fs,max_h)
 
             mag_res=abs(20.0*math.log10(max(abs(c_mid),1e-30)/max(abs(c_ref),1e-30)))
-            phase_res=abs(math.degrees(cmath.phase(c_mid/c_ref)))
+
+            # Both renderers report output at the END of each integration step.
+            # Align those physical sample times before judging phase.
+            delta_t=(1.0/fs)-(1.0/auth_fs)
+            c_mid_aligned=c_mid*cmath.exp(-1j*2.0*math.pi*freq*delta_t)
+            phase_res=abs(math.degrees(cmath.phase(c_mid_aligned/c_ref)))
+
             thd_res=100.0*abs(t_mid-t_ref)
-            h3_res=100.0*abs(h_mid[1]-h_ref[1])
+            h3_res=0.0
+            if max_h>=3:
+                h3_res=100.0*abs(h_mid[1]-h_ref[1])
 
             w=worst[fs]
             w["mag"]=max(w["mag"],mag_res)
@@ -127,7 +149,7 @@ def main():
             w["thd"]=max(w["thd"],thd_res)
             w["h3"]=max(w["h3"],h3_res)
 
-            print(f"{fs:.0f},{level:.1f},{freq:.1f},{mag_res:.9f},{phase_res:.9f},{thd_res:.9f},{h3_res:.9f}")
+            print(f"{fs:.0f},{level:.1f},{freq:.1f},{mag_res:.9f},{phase_res:.9f},{thd_res:.9f},{h3_res:.9f},Hmax={max_h}")
 
     print()
     failures=[]
