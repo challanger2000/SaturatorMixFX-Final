@@ -1,0 +1,16 @@
+name: V2 Iron Direct 44.1k Residual
+on:
+  workflow_dispatch:
+  push:
+    branches: [v2.0.0-development]
+    paths: ['.github/workflows/v2-iron-direct-441.yml']
+jobs:
+  residual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m py_compile tools/smx3_v2_iron_direct_441.py
+      - run: python tools/smx3_v2_iron_direct_441.py
