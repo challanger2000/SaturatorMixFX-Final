@@ -19,9 +19,6 @@ import cmath
 import smx3_v2_jensen_hf_fit as hf
 
 
-LLK=2755.715474630e-6
-CX=1155.036777196e-12
-
 
 def unwrap(phases):
     out=[phases[0]]
@@ -49,6 +46,11 @@ def fit_line(xs,ys):
 def main():
     # log-spaced evaluation density, but linear phase is fitted against
     # frequency itself because pure delay gives phi=-2*pi*f*tau.
+    llk,cx,_,_,_=hf.fit()
+
+    print(f"using refit Llk = {llk*1e6:.9f} uH")
+    print(f"using refit Cx = {cx*1e12:.9f} pF")
+
     n=1201
     f0=20.0
     f1=20000.0
@@ -58,7 +60,7 @@ def main():
     ]
 
     phases=unwrap([
-        cmath.phase(hf.transfer(f,LLK,CX))
+        cmath.phase(hf.transfer(f,llk,cx))
         for f in freqs
     ])
 
