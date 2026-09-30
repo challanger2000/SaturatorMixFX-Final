@@ -1,0 +1,74 @@
+name: V2 MixFX Refactor QA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - 'SMX3Common/**'
+      - 'SMX-3-MixFX/source/processor.h'
+      - 'SMX-3-MixFX/source/processor.cpp'
+      - '.github/workflows/v2-mixfx-refactor-qa.yml'
+
+jobs:
+  build-validator:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Steinberg VST3 SDK
+        uses: actions/checkout@v4
+        with:
+          repository: steinbergmedia/vst3sdk
+          ref: 3cdf9ca5d1f5b1b21e0a86832aa4abe55607bd96
+          path: vst3sdk
+          submodules: recursive
+
+      - name: Configure Mix FX
+        shell: pwsh
+        run: >-
+          cmake -S SMX-3-MixFX -B build-mixfx-v2-refactor
+          -G "Visual Studio 17 2022"
+          -A x64
+          -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
+          -DSMTG_CREATE_PLUGIN_LINK=0
+
+      - name: Build Release
+        run: cmake --build build-mixfx-v2-refactor --config Release --target SMX-3-MixFX
+
+      - name: Build Validator
+        run: cmake --build build-mixfx-v2-refactor --config Release --target validator
+
+      - name: Run Validator
+        shell: pwsh
+        run: |
+          $validator = Get-ChildItem -Path build-mixfx-v2-refactor -Recurse -File -Filter validator.exe | Select-Object -First 1
+          if (-not $validator) { throw "validator.exe not found" }
+          $plugin = Get-ChildItem -Path build-mixfx-v2-refactor -Recurse -Directory -Filter SMX-3-MixFX.vst3 | Select-Object -First 1
+          if (-not $plugin) { throw "SMX-3-MixFX.vst3 not found" }
+
+          & $validator.FullName $plugin.FullName 2>&1 | Tee-Object -FilePath validator-v2-mixfx-refactor.log
+          $validatorExit = $LASTEXITCODE
+          $log = Get-Content validator-v2-mixfx-refactor.log -Raw
+          $isAudioMixProcessor = $log -match 'category\s*=\s*Audio Mix Processor'
+          $isZeroTestResult = $log -match 'Result:\s+0 tests passed,\s+0 tests failed'
+
+          if ($isZeroTestResult -and $isAudioMixProcessor) {
+            Write-Host "Audio Mix Processor class scan succeeded; Steinberg validator has no standard tests for this host-specific category."
+            exit 0
+          }
+          if ($isZeroTestResult) {
+            Write-Error "Validator created zero tests for a non-Mix-FX class."
+            exit 2
+          }
+          if ($validatorExit -ne 0) { exit $validatorExit }
+
+      - name: Upload validator log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-MixFX-Refactor-Validator
+          path: validator-v2-mixfx-refactor.log
+          if-no-files-found: warn
