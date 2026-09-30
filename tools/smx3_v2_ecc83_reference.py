@@ -88,23 +88,65 @@ def solve_bias(params, vb, ra, rk, max_iter=20000, tol=1e-13):
 
 
 def solve_plate_for_grid(params, bias, vin, vp_seed):
-    """Static AC plate solution with bypassed cathode and documented Rg' load."""
+    """Static AC plate solution with bypassed cathode and documented Rg' load.
+
+    Solve the one-dimensional load-line equation with a bracketed method:
+
+        F(vp) = vp - (Vth - Ia(vp, vin) * Rload) = 0
+
+    The former damped fixed-point iteration can lose convergence under strong
+    drive even when the physical root remains well behaved. Bracketing is
+    deterministic and does not change the tube/circuit model.
+    """
     ra = MULLARD["ra_ohm"]
     rg = MULLARD["rg_next_ohm"]
     rload = 1.0 / (1.0 / ra + 1.0 / rg)
 
     ia0 = bias["ia_a"]
     vth = bias["vp_v"] + ia0 * rload
-    vp = vp_seed
+    vk = bias["vk_v"]
 
-    for _ in range(10000):
-        _, ia, _ = currents(params, vp - bias["vk_v"], vin - bias["vk_v"])
-        vp_new = vth - ia * rload
-        if abs(vp_new - vp) < 1e-13:
-            return vp
-        vp = 0.80 * vp + 0.20 * vp_new
+    def residual(vp):
+        _, ia, _ = currents(params, vp - vk, vin - vk)
+        return vp - (vth - ia * rload)
 
-    raise RuntimeError("plate solver did not converge")
+    # Physical plate node is expected between approximately cathode potential
+    # and the AC Thevenin supply. Start there, then expand only if needed.
+    lo = max(-100.0, vk - 50.0)
+    hi = max(vth + 50.0, bias["vp_v"] + 50.0)
+
+    flo = residual(lo)
+    fhi = residual(hi)
+
+    # Deterministic bounded expansion for unusual extreme-drive cases.
+    for _ in range(12):
+        if flo <= 0.0 <= fhi:
+            break
+        if flo > 0.0:
+            lo -= 100.0
+            flo = residual(lo)
+        if fhi < 0.0:
+            hi += 100.0
+            fhi = residual(hi)
+    else:
+        raise RuntimeError(
+            f"plate root not bracketed: vin={vin:.9g} lo={lo:.9g} hi={hi:.9g} "
+            f"F(lo)={flo:.9g} F(hi)={fhi:.9g}"
+        )
+
+    for _ in range(100):
+        mid = 0.5 * (lo + hi)
+        fm = residual(mid)
+
+        if abs(fm) < 1e-12 or (hi - lo) < 1e-12:
+            return mid
+
+        if fm > 0.0:
+            hi = mid
+        else:
+            lo = mid
+
+    return 0.5 * (lo + hi)
 
 
 def small_signal_gain(params, bias):
