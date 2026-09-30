@@ -415,3 +415,37 @@ that linear phase from the complete 20 Hz..20 kHz phase response.
 
 Whole-band log-spaced linear fits are superseded because they allow the LF DLP
 curvature itself to bias the delay estimate.
+
+
+### Zirka, Moroz, Marketos & Moses — Dynamic hysteresis modelling
+Physica B 343 (2004), 90-95
+DOI: 10.1016/j.physb.2003.08.036
+Cardiff ORCA record: https://orca.cardiff.ac.uk/id/eprint/1920
+Public author copy indexed at ResearchGate:
+https://www.researchgate.net/publication/222783786_Dynamic_hysteresis_modeling
+Evidence use: MAGNETIC-VISCOSITY / DYNAMIC-LOSS ARCHITECTURE
+
+Key model:
+dB/dt = r(B) [ H - H_st(B) ]^n
+
+Equivalent field-separation form:
+H = H_st(B) + [ (1/r(B)) dB/dt ]^(1/n)
+
+where:
+- H_st(B) is supplied by an arbitrary compatible static hysteresis model;
+- r(B) is dynamic magnetic resistivity;
+- n controls temporal/frequency behavior.
+
+A common reported form is:
+r(B) = R_m [ 1 - B^2/B_s^2 ]
+
+Important structural property:
+the model explicitly separates the static hysteresis field from the dynamic
+(excess/viscous) field and is designed to be compatible with static hysteresis
+models of different types.
+
+SMX-3 implication:
+- retain the validated quasi-static JA core as H_st / static-history authority;
+- fit only the additional dynamic/viscous state/field to Jensen phase/loss evidence;
+- require the dynamic contribution to vanish in the quasi-static/DC limit;
+- do not retune static JA hysteresis merely to fake frequency dependence.
