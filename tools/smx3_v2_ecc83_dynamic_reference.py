@@ -2,7 +2,7 @@
 """Dynamic ECC83 reference circuit for SMX-3 V2 TRI0DE research.
 
 Offline reference only. Solves the documented Mullard-style ECC83 network with
-the Dempwolf/Zoelzer measured EHX-1 current equations.
+the Dempwolf/Zoelzer measured RSD-2 current equations.
 
 Circuit:
 - Vb 250 V
@@ -26,8 +26,8 @@ Standard library only.
 
 import math
 
-P={"G":1.371e-3,"mu":86.9,"gamma":1.349,"C":4.56,
-   "Gg":3.263e-4,"xi":1.156,"Cg":11.99,"Ig0":3.917e-8}
+P={"G":2.173e-3,"mu":100.2,"gamma":1.28,"C":3.19,
+   "Gg":5.911e-4,"xi":1.358,"Cg":11.76,"Ig0":4.527e-8}
 
 VB=250.0
 RA=100000.0
