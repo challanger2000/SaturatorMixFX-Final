@@ -1,0 +1,23 @@
+name: V2 Triode Realtime Rate Benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-triode-realtime-rate.yml'
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: python -m py_compile tools/smx3_v2_triode_realtime_rate.py
+      - name: Run TRI0DE practical-rate benchmark
+        run: python tools/smx3_v2_triode_realtime_rate.py
