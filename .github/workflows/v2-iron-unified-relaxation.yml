@@ -1,4 +1,4 @@
-# revision: 2 - fully settled unified relaxation fit
+# revision: 3 - settled fit with robust Langevin asymptotic
 name: V2 IRON Unified Relaxation
 
 on:
