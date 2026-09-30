@@ -381,3 +381,16 @@ Decision:
 - do not use fixed 4x oversampling merely for H/M numerical accuracy;
 - evaluate alias control separately;
 - first production candidate should keep magnetic state integration at host rate and add targeted oversampling only if alias measurements justify it.
+
+
+### EF86 dynamic Graph-D diagnosis
+Status: DYNAMIC-NETWORK EXPLANATION REJECTED
+
+Evidence:
+- EX=1.40 dynamic Philips network reproduces midband gain within ~1.53%;
+- Graph-D Vi->Vo remains close;
+- low/mid output THD remains too high and top-end THD remains low;
+- real cathode/screen/output dynamics do not remove the residual pattern.
+
+Decision:
+reopen only an existing control-grid transfer-shape degree of freedom next (KP), while re-solving VCT/KG1/S0 to preserve exact local Ia/gm/Ig2. Do not add an external waveshaper or gain correction.
