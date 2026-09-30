@@ -21,6 +21,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 
 GRAPH_A=ROOT/"research"/"ef86_philips_graphA_provisional.csv"
 GRAPH_B=ROOT/"research"/"ef86_philips1956_platecurve_provisional.csv"
+GRAPH_B_KNEE=ROOT/"research"/"ef86_philips1956_platecurve_knee_provisional.csv"
 
 PHILIPS={
     200.0:{"ik":0.00170,"gain":106.0,"vo5":40.0},
@@ -66,8 +67,8 @@ def graph_a_score(currents):
     return math.sqrt(sum(x*x for x in sig)/len(sig)),max(abs(x) for x in sig)
 
 
-def graph_b_score(currents):
-    rows=list(csv.DictReader(GRAPH_B.open(encoding="utf-8")))
+def graph_file_score(currents,path):
+    rows=list(csv.DictReader(path.open(encoding="utf-8")))
     sig=[]
     for r in rows:
         vg1=float(r["curve_vg1_v"]); va=float(r["va_v"])
@@ -75,6 +76,14 @@ def graph_b_score(currents):
         m=1e3*currents(va,140.0,vg1)[0]
         sig.append((m-ref)/u)
     return math.sqrt(sum(x*x for x in sig)/len(sig)),max(abs(x) for x in sig)
+
+
+def graph_b_score(currents):
+    return graph_file_score(currents,GRAPH_B)
+
+
+def graph_b_knee_score(currents):
+    return graph_file_score(currents,GRAPH_B_KNEE)
 
 
 def device_score(currents):
@@ -180,15 +189,17 @@ def main():
         dev=device_score(model["currents"])
         ga=graph_a_score(model["currents"])
         gb=graph_b_score(model["currents"])
+        gbk=graph_b_knee_score(model["currents"])
         dg=dc_gain_score(model)
         ve=vo5_score(model)
 
-        rows.append((name,dev,ga,gb,dg,ve))
+        rows.append((name,dev,ga,gb,gbk,dg,ve))
 
         print(f"[{name}]")
         print(f"  device errors: Ia={dev['ia_err']:+.3f}% Ig2={dev['ig2_err']:+.3f}% gm={dev['gm_err']:+.3f}%")
         print(f"  Graph A: NRMS={ga[0]:.3f} sigma worst={ga[1]:.3f}")
-        print(f"  Graph B: NRMS={gb[0]:.3f} sigma worst={gb[1]:.3f}")
+        print(f"  Graph B plateau (100/200/300 V): NRMS={gb[0]:.3f} sigma worst={gb[1]:.3f}")
+        print(f"  Graph B knee (20/40/60/80 V): NRMS={gbk[0]:.3f} sigma worst={gbk[1]:.3f}")
         print(f"  DC Ik: RMS={dg['ik_rms']:.3f}% worst={dg['ik_worst']:.3f}%")
         print(f"  gain: RMS={dg['gain_rms']:.3f}% worst={dg['gain_worst']:.3f}%")
         print(f"  Vo@5%: RMS={ve['rms']:.3f}% worst={ve['worst']:.3f}%")
@@ -202,7 +213,7 @@ def main():
     print("INTERPRETATION:")
     print("- no overall winner is declared from provisional graph data;")
     print("- exact table domains (device/DC/gain/Vo@5%) and graph domains are shown separately;")
-    print("- a future refit must improve the large-signal envelope without materially degrading Graph A/B.")
+    print("- a future refit must improve the large-signal envelope without materially degrading Graph A, Graph-B plateau or Graph-B knee.")
     return 0
 
 
