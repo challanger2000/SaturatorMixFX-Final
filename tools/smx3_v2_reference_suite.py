@@ -27,6 +27,7 @@ POSITIVE=[
     ("EF86 provisional table/device fit", ["tools/smx3_v2_ef86_provisional_fit.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
+    ("physical level calibration", ["tools/smx3_v2_level_calibration.py"]),
 ]
 
 INFORMATIONAL=[
