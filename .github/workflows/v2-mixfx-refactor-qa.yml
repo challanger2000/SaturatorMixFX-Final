@@ -7,8 +7,8 @@ on:
       - v2.0.0-development
     paths:
       - 'SMX3Common/DSP/**'
-      - 'SMX-3-V2-MixFX/source/processor.h'
-      - 'SMX-3-V2-MixFX/source/processor.cpp'
+      - 'SMX-3-MixFX/source/processor.h'
+      - 'SMX-3-MixFX/source/processor.cpp'
       - '.github/workflows/v2-mixfx-refactor-qa.yml'
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
       - name: Configure Mix FX
         shell: pwsh
         run: >-
-          cmake -S SMX-3-V2-MixFX -B build-mixfx-v2-refactor
+          cmake -S SMX-3-MixFX -B build-mixfx-v2-refactor
           -G "Visual Studio 17 2022"
           -A x64
           -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
