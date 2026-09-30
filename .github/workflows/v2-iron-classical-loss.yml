@@ -1,0 +1,40 @@
+name: V2 IRON Classical Loss Sensitivity
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-classical-loss.yml'
+
+jobs:
+  classical-loss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check
+        run: |
+          python -m py_compile             tools/smx3_v2_iron_candidate.py             tools/smx3_v2_iron_classical_loss_sensitivity.py
+
+      - name: Run classical dynamic-loss sensitivity
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_classical_loss_sensitivity.py 2>&1 | tee iron-classical-loss.log
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-IRON-Classical-Loss
+          path: iron-classical-loss.log
+          if-no-files-found: warn
