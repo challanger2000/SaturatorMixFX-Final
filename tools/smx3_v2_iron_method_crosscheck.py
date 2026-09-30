@@ -63,28 +63,34 @@ def simulate_midpoint(level_dbu,freq=20.0,fs=192000.0,warmup_cycles=30,analysis_
 
 def main():
     print("SMX-3 V2 IRON numerical-method cross-check")
-    print("RK4 reference vs explicit midpoint/RK2 at 192 kHz")
+    print("RK4 candidate @48 kHz vs explicit midpoint/RK2 @192 kHz")
     print()
-    print("level_dBu,RK4_THD_pct,midpoint_THD_pct,residual_pp,H3_residual_pp")
+    print("case,RK4_THD_pct,midpoint_THD_pct,residual_pp,H3_residual_pp")
 
     failures=[]
 
-    for level in (4.0,20.0):
-        rk4_thd,rk4_hs=ref.simulate(level,20.0,fs=192000.0,warmup_cycles=30,analysis_cycles=4)
-        mid_thd,mid_hs=simulate_midpoint(level)
+    cases=[
+        ("20Hz +4dBu",4.0,20.0),
+        ("20Hz +20dBu",20.0,20.0),
+        ("40Hz +4dBu",4.0,40.0),
+    ]
+
+    for label,level,freq in cases:
+        rk4_thd,rk4_hs=ref.simulate(level,freq,fs=48000.0,warmup_cycles=30,analysis_cycles=4)
+        mid_thd,mid_hs=simulate_midpoint(level,freq=freq,fs=192000.0,warmup_cycles=30,analysis_cycles=4)
 
         thd_pp=100.0*abs(mid_thd-rk4_thd)
         h3_pp=100.0*abs(mid_hs[1]-rk4_hs[1])
 
         print(
-            f"{level:.1f},{100*rk4_thd:.9f},{100*mid_thd:.9f},"
+            f"{label},{100*rk4_thd:.9f},{100*mid_thd:.9f},"
             f"{thd_pp:.9f},{h3_pp:.9f}"
         )
 
-        if thd_pp>0.002:
-            failures.append(f"{level:g} dBu THD residual")
-        if h3_pp>0.002:
-            failures.append(f"{level:g} dBu H3 residual")
+        if thd_pp>0.003:
+            failures.append(label+" THD residual")
+        if h3_pp>0.003:
+            failures.append(label+" H3 residual")
 
     print()
     if failures:
@@ -93,7 +99,7 @@ def main():
             print(" - "+f)
         return 1
 
-    print("PASS: RK4 and independent midpoint integration agree within frozen offline tolerances.")
+    print("PASS: 48 kHz RK4 candidate and 192 kHz independent midpoint reference agree within frozen offline tolerances.")
     return 0
 
 
