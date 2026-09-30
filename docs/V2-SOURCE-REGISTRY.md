@@ -272,3 +272,22 @@ Key point: unconstrained fitting can generate non-physical hysteresis loops; phy
 
 SMX-3 implication:
 the Jensen audio curves are not B-H loops, so fitted magnetic parameters remain effective model parameters unless direct magnetic evidence becomes available.
+
+
+### Bill Whitlock — Audio Transformers, Handbook for Sound Engineers chapter
+URL: https://www.jensen-transformers.com/wp-content/uploads/2014/08/Audio-Transformers-Chapter.pdf
+Author: Bill Whitlock, Jensen Transformers
+Evidence use: DOCUMENTED / engineering interpretation
+
+Relevant primary engineering statements:
+- transformer distortion follows the smooth symmetric curvature of the B-H characteristic;
+- flux density at fixed voltage is inversely proportional to frequency;
+- nickel-core transformer distortion roughly quarters for each doubling of frequency in the discussed low-frequency region;
+- an un-magnetized transformer core exhibits nearly pure third-harmonic distortion with virtually no even-order distortion;
+- residual magnetization/DC exposure introduces significant even-order products.
+
+SMX-3 use:
+- H3-dominance gate for default IRON;
+- frequency-law diagnostic;
+- DC-bias/remanence test design;
+- demagnetized default-state definition.
