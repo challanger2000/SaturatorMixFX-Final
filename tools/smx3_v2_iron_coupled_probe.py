@@ -120,13 +120,12 @@ def simulate(level_dbu,freq=20.0,fs=96000.0,cycles=12):
         return math.hypot(re,im)
 
     fundamental=component(1)
-    powers=0.0
-    for h in range(2,11):
-        powers += component(h)**2
-    thd=math.sqrt(powers)/fundamental
+    harmonics=[component(h)/fundamental for h in range(2,11)]
+    powers=sum(h*h for h in harmonics)
+    thd=math.sqrt(powers)
 
     rms=math.sqrt(sum(v*v for v in y)/N)
-    return thd,rms
+    return thd,rms,harmonics
 
 
 def main():
@@ -137,18 +136,25 @@ def main():
     print(f"small-signal Lm target={LM_TARGET:.6f} H")
     print()
     print("20 Hz level sweep")
-    print("level_dBu,THD_percent,output_rms_V")
+    print("level_dBu,THD_percent,H2_percent,H3_percent,H5_percent,H2_over_H3_dB,output_rms_V")
     results={}
     for level in (4.0,14.0,20.0):
-        thd,rms=simulate(level,20.0)
-        results[level]=(thd,rms)
-        print(f"{level:.1f},{100.0*thd:.9f},{rms:.9f}")
+        thd,rms,hs=simulate(level,20.0)
+        h2=hs[0] if len(hs)>0 else 0.0
+        h3=hs[1] if len(hs)>1 else 0.0
+        h5=hs[3] if len(hs)>3 else 0.0
+        ratio_db=20.0*math.log10(max(h2,1e-30)/max(h3,1e-30))
+        results[level]=(thd,rms,hs)
+        print(
+            f"{level:.1f},{100.0*thd:.9f},{100.0*h2:.9f},"
+            f"{100.0*h3:.9f},{100.0*h5:.9f},{ratio_db:.9f},{rms:.9f}"
+        )
 
     print()
     print("+20 dBu frequency sweep")
     print("frequency_Hz,THD_percent")
     for freq in (20.0,30.0,50.0,100.0,1000.0):
-        thd,_=simulate(20.0,freq)
+        thd,_,_=simulate(20.0,freq)
         print(f"{freq:.1f},{100.0*thd:.9f}")
 
     hi=100.0*results[20.0][0]
