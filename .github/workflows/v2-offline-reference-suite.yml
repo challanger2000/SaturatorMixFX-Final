@@ -1,4 +1,4 @@
-# revision: 10 - cleaned current reference suite with kink sensitivity
+# revision: 11 - fast current gates, corrected EF86 knee and TRI0DE domain
 name: V2 Offline Reference Suite
 
 on:
