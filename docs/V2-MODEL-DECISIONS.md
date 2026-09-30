@@ -394,3 +394,16 @@ Evidence:
 
 Decision:
 reopen only an existing control-grid transfer-shape degree of freedom next (KP), while re-solving VCT/KG1/S0 to preserve exact local Ia/gm/Ig2. Do not add an external waveshaper or gain correction.
+
+
+### EF86 KP curvature reopening
+Status: CLOSED — NO JUSTIFIED MODEL CHANGE
+
+A coarse EX x KP scan with exact Ia/gm/Ig2 recalibration found that only KP around ~220 consistently clears the stronger Graph A/B, gain/current and exact Vo@5% gates.
+
+The original Stage-1 KP (~215.8) already occupies this region.
+
+Graph-D THD residual does not materially improve across eligible KP candidates, and the current low-level Graph-D manual digitization is not reliable enough to justify another degree of freedom.
+
+Decision:
+retain EX≈1.40 and the Stage-1 KP region. Do not tune the pentode model against uncertain Graph-D low-level points.
