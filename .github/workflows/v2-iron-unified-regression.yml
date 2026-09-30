@@ -1,3 +1,4 @@
+# revision: 2 - measure recovery convergence before freezing state gate
 name: V2 IRON Unified Regression
 
 on:
@@ -11,7 +12,7 @@ on:
 jobs:
   unified-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -26,13 +27,13 @@ jobs:
         run: |
           python -m py_compile \
             tools/smx3_v2_iron_unified_candidate.py \
-            tools/smx3_v2_iron_unified_dc_bias.py \
+            tools/smx3_v2_iron_unified_recovery_convergence.py \
             tools/smx3_v2_iron_unified_method_crosscheck.py
 
-      - name: Run DC-bias and remanence regression
+      - name: Measure recovery convergence
         shell: bash
         run: |
-          python tools/smx3_v2_iron_unified_dc_bias.py 2>&1 | tee iron-unified-regression.log
+          python tools/smx3_v2_iron_unified_recovery_convergence.py 2>&1 | tee iron-unified-regression.log
 
       - name: Run numerical-method cross-check
         shell: bash
