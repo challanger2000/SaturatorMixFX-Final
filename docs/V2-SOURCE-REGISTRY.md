@@ -225,3 +225,27 @@ Why useful:
 Restriction:
 - community-derived parameters are not treated as primary hardware evidence;
 - no production parameter is copied merely because it exists in a SPICE model.
+
+
+### Philips/Mullard ECC83 operating-characteristics circuit, January 1970
+URL: https://frank.pocnet.net/sheets/010/e/ECC83.pdf
+Type: manufacturer data sheet
+Evidence use: DOCUMENTED
+
+Selected A.F.-amplifier row:
+- Vb=250 V
+- Ra=100 kOhm
+- Rg' next-stage load=330 kOhm
+- Rk=1.5 kOhm
+- Ia=0.86 mA
+- gain=54.5
+- Vo=26 Vrms at the stated Ig=0.3 uA criterion
+- total distortion=3.9%
+
+Published circuit diagram:
+- input coupling C=0.01 uF
+- input grid leak=1 MOhm
+- cathode bypass Ck=50 uF
+- output coupling C=0.01 uF
+
+This is now the authoritative surrounding network for the dynamic TRI0DE reference unless later primary evidence justifies a deliberate alternative.
