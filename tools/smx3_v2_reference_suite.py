@@ -37,6 +37,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 unified multi-domain scorecard", ["tools/smx3_v2_ef86_scorecard.py"]),
     ("EF86 Graph-A family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
     ("IRON reset convergence", ["tools/smx3_v2_iron_reset_convergence.py"]),
     ("EF86 dynamic Graph-D probe", ["tools/smx3_v2_ef86_dynamic_graphD.py"]),
