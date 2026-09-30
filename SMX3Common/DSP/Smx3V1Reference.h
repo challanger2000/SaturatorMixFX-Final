@@ -300,8 +300,8 @@ private:
         // the measured mean level loss while preserving the nonlinear shape.
         // Interpolate smoothly to avoid audible gain kinks while automating.
         static constexpr double x[5]={0.0,.25,.50,.75,1.0};
-        static constexpr double tri[5]={0.0,.48,3.30,7.91,12.30};
-        static constexpr double pen[5]={0.0,.77,3.50,6.67,10.93};
+        static constexpr double tri[5]={0.0,.78,4.80,9.71,12.60};
+        static constexpr double pen[5]={0.0,1.27,5.30,8.47,11.43};
         static constexpr double iron[5]={0.0,.33,.69,1.75,3.06};
 
         drive=clamp01(drive);
