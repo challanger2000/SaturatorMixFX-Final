@@ -82,3 +82,57 @@ Acceptance requires simultaneous agreement with:
 - already established low-level gain/impedance/frequency anchors.
 
 This is a useful failed model: it proves that 'Jiles-Atherton' by itself is not enough; the actual magnetic loop shape must be identified from the hardware evidence.
+
+
+## Harmonic-parity follow-up
+
+The same rejected example-shape model was decomposed into individual harmonics at 20 Hz.
+
+### +4 dBu
+- THD ≈ 0.15344 %
+- H2 ≈ 0.01341 %
+- H3 ≈ 0.15154 %
+- H5 ≈ 0.01620 %
+- H2/H3 ≈ -21.06 dB
+
+### +14 dBu
+- THD ≈ 0.41736 %
+- H2 ≈ 0.02557 %
+- H3 ≈ 0.41524 %
+- H5 ≈ 0.01518 %
+- H2/H3 ≈ -24.21 dB
+
+### +20 dBu
+- THD ≈ 0.99703 %
+- H2 ≈ 0.02294 %
+- H3 ≈ 0.98279 %
+- H5 ≈ 0.16254 %
+- H2/H3 ≈ -32.64 dB
+
+## Revised interpretation
+
+This refines the rejection.
+
+The example Jiles-Atherton shape is NOT wrong in every respect.
+
+It gets one important transformer property qualitatively right:
+- zero-bias distortion is strongly H3-dominant;
+- even-order distortion remains substantially below H3.
+
+That is consistent with Jensen/Whitlock's engineering description of an un-magnetized transformer core.
+
+The principal mismatch is instead:
+- excessive low-level nonlinear/hysteretic contribution;
+- incorrect THD-growth law between +4 and +20 dBu.
+
+Therefore the next magnetic fit should preferentially alter:
+- low-field irreversible-loop opening;
+- reversible/anhysteretic balance;
+- field scaling / saturation-transition shape;
+
+while preserving:
+- approximate odd symmetry;
+- H3 dominance;
+- stateful magnetic memory.
+
+Do NOT discard Jiles-Atherton merely because the published example parameter set fails the JT-11P-1 amplitude law.
