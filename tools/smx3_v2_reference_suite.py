@@ -22,6 +22,7 @@ PY=sys.executable
 
 
 POSITIVE=[
+    ("provisional Iron exact-anchor candidate", ["tools/smx3_v2_iron_candidate.py"]),
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
     ("ECC83 large signal", ["tools/smx3_v2_ecc83_large_signal.py"]),
     ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
