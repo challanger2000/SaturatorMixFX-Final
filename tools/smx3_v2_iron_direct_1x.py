@@ -78,7 +78,8 @@ def fourier_bandlimit(y,fs,freq,host_fs):
             a=2.0*math.pi*h*freq*i/fs
             re+=v*math.cos(a)
             im-=v*math.sin(a)
-        coeff.append((h,complex(2.0*re/N,-2.0*im/N)))
+        # im already accumulates -sum(y*sin); preserve that sign.
+        coeff.append((h,complex(2.0*re/N,2.0*im/N)))
 
     return mean,coeff
 
