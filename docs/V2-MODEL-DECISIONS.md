@@ -161,3 +161,17 @@ Therefore:
 - the fitted model must react plausibly to DC bias/remanence and return deterministically to a demagnetized baseline.
 
 This requirement strengthens the case for a stateful magnetic model and rules out any final IRON implementation that merely matches a scalar THD curve with a memoryless symmetric waveshaper.
+
+
+### EHX-1 loaded-amplifier reassessment
+Status: BEST PUBLISHED MEASURED-SPECIMEN STARTING POINT; NOT FINAL TRI0DE REFERENCE
+
+Correction:
+the earlier apparent ~2.2% gain agreement used an unloaded small-signal calculation. Including Mullard's documented 330 kOhm following-stage AC load gives approximately 50.22 V/V versus 54.5 V/V.
+
+Large-signal check at the documented grid-current condition:
+- EHX-1 ~32.52 Vrms / 3.42% THD
+- Mullard ~26 Vrms / 3.9% THD
+
+Decision:
+retain EHX-1 as the most useful Dempwolf/Zoelzer specimen, but require a joint current-surface + loaded-circuit + large-signal fit before promotion.
