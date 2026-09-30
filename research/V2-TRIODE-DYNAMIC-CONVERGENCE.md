@@ -1,3 +1,10 @@
+> SUPERSEDED NUMERICAL VALUES — 2026-09-30
+>
+> The numerical tables below were generated with the historical EHX-1 dynamic specimen.
+> The solver infrastructure and convergence methodology remain valid, but the current
+> dynamic authority has been switched to RSD-2. Re-run results under RSD-2 supersede
+> these numerical values once the central reference suite completes.
+
 # SMX-3 V2 TRI0DE Dynamic Integration Convergence
 
 Date: 2026-09-30
