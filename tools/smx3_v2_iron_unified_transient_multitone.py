@@ -44,14 +44,21 @@ def sample_input(source,duration,fs):
     return [source(i/fs) for i in range(n)]
 
 
-def render_host(samples,fs,factor):
+def render_host(samples,fs,factor,method):
     dt=1.0/(fs*factor)
     H=M=I=0.0
     y=[]
     for x in samples:
         v=None
-        for _ in range(factor):
-            H,M,I,v=step_mid_sample(H,M,I,dt,x)
+        if method=="rk2":
+            for _ in range(factor):
+                H,M,I,v=step_mid_sample(H,M,I,dt,x)
+        elif method=="rk4":
+            source=lambda _t, value=x: value
+            for k in range(factor):
+                H,M,I,v=ref.rk4_step(k*dt,H,M,I,dt,source)
+        else:
+            raise ValueError(method)
         y.append(v)
     return y
 
@@ -188,49 +195,49 @@ def main():
     )
 
     print("SMX-3 V2 unified IRON transient/multitone substep matrix")
-    print("host,case,factor,rms_residual_dBc,peak_residual_dBc")
+    print("host,case,method,factor,rms_residual_dBc,peak_residual_dBc")
 
-    FACTORS=(1,2,4)
-    worst={(fs,f):{"rms":-300.0,"peak":-300.0} for fs in HOSTS for f in FACTORS}
+    CANDIDATES=(("rk2",1),("rk2",2),("rk2",4),("rk4",1),("rk4",2),("rk4",4))
+    worst={(fs,m,f):{"rms":-300.0,"peak":-300.0} for fs in HOSTS for m,f in CANDIDATES}
 
     for fs in HOSTS:
         for name,source,duration in cases:
             samples=sample_input(source,duration,fs)
             auth=render_auth_at_host_times(samples,fs)
-            for factor in FACTORS:
-                host=render_host(samples,fs,factor)
+            for method,factor in CANDIDATES:
+                host=render_host(samples,fs,factor,method)
                 rdb,pdb=residual_metrics(auth,host)
-                worst[(fs,factor)]["rms"]=max(worst[(fs,factor)]["rms"],rdb)
-                worst[(fs,factor)]["peak"]=max(worst[(fs,factor)]["peak"],pdb)
-                print(f"{fs:.0f},{name},{factor}x,{rdb:.6f},{pdb:.6f}")
+                worst[(fs,method,factor)]["rms"]=max(worst[(fs,method,factor)]["rms"],rdb)
+                worst[(fs,method,factor)]["peak"]=max(worst[(fs,method,factor)]["peak"],pdb)
+                print(f"{fs:.0f},{name},{method},{factor}x,{rdb:.6f},{pdb:.6f}")
 
     print()
     for fs in HOSTS:
-        for factor in FACTORS:
-            w=worst[(fs,factor)]
+        for method,factor in CANDIDATES:
+            w=worst[(fs,method,factor)]
             print(
-                f"WORST host={fs:.0f} factor={factor}x "
+                f"WORST host={fs:.0f} method={method} factor={factor}x "
                 f"RMS={w['rms']:.6f} dBc peak={w['peak']:.6f} dBc"
             )
 
-    # Promotion decision: the cheapest factor that clears both residual limits
-    # at both host rates is the realtime state-update candidate.
     selected=None
-    for factor in FACTORS:
+    # Approximate derivative-evaluation cost: RK2=2, RK4=4 per substep.
+    ranked=sorted(CANDIDATES,key=lambda mf: (2 if mf[0]=="rk2" else 4)*mf[1])
+    for method,factor in ranked:
         ok=True
         for fs in HOSTS:
-            w=worst[(fs,factor)]
+            w=worst[(fs,method,factor)]
             if w["rms"]>-90.0 or w["peak"]>-70.0:
                 ok=False
         if ok:
-            selected=factor
+            selected=(method,factor)
             break
 
     if selected is None:
-        print("FAIL: 1x/2x/4x midpoint substeps do not clear transient residual limits.")
+        print("FAIL: tested RK2/RK4 realtime candidates do not clear transient residual limits.")
         return 1
 
-    print(f"PASS: minimum midpoint state-update factor clearing transient limits = {selected}x.")
+    print(f"PASS: lowest-cost tested candidate clearing transient limits = {selected[0]} {selected[1]}x.")
     return 0
 
 
