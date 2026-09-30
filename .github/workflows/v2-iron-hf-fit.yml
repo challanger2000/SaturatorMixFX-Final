@@ -1,4 +1,4 @@
-# revision: 10 - joint low-field-L and dynamic-loss architecture screen
+# revision: 11 - constrained LqS c KI simplification test
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -66,6 +66,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_loss_lm_screen.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run constrained LqS c KI refit
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_lm_constrained_refit.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Upload log
         if: always()
