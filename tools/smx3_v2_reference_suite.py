@@ -40,6 +40,11 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("physical level calibration candidate", ["tools/smx3_v2_level_calibration.py"]),
+    ("V1 oversampling baseline", ["tools/smx3_v1_oversampling_baseline.py","--sample-rate","44100"]),
+]
+
+DEEP_INFORMATIONAL=[
     ("EF86 kink sensitivity", ["tools/smx3_v2_ef86_kink_sensitivity.py"]),
     ("legacy EX=1.40 dynamic reference", ["tools/smx3_v2_ef86_dynamic_reference.py"]),
     ("EF86 Graph-A three-way family comparison", ["tools/smx3_v2_ef86_graphA_threeway.py"]),
@@ -81,6 +86,7 @@ def run_case(label,args,verbose):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--verbose",action="store_true")
+    ap.add_argument("--deep",action="store_true",help="Also run archived/heavy research comparisons.")
     args=ap.parse_args()
 
     failures=[]
@@ -108,6 +114,14 @@ def main():
         if rc!=0:
             failures.append(label+" execution error")
 
+    if args.deep:
+        for label,cmd in DEEP_INFORMATIONAL:
+            rc=run_case(label,cmd,args.verbose)
+            status="DEEP-INFO-OK" if rc==0 else "DEEP-INFO-ERROR"
+            print(f"[{status}] {label}")
+            if rc!=0:
+                failures.append(label+" deep execution error")
+
     print()
     if failures:
         print("REFERENCE SUITE FAIL")
@@ -116,7 +130,7 @@ def main():
         return 1
 
     print("REFERENCE SUITE PASS")
-    print("Note: this validates frozen offline research gates, not VST3 release QA.")
+    print("Note: this validates current frozen offline gates, not VST3 release QA.")\n    if not args.deep:\n        print("Use --deep for archived/heavy research comparisons.")
     return 0
 
 
