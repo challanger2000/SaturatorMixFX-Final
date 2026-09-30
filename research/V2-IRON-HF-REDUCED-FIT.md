@@ -43,3 +43,52 @@ Even if both magnitude anchors are matched, the topology is not promoted until i
 - consistency when the nonlinear magnetic branch is reinserted.
 
 Magnitude matching is necessary but not sufficient.
+
+
+## Corrected 144 H fit result
+
+After correcting the LF magnetizing-inductance derivation for Jensen test
+circuit 1 with Rs=600 Ohm, the reduced HF fit was rerun.
+
+Targeted GitHub run:
+- run 36697771830
+- conclusion: success
+
+Current reduced-network result:
+- Lm = ~143.999 H
+- Llk = ~2.75665 mH
+- documented Cp = 98 pF
+- documented Cs = 110 pF
+- effective fitted Cx = ~1.15504 nF
+
+Magnitude response relative to 1 kHz:
+- 20 Hz: ~-0.03989 dB
+- 20 kHz: ~-0.04925 dB
+- 50 kHz: ~-0.49387 dB
+- 95 kHz: ~-3.00081 dB
+- 150 kHz: ~-8.13 dB
+
+This is substantially more internally consistent than the old 106.55 H
+derivation because the same source condition now reproduces the LF anchor.
+
+## Promotion status
+
+Magnitude topology:
+STRONG PROVISIONAL.
+
+Parameter interpretation:
+- Llk remains an effective referred leakage inductance unless direct Jensen
+  leakage data become available;
+- Cx remains an effective reduced-network capacitance and must not be described
+  as the physical interwinding capacitance.
+
+Still blocking promotion:
+- DLP / phase-deviation reproduction;
+- identifiability / sensitivity of Llk vs Cx;
+- reinsertion into the full nonlinear magnetic state model;
+- no unintended resonant peak under all intended source/load conditions.
+
+Do not compare source-to-load absolute gain with Jensen's separate
+transformer-port -2.3 dB voltage-gain figure. The response test includes
+Rs=600 Ohm; the 1 kHz transformer-port figure is a different measurement
+quantity.
