@@ -1,3 +1,23 @@
+> CORRECTED BASIS — 2026-09-30
+>
+> The original candidate below used the superseded ~106.55 H magnetizing-inductance basis.
+> Jensen's response test explicitly includes Rs=600 Ohm; the corrected effective Lm is
+> ~143.999434 H. The IRON candidate has been refit on that corrected skeleton.
+>
+> Current corrected parameters:
+> - Lm = 143.999433995 H
+> - c = 0.814375
+> - KI = 40891.896218061 A/m per A
+> - KPHI = 4.88989141336e-7
+>
+> High-resolution corrected-anchor results:
+> - +4 dBu / 20 Hz: ~0.0261236% THD
+> - +20 dBu / 20 Hz: ~0.999992% THD
+> - +4 dBu H2: ~0.0000126%
+> - +4 dBu H3: ~0.0257491%
+>
+> The original c~0.84 / KI~26174 section is retained only as superseded research history.
+>
 > SUPERSEDED-NUMBERS NOTE — 2026-09-30
 >
 > Earlier values in this document using Lm≈106.554 H, c≈0.84 and KI≈26174
