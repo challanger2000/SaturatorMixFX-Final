@@ -6,7 +6,7 @@ on:
     branches:
       - v2.0.0-development
     paths:
-      - 'SMX3Common/**'
+      - 'SMX3Common/DSP/**'
       - 'SMX-3-MixFX/source/processor.h'
       - 'SMX-3-MixFX/source/processor.cpp'
       - '.github/workflows/v2-mixfx-refactor-qa.yml'
