@@ -391,3 +391,27 @@ Relevant result:
 
 SMX-3 implication:
 the next IRON stage should not retune quasi-static hysteresis merely to fake Jensen DLP.
+
+
+### Deane Jensen — High-Frequency Phase Response Specifications: Useful or Misleading?
+AES Convention 81, Paper 2398, 1986; revised 1988
+AES record: https://aes.org/publications/elibrary-page/?id=5032
+Publicly indexed copy:
+https://www.technicalaudio.com/pdf/Jensen_Transformers/Jensen_Application_Notes_and_Papers/HF_Phase_Response_Specs_Useful_or_Misleading_1986_AES_paper_Dean_Jensen.pdf
+
+Evidence use:
+DOCUMENTED DLP MEASUREMENT DEFINITION
+
+Key definition:
+absolute phase contains a Frequency Independent Delay / linear-phase component
+and a Frequency Dependent phase-error component.
+
+DLP is obtained by determining and subtracting the Frequency Independent Delay,
+leaving only the phase error that alters waveform shape.
+
+SMX-3 numerical convention:
+estimate constant delay from the near-linear >=500 Hz phase region and subtract
+that linear phase from the complete 20 Hz..20 kHz phase response.
+
+Whole-band log-spaced linear fits are superseded because they allow the LF DLP
+curvature itself to bias the delay estimate.
