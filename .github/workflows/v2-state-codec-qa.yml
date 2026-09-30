@@ -1,0 +1,30 @@
+name: V2 State Codec QA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - 'SMX3Common/State/Smx3StateV2.h'
+      - 'tools/smx3_v2_state_codec_test.cpp'
+      - '.github/workflows/v2-state-codec-qa.yml'
+
+jobs:
+  state-codec:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile and run state codec tests
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vs) { throw 'Visual Studio C++ toolchain not found' }
+          $devcmd = Join-Path $vs 'Common7\Tools\VsDevCmd.bat'
+          $cmd = '"{0}" -arch=x64 -host_arch=x64 && cl /nologo /std:c++17 /O2 /EHsc tools\smx3_v2_state_codec_test.cpp /Fe:smx3_v2_state_codec_test.exe' -f $devcmd
+          cmd /d /s /c $cmd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\smx3_v2_state_codec_test.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
