@@ -33,6 +33,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 Graph-D shape check", ["tools/smx3_v2_ef86_graphD_validate.py"]),
     ("physical level calibration candidate", ["tools/smx3_v2_level_calibration.py"]),
     ("V1 oversampling baseline", ["tools/smx3_v1_oversampling_baseline.py","--sample-rate","44100"]),
     ("EF86 independent comparison baseline", ["tools/smx3_v2_ef86_candidate_baseline.py"]),
