@@ -22,16 +22,16 @@ GRAPHA=ROOT/"research"/"ef86_philips_graphA_provisional.csv"
 GRAPHB=ROOT/"research"/"ef86_philips1956_platecurve_provisional.csv"
 
 P={
-    "MU":43.3297945,
-    "KG1":2122.02731,
-    "KP":200.296043,
-    "KVB":987.399992,
-    "VCT":0.398021237,
-    "EX":1.29313213,
-    "KNEE":12.2652275,
-    "KNEE2":3.04408319,
+    "MU":43.5199389,
+    "KG1":1998.32070,
+    "KP":200.286916,
+    "KVB":1083.75004,
+    "VCT":0.365171210,
+    "EX":1.27822810,
+    "KNEE":12.9196481,
+    "KNEE2":1.45283944,
     "KNEX":0.0,
-    "KLAMG":9.22571089e-5,
+    "KLAMG":1.00015581e-7,
 }
 
 
@@ -81,22 +81,30 @@ def main():
     dv=1e-4
     gm=(ia(250.0,140.0,-2.0+dv)-ia(250.0,140.0,-2.0-dv))/(2.0*dv)
 
+    dva=0.1
+    gop=(ia(250.0+dva,140.0,-2.0)-ia(250.0-dva,140.0,-2.0))/(2.0*dva)
+    ri=1.0/gop
+
     a_rms,a_worst=score_grapha()
     b_rms,b_worst=score_graphb()
 
     print("SMX-3 V2 EF86 Stage-1 plate-current surface")
     print(f"Ia @250/140/-2 = {ia0*1e3:.9f} mA (Philips 3.000 mA)")
     print(f"gm @250/140/-2 = {gm*1e3:.9f} mA/V (Philips 2.000 mA/V)")
+    print(f"Ri @250/140/-2 = {ri/1e6:.9f} MOhm (Philips 2.500 MOhm)")
     print(f"Graph A NRMS = {a_rms:.6f} sigma; worst = {a_worst:.6f} sigma")
     print(f"Graph B NRMS = {b_rms:.6f} sigma; worst = {b_worst:.6f} sigma")
 
     ia_err=100.0*(ia0-0.003)/0.003
     gm_err=100.0*(gm-0.002)/0.002
+    ri_err=100.0*(ri-2.5e6)/2.5e6
 
     if abs(ia_err)>2.0:
         raise SystemExit("FAIL: exact Ia anchor")
     if abs(gm_err)>2.0:
         raise SystemExit("FAIL: exact gm anchor")
+    if abs(ri_err)>12.0:
+        raise SystemExit("FAIL: exact Ri anchor")
     if a_rms>1.0 or a_worst>2.0:
         raise SystemExit("FAIL: Graph A screen-family surface")
     if b_rms>1.0 or b_worst>2.0:
