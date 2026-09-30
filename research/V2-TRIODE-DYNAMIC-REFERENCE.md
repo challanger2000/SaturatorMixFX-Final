@@ -82,3 +82,30 @@ Before promoting this solver to the final offline authority:
 6. establish valid Drive mapping that avoids relying excessively on Dempwolf's known positive-grid/very-low-Va model limitations.
 
 No realtime production kernel is selected yet.
+
+
+## Integration-rate convergence correction
+
+A follow-up convergence check showed two different numerical regimes:
+
+At 1 kHz:
+- 192 kHz, 384 kHz and 768 kHz integration rates produce essentially the same large-signal result.
+- Example at Vin=1.0 Vrms: output changes by only a few millivolts and THD by only a few thousandths of a percentage point.
+
+At 20 kHz:
+- 192 kHz is too coarse for an offline authority; trapezoidal discretization still shifts the measured magnitude/phase.
+- Increasing the integration density materially changes the result toward convergence.
+
+Therefore the reference tool no longer uses a fixed 192 kHz rate for every test.
+
+Current rule:
+- fs_reference = max(192 kHz, 96 * fundamental frequency)
+
+Examples:
+- 1 kHz -> 192 kHz
+- 10 kHz -> 960 kHz
+- 20 kHz -> 1.92 MHz
+
+This keeps the numerical reference error below the level at which it could be mistaken for tube/Miller response.
+
+The production plugin is NOT expected to run at these rates. This is purely an offline ground-truth calculation used to judge reduced realtime implementations.
