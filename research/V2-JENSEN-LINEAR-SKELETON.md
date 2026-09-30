@@ -36,21 +36,25 @@ This is classified CIRCUIT DERIVED from DOCUMENTED component/test values.
 
 A first-order low-level model was then formed with a primary shunt magnetizing inductance Lm.
 
-Lm was solved numerically such that:
+The Jensen datasheet explicitly states that the 20 Hz magnitude-response test uses test circuit 1 with Rs=600 Ohm.
 
-|H(20 Hz)| / |H(1 kHz)| = -0.04 dB.
+Therefore Lm is solved from the SOURCE-TO-LOAD transfer ratio:
+
+|Hsrc(20 Hz)| / |Hsrc(1 kHz)| = -0.04 dB
+
+with the 600 Ohm source resistance included.
 
 Result:
 
-- effective Lm ≈ 106.554 H
+- effective Lm ≈ 143.999 H
 
 Selected calculated values:
 
 | frequency | gain | relative to 1 kHz | |Zin| |
 |---:|---:|---:|---:|
-| 20 Hz | -2.31888 dB | -0.04000 dB | ~9.889 kOhm |
-| 1 kHz | -2.27888 dB | 0 dB | ~12.998 kOhm |
-| 20 kHz* | -2.27887 dB | ~+0.00002 dB | ~13.000 kOhm |
+| 20 Hz | transformer-port gain remains near -2.30 dB | -0.04000 dB source-referenced | source-loaded Zi reduced by magnetizing branch |
+| 1 kHz | ~-2.27888 dB | 0 dB | ~12.999 kOhm |
+| 20 kHz* | ~-2.27887 dB | ~0 dB before HF parasitics | ~13.000 kOhm |
 
 *The manufacturer documents about -0.05 dB at 20 kHz. The present skeleton intentionally has no parasitic-capacitance/leakage network yet, so it is NOT expected to reproduce the HF roll-off.
 
@@ -100,3 +104,24 @@ the first nonlinear magnetic fit can operate in terms of flux linkage lambda=N*P
 Only if a later solver requires absolute B and H must geometry/turns be resolved or fitted with an explicit identifiability note.
 
 The +20 dBu / 20 Hz point corresponds to the manufacturer typical 1 % THD threshold and therefore gives a particularly useful high-flux nonlinear anchor.
+
+
+## Correction note
+
+The earlier ~106.554 H value is superseded.
+
+Cause:
+the first derivation applied the -0.04 dB manufacturer response to the transformer-port transfer while the datasheet explicitly specifies Rs=600 Ohm for the magnitude-response measurement.
+
+The corrected derivation keeps two measurement domains separate:
+
+1. transformer-port 1 kHz quantities:
+   - Zi ~13 kOhm;
+   - voltage gain ~-2.3 dB;
+
+2. source-referenced frequency-response quantities:
+   - test circuit 1;
+   - Rs=600 Ohm;
+   - 20 Hz / 20 kHz response relative to 1 kHz.
+
+This distinction is now mandatory in all later IRON fitting.
