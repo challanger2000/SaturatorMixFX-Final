@@ -1,4 +1,4 @@
-# revision: 1 - trigger unified transient/multitone gate
+# revision: 2 - realizable transient stimulus
 name: V2 IRON Unified Transient Multitone
 
 on:
