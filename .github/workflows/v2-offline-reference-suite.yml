@@ -1,4 +1,4 @@
-# revision: 5 - exact-anchor Iron candidate included
+# revision: 6 - current Iron candidate and Pentode diagnostics
 name: V2 Offline Reference Suite
 
 on:
