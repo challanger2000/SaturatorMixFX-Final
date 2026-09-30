@@ -1,0 +1,41 @@
+name: V2 Offline Reference Suite
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-offline-reference-suite.yml'
+
+jobs:
+  reference-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax-check V2 research tools
+        shell: bash
+        run: |
+          python -m py_compile tools/smx3_v2_*.py tools/run_v2_research_checks.py
+
+      - name: Run offline hardware-reference suite
+        shell: bash
+        run: |
+          python tools/smx3_v2_reference_suite.py --verbose 2>&1 | tee v2-reference-suite.log
+
+      - name: Upload reference-suite log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-Offline-Reference-Suite
+          path: v2-reference-suite.log
+          if-no-files-found: warn
