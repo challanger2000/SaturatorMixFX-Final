@@ -1,0 +1,24 @@
+source,curve,frequency_hz,input_dbu,thd_percent,uncertainty_rel,evidence,note
+Jensen JT-11P-1 graph,THD_vs_frequency_+4dBu,20,4,0.025,0.15,DOCUMENTED_TABLE,exact typical table anchor
+Jensen JT-11P-1 graph,THD_vs_frequency_+4dBu,30,4,0.013,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+4dBu,50,4,0.0065,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+4dBu,100,4,0.0030,0.35,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+14dBu,20,14,0.12,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+14dBu,30,14,0.055,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+14dBu,50,14,0.022,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+14dBu,100,14,0.0080,0.35,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+20dBu,20,20,1.0,0.10,DOCUMENTED_TABLE,exact typical 1pct threshold anchor
+Jensen JT-11P-1 graph,THD_vs_frequency_+20dBu,30,20,0.30,0.35,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+20dBu,50,20,0.10,0.35,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_frequency_+20dBu,100,20,0.030,0.40,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_20Hz,20,4,0.025,0.15,DOCUMENTED_TABLE,exact typical table anchor
+Jensen JT-11P-1 graph,THD_vs_level_20Hz,20,10,0.033,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_20Hz,20,14,0.050,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_20Hz,20,18,0.20,0.35,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_20Hz,20,20,1.0,0.10,DOCUMENTED_TABLE,exact typical threshold anchor
+Jensen JT-11P-1 graph,THD_vs_level_30Hz,30,4,0.013,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_30Hz,30,10,0.018,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_30Hz,30,14,0.028,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_50Hz,50,4,0.0065,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_50Hz,50,10,0.0090,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
+Jensen JT-11P-1 graph,THD_vs_level_50Hz,50,14,0.015,0.30,MANUAL_GRAPH_DIGITIZATION,provisional visual graph read
