@@ -338,3 +338,24 @@ The Dempwolf/Zoelzer parasitic tube capacitances remain separate device-level el
 - Cag=2.4 pF
 
 The manufacturer circuit capacitors and tube parasitics must not be conflated.
+
+
+### Loaded-amplifier correction
+
+The earlier unloaded small-signal gain comparison is insufficient for the Mullard R-C amplifier because the manufacturer table explicitly specifies a 330 kOhm following-stage grid resistor.
+
+Including that documented AC load changes the EHX-1 result materially:
+
+- loaded small-signal gain: approximately 50.22 V/V
+- Mullard target: approximately 54.5 V/V
+- loaded gain error: approximately -7.8 %
+
+At the manufacturer-style grid-current condition of approximately 0.3 uA peak grid current, EHX-1 predicts approximately:
+- 32.52 Vrms output
+- 3.42 % THD
+
+Mullard documents approximately:
+- 26 Vrms output
+- 3.9 % total distortion
+
+Therefore EHX-1 remains the best currently tested published measured specimen, but it is not a final Mullard-matched reference.
