@@ -231,3 +231,55 @@ Reason:
 
 Consequence:
 TRI0DE model selection now requires simultaneous small-signal and large-signal agreement. A local operating-point fit is insufficient.
+
+
+## 2026-09-30 follow-up decisions
+
+### Generalized beta EF86 surrogate
+Status: LOCAL PROVISIONAL SURROGATE ONLY; REJECTED AS FINAL PENTODE MODEL
+
+Evidence:
+- strong agreement around the 200-250 V operating region;
+- ~49.2 Vrms at 5% THD versus Philips 50 Vrms at 250 V;
+- acceptable coarse plate-curve residual;
+- but exact Philips 5%-THD envelope diverges increasingly above 250 V:
+  - ~57.7 V vs 64 V at 300 V;
+  - ~65.8 V vs 75 V at 350 V;
+  - ~73.6 V vs 87 V at 400 V.
+
+Consequence:
+do not freeze PENTODE production DSP from the generalized beta model.
+Use it as a compact local/realtime comparison baseline only.
+
+### Extended EF86 knee/kink family
+Status: ACCEPTED FOR INDEPENDENT REFIT RESEARCH; community parameters remain rejected
+
+Reason:
+the family has explicit degrees of freedom for:
+- low-plate-voltage knee;
+- finite plate slope;
+- kink behavior;
+- screen coupling;
+
+and the published comparison set shows substantially better large-signal envelope shape despite incorrect absolute current/screen-current calibration.
+
+Fit strategy:
+1. fit static Philips Ia surfaces, device anchors, DC-current sweep and small-signal gain;
+2. freeze/regularize those parameters;
+3. fit remaining knee/kink degrees of freedom against exact 5%-THD supply envelope and Graph-D trajectory;
+4. re-run all static gates after the large-signal stage;
+5. reject any solution that improves the envelope by destroying the primary current surfaces.
+
+### IRON magnetic settling
+Status: MEASUREMENT METHOD CORRECTED
+
+A finite-cycle startup state can create apparent even-order distortion in the coupled Jiles-Atherton probe.
+
+After sufficient periodic-state warmup:
+- H2 collapses to effectively negligible levels;
+- H3 strongly dominates;
+- the model agrees qualitatively with Jensen/Whitlock parity behavior.
+
+The DAFx example parameter shape remains rejected as a JT-11P-1 fit because its low-level THD remains far too high (~0.158% vs ~0.025% at +4 dBu/20 Hz) while the +20 dBu point remains near 1%.
+
+Future IRON harmonic analysis requires explicit magnetic periodic-state convergence or an explicit demagnetization/state protocol.
