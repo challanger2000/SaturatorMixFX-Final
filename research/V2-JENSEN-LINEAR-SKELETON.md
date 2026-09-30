@@ -1,3 +1,13 @@
+> CORRECTION — 2026-09-30
+>
+> The original ~106.55 H derivation omitted Jensen's explicitly specified
+> 600-ohm source resistance from the 20 Hz response-test path.
+>
+> Corrected derivation with Rs=600 Ohm gives effective Lm approximately 144.0 H.
+> The original value below is retained only as superseded research history.
+>
+> See tools/smx3_v2_jensen_linear_reference.py for the corrected authority.
+
 # SMX-3 V2 JT-11P-1 Linear Skeleton
 
 Date: 2026-09-30
