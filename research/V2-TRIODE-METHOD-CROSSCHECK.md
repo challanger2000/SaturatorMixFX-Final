@@ -1,3 +1,9 @@
+> SUPERSEDED NUMERICAL VALUES — 2026-09-30
+>
+> The residual table below used the historical EHX-1 specimen. The method itself remains
+> the required cross-check. RSD-2 is now the dynamic reference and must independently
+> clear the same frozen method-agreement tolerances.
+
 # SMX-3 V2 TRI0DE Integration-Method Cross-Check
 
 Date: 2026-09-30
