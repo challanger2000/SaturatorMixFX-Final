@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Transient + multitone host-rate residual gate for frozen unified SMX-3 V2 IRON.
 
-Compares host-rate midpoint/RK2 output against an 8x RK4 authority rendered
-from the same excitation. The authority is downsampled at exactly matching
-physical sample times; no production anti-alias filter is assumed here.
+Compares host-rate midpoint/RK2 output against an 8x RK4 authority driven by
+the exact same discrete host samples. The 8x solver only refines integration
+inside each host-sample interval; it does not receive a different continuous
+input waveform.
 
 Purpose:
 - catch state/update errors hidden by periodic sine analysis;
@@ -22,48 +23,53 @@ AUTH_FACTOR=8
 LEVEL_DBU=20.0
 
 
-def step_mid(t,H,M,I,dt,source):
-    v1=source(t)
-    k1h,k1m,k1i,_,_=ref.deriv_source(H,M,I,v1)
-    tm=t+0.5*dt
-    vm=source(tm)
+def step_mid_sample(H,M,I,dt,x):
+    """One host interval with zero-order-held input sample x."""
+    k1h,k1m,k1i,_,_=ref.deriv_source(H,M,I,x)
     k2h,k2m,k2i,_,_=ref.deriv_source(
         H+0.5*dt*k1h,
         M+0.5*dt*k1m,
         I+0.5*dt*k1i,
-        vm,
+        x,
     )
     H2=H+dt*k2h
     M2=M+dt*k2m
     I2=I+dt*k2i
-    ve=source(t+dt)
-    _,_,_,vout,_=ref.deriv_source(H2,M2,I2,ve)
+    _,_,_,vout,_=ref.deriv_source(H2,M2,I2,x)
     return H2,M2,I2,vout
 
 
-def render_host(source,duration,fs):
-    dt=1.0/fs
+def sample_input(source,duration,fs):
     n=int(round(duration*fs))
+    return [source(i/fs) for i in range(n)]
+
+
+def render_host(samples,fs):
+    dt=1.0/fs
     H=M=I=0.0
     y=[]
-    for i in range(n):
-        H,M,I,v=step_mid(i*dt,H,M,I,dt,source)
+    for x in samples:
+        H,M,I,v=step_mid_sample(H,M,I,dt,x)
         y.append(v)
     return y
 
 
-def render_auth_at_host_times(source,duration,host_fs):
+def render_auth_at_host_times(samples,host_fs):
+    """8x RK4 authority driven by the exact same discrete host samples.
+
+    Each host sample is held constant over its host interval. This isolates
+    numerical integration/state-update error instead of comparing two
+    differently sampled versions of the analogue stimulus.
+    """
     fs=host_fs*AUTH_FACTOR
     dt=1.0/fs
-    n_host=int(round(duration*host_fs))
     H=M=I=0.0
     y=[]
-    for ih in range(n_host):
+    for x in samples:
         v=None
-        base=ih*AUTH_FACTOR
+        source=lambda _t, value=x: value
         for k in range(AUTH_FACTOR):
-            i=base+k
-            H,M,I,v=ref.rk4_step(i*dt,H,M,I,dt,source)
+            H,M,I,v=ref.rk4_step(k*dt,H,M,I,dt,source)
         y.append(v)
     return y
 
@@ -188,8 +194,9 @@ def main():
 
     for fs in HOSTS:
         for name,source,duration in cases:
-            auth=render_auth_at_host_times(source,duration,fs)
-            host=render_host(source,duration,fs)
+            samples=sample_input(source,duration,fs)
+            auth=render_auth_at_host_times(samples,fs)
+            host=render_host(samples,fs)
             rdb,pdb=residual_metrics(auth,host)
             worst_rms=max(worst_rms,rdb)
             worst_peak=max(worst_peak,pdb)
