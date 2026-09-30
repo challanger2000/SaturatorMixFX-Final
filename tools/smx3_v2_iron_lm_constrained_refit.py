@@ -172,30 +172,40 @@ def simulate(lm,c,ki,level_dbu,freq=20.0,fs=None,warmup_cycles=20,analysis_cycle
     }
 
 
+def simulate_fast(lm,c,ki,level_dbu):
+    return simulate(
+        lm,c,ki,level_dbu,
+        freq=20.0,
+        fs=12000.0,
+        warmup_cycles=10,
+        analysis_cycles=2,
+    )
+
+
 def solve_ki_for_high(lm,c,target_thd=0.01):
-    # Find a monotonic bracket by expansion.
+    # Low-cost monotonic solve used only for parameter search.
     lo=500.0
     hi=50000.0
 
-    dlo=simulate(lm,c,lo,20.0)["thd"]
-    dhi=simulate(lm,c,hi,20.0)["thd"]
+    dlo=simulate_fast(lm,c,lo,20.0)["thd"]
+    dhi=simulate_fast(lm,c,hi,20.0)["thd"]
 
-    for _ in range(12):
+    for _ in range(10):
         if dlo>target_thd:
             lo*=0.5
-            dlo=simulate(lm,c,lo,20.0)["thd"]
+            dlo=simulate_fast(lm,c,lo,20.0)["thd"]
         elif dhi<target_thd:
             hi*=2.0
-            dhi=simulate(lm,c,hi,20.0)["thd"]
+            dhi=simulate_fast(lm,c,hi,20.0)["thd"]
         else:
             break
 
     if not (dlo<=target_thd<=dhi):
         return None
 
-    for _ in range(22):
+    for _ in range(14):
         mid=0.5*(lo+hi)
-        d=simulate(lm,c,mid,20.0)["thd"]
+        d=simulate_fast(lm,c,mid,20.0)["thd"]
         if d<target_thd:
             lo=mid
         else:
@@ -205,56 +215,74 @@ def solve_ki_for_high(lm,c,target_thd=0.01):
 
 
 def fit_c_ki(lm):
-    # First find a c bracket around +4 dBu target after solving KI for +20 dBu.
+    # Coarse c scan. Each point solves KI only against the high-level anchor.
+    # Then interpolate c between neighboring low-level residuals instead of
+    # nesting another expensive bisection.
+    target_low=0.00025
     samples=[]
 
-    for i in range(19):
-        c=0.05+0.90*i/18.0
-        ki=solve_ki_for_high(lm,c)
+    c_values=(0.05,0.15,0.25,0.35,0.45,0.55,0.65,0.75,0.85,0.95)
+
+    for cv in c_values:
+        ki=solve_ki_for_high(lm,cv)
         if ki is None:
             continue
-        low=simulate(lm,c,ki,4.0)["thd"]
-        samples.append((c,ki,low))
+        low=simulate_fast(lm,cv,ki,4.0)["thd"]
+        samples.append((cv,ki,low))
 
     if not samples:
         return None
 
-    target_low=0.00025
-
+    # Find a sign-changing neighbor pair.
     bracket=None
     for a,b in zip(samples,samples[1:]):
-        if (a[2]-target_low)*(b[2]-target_low)<=0.0:
+        ea=a[2]-target_low
+        eb=b[2]-target_low
+        if ea==0.0 or ea*eb<=0.0:
             bracket=(a,b)
             break
 
     if bracket is None:
-        # Return closest point as an explicit non-exact result.
         best=min(samples,key=lambda x:abs(x[2]-target_low))
         return best[0],best[1],best[2],False
 
-    lo=bracket[0][0]
-    hi=bracket[1][0]
+    a,b=bracket
 
-    for _ in range(16):
-        mid=0.5*(lo+hi)
-        ki=solve_ki_for_high(lm,mid)
-        if ki is None:
-            break
-        low=simulate(lm,mid,ki,4.0)["thd"]
+    # Three secant/interpolation refinements are enough for screening.
+    lo=a
+    hi=b
+    cand=None
+    for _ in range(3):
+        c0,e0=lo[0],lo[2]-target_low
+        c1,e1=hi[0],hi[2]-target_low
 
-        ki_lo=solve_ki_for_high(lm,lo)
-        low_lo=simulate(lm,lo,ki_lo,4.0)["thd"]
-
-        if (low_lo-target_low)*(low-target_low)<=0.0:
-            hi=mid
+        if abs(e1-e0)<1e-16:
+            cv=0.5*(c0+c1)
         else:
-            lo=mid
+            cv=c0+(c1-c0)*(-e0)/(e1-e0)
+            cv=max(min(cv,max(c0,c1)),min(c0,c1))
 
-    c=0.5*(lo+hi)
-    ki=solve_ki_for_high(lm,c)
-    low=simulate(lm,c,ki,4.0)["thd"]
-    return c,ki,low,True
+        ki=solve_ki_for_high(lm,cv)
+        if ki is None:
+            cv=0.5*(c0+c1)
+            ki=solve_ki_for_high(lm,cv)
+            if ki is None:
+                break
 
+        low=simulate_fast(lm,cv,ki,4.0)["thd"]
+        cand=(cv,ki,low)
+
+        if (lo[2]-target_low)*(low-target_low)<=0.0:
+            hi=cand
+        else:
+            lo=cand
+
+    if cand is None:
+        best=min(samples,key=lambda x:abs(x[2]-target_low))
+        return best[0],best[1],best[2],False
+
+    exact=abs(cand[2]-target_low)<=2.5e-5
+    return cand[0],cand[1],cand[2],exact
 
 def target_y(freq):
     return 1.0/complex(target.RMAG,2.0*math.pi*freq*target.LMAG)
@@ -300,7 +328,7 @@ def main():
     results=[]
 
     print("SMX-3 V2 IRON L_qs -> c/KI constrained refit")
-    print("Each L_qs solves +20 dBu THD via KI and then +4 dBu THD via c.")
+    print("Each L_qs uses a fast coarse c scan, short KI solve, then c interpolation before high-resolution verification.")
     print()
     print("L_qs_H,c,KI,low_anchor_exact,H4_THD_pct,H20_THD_pct,Ycost,DLP_min,DLP_max,DLP_worst,rel20_dB,rel20k_dB")
 
