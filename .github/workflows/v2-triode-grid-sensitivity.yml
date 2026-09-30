@@ -23,6 +23,7 @@ jobs:
       - name: Syntax check
         run: python -m py_compile tools/smx3_v2_ecc83_dynamic_reference.py tools/smx3_v2_ecc83_grid_dynamic_sensitivity.py
       - name: Run dynamic grid-current sensitivity
+        shell: bash
         run: python tools/smx3_v2_ecc83_grid_dynamic_sensitivity.py 2>&1 | tee triode-grid-sensitivity.log
       - name: Upload log
         if: always()
