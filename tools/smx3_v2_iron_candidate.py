@@ -173,7 +173,27 @@ def main():
     if h2 >= 0.1*h3:
         raise SystemExit("FAIL: default settled Iron state is not sufficiently H3-dominant")
 
-    print("PASS: provisional Iron candidate matches exact 20 Hz anchors and H3-dominant settled symmetry.")
+
+    # Independent low-level frequency-law diagnostic from Jensen/Whitlock:
+    # high-quality nickel-core transformer distortion is described as roughly
+    # quartering for each octave increase in frequency.
+    thd20,_=simulate(4.0,20.0)
+    thd40,_=simulate(4.0,40.0)
+    thd80,_=simulate(4.0,80.0)
+    q1=thd40/thd20
+    q2=thd80/thd40
+
+    print()
+    print("Low-level frequency-law diagnostic (+4 dBu):")
+    print(f"20Hz={100*thd20:.9f}% 40Hz={100*thd40:.9f}% 80Hz={100*thd80:.9f}%")
+    print(f"40/20 ratio={q1:.6f}; 80/40 ratio={q2:.6f}; Jensen/Whitlock qualitative target ~0.25")
+
+    if not (0.18 <= q1 <= 0.35):
+        raise SystemExit("FAIL: +4 dBu 20->40 Hz distortion ratio inconsistent with Jensen/Whitlock diagnostic")
+    if not (0.18 <= q2 <= 0.35):
+        raise SystemExit("FAIL: +4 dBu 40->80 Hz distortion ratio inconsistent with Jensen/Whitlock diagnostic")
+
+    print("PASS: provisional Iron candidate matches exact anchors, H3-dominant symmetry and low-level frequency-law diagnostic.")
     print("WARNING: multi-frequency Jensen graph fit remains provisional and is not a hard gate yet.")
 
 
