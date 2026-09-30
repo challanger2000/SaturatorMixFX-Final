@@ -115,3 +115,24 @@ Still blocking final promotion:
 7. aliasing and CPU QA.
 
 No production DSP should yet be derived from these numbers without those gates.
+
+
+## Independent low-level frequency-law cross-check
+
+The Jensen/Whitlock transformer-engineering source states that for high-quality nickel-core transformers, low-frequency distortion roughly quarters for each doubling of frequency.
+
+Using the same candidate at +4 dBu:
+
+- 20 Hz: ~0.02553% THD
+- 40 Hz: ~0.00671% THD
+- 80 Hz: ~0.00172% THD
+
+Ratios:
+- 40/20 Hz: ~0.263
+- 80/40 Hz: ~0.257
+
+These values are strikingly close to the documented qualitative ~0.25-per-octave behavior.
+
+This is independent of the two exact Jensen anchors used to tune the candidate and therefore strengthens the model-form evidence.
+
+The automated candidate gate now requires each low-level octave ratio to remain within a deliberately broad 0.18..0.35 interval. That tolerance reflects the qualitative nature of the handbook statement and does not pretend the quartering law is an exact JT-11P-1 datasheet specification.
