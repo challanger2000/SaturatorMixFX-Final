@@ -1,4 +1,4 @@
-# revision: 13 - current fast gates with EF86 knee stages and RSD-2 grid-current cross-check
+# revision: 12 - current fast gates plus deep grid-sensitivity registration
 name: V2 Offline Reference Suite
 
 on:
