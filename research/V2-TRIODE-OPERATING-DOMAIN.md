@@ -110,3 +110,45 @@ But correct periodic steady-state measurement moves that boundary materially hig
 
 This is favorable:
 SMX-3 can obtain substantial authentic triode nonlinearity before relying on the least reliable region of the Dempwolf current model.
+
+
+## Primary-source correction: positive grid is measured territory
+
+Dempwolf & Zoelzer did NOT define all positive-grid operation as invalid.
+
+Their practical 12AX7 measurement range was approximately:
+- Va = 20..300 V
+- Vg = -5..+3 V
+
+Positive grid current is explicitly measured and modeled.
+
+The documented limitation is specifically:
+- Vg > 0
+- combined with Va < approximately 20 V
+
+because the real anode current falls rapidly as Va approaches 0 V and the published formulation does not reproduce that low-Va behavior correctly.
+
+Therefore:
+- positive Vg alone is a valid overdrive/grid-current state;
+- the automated domain gate now tracks minimum Va specifically while Vg>0;
+- the hard invalidity test is the combination Vg>0 AND Va<20 V, or leaving the published Vg measurement range.
+
+This supersedes earlier wording that treated first positive-grid crossing itself as the model-validity ceiling.
+
+## Independent overload cross-check: Danyuk AES 137
+
+Dimitri Danyuk, "Triode Emulator: Part 2", AES Convention Paper 9124 (2014), reports measured 12AX7 grid current under high drive.
+
+Relevant observations:
+- negative, transition and positive-grid-current regions are visible experimentally;
+- around Vgk=+0.3 V, grid current is about 200 uA for the measured specimen/circuit;
+- typical AC coupling causes charge shift / blocking behavior;
+- sustained grid voltage much above roughly +0.2..+0.3 V is difficult in the studied AC-coupled triode stage because grid current discharges/charges the coupling network.
+
+SMX-3 implication:
+- moderate positive-grid operation is physically meaningful;
+- grid-current interaction with the coupling capacitor is a required part of authentic extreme Drive behavior;
+- a static clamp at Vg=0 would be physically wrong;
+- the dynamic circuit itself should limit/reshape sustained positive-grid excursions.
+
+The Danyuk measurements are a separate specimen/circuit and are therefore a cross-check, not a numeric target for the Mullard/EHX reference.
