@@ -60,3 +60,23 @@ is a constrained local fit followed by:
 - numerical-method cross-check;
 - realtime reduction;
 - Jensen multi-level/frequency residual.
+
+
+## Frozen first-order acceptance envelope
+
+A classical+excess dynamic-loss point is NOT considered viable merely because
+it has the lowest aggregate score.
+
+For architecture promotion it must simultaneously satisfy:
+
+- +4 dBu / 20 Hz THD: 0.020..0.030%;
+- +20 dBu / 20 Hz THD: 0.95..1.05%;
+- default H3 remains dominant over H2;
+- Jensen-band DLP worst absolute <= 2.0 degrees;
+- 20 Hz relative magnitude remains within +/-0.01 dB of -0.04 dB.
+
+The 20 kHz and 95 kHz response are handled by the separate parasitic/HF target
+and are not allowed to conceal a failed magnetic low-frequency model.
+
+Only after a point passes this first-order envelope may c/KI be re-calibrated
+locally and the full regression suite be rerun.
