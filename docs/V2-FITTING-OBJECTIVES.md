@@ -111,3 +111,27 @@ Required:
 A magnetic parameter set is rejected if a geometry rescale can match 1% THD but low-level THD misses materially.
 
 The already tested unmodified DAFx example Jiles-Atherton shape is therefore a documented rejection as a Jensen fit.
+
+
+## IRON parameter-identifiability rule
+
+Jensen publishes electrical/audio measurements, not the transformer's complete magnetic B-H loops, core geometry, turns count and material-identification data.
+
+Therefore the five Jiles-Atherton parameters cannot be claimed as uniquely identified physical core-material parameters from the JT-11P-1 audio curves alone.
+
+Literature on Jiles-Atherton identification typically minimizes error against measured hysteresis loops and may require global search plus physical constraints. Multiple-loop fitting is preferred over single-loop fitting.
+
+SMX-3 classification:
+- geometry/core parameters inferred only from audio transfer/distortion data are EMPIRICALLY TUNED TO DOCUMENTED MEASUREMENTS;
+- circuit values directly stated by Jensen remain DOCUMENTED;
+- combinations mathematically derived from those values remain CIRCUIT DERIVED;
+- no fitted parameter may be labelled as a Jensen material constant without direct manufacturer/core evidence.
+
+Optimization strategy:
+1. enforce physical bounds/constraints;
+2. use global search for the magnetic shape;
+3. refine locally after global convergence;
+4. fit all available Jensen level/frequency curves simultaneously;
+5. reject solutions with non-physical loops or unstable minor-loop/state behavior;
+6. retain multiple near-optimal parameter sets during identifiability analysis;
+7. prefer the simplest/stablest parameterization whose audio predictions are indistinguishable within source uncertainty.
