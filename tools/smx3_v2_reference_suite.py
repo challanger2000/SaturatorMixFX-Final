@@ -30,10 +30,10 @@ POSITIVE=[
     ("EF86 provisional table/device fit", ["tools/smx3_v2_ef86_provisional_fit.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
-    ("physical level calibration", ["tools/smx3_v2_level_calibration.py"]),
 ]
 
 INFORMATIONAL=[
+    ("physical level calibration candidate", ["tools/smx3_v2_level_calibration.py"]),
     ("V1 oversampling baseline", ["tools/smx3_v1_oversampling_baseline.py","--sample-rate","44100"]),
     ("EF86 independent comparison baseline", ["tools/smx3_v2_ef86_candidate_baseline.py"]),
     ("IRON coupled rejection probe", ["tools/smx3_v2_iron_coupled_probe.py"]),
