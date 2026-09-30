@@ -139,3 +139,21 @@ Remaining before realtime promotion:
 - CPU tail metrics;
 - transient/reset lifecycle;
 - final HF parasitic network.
+
+
+## PENTODE dynamic numerical checkpoint
+
+Established:
+- EX~1.40 current static/large-signal candidate;
+- Philips cathode/screen/output dynamic network;
+- implicit trapezoid dynamic reference;
+- independent implicit-midpoint cross-check;
+- cross-method gain residual <= ~34 ppm in tested cases;
+- cross-method THD residual <= ~0.00003 percentage-points.
+
+Remaining:
+- exact input Rg1 sourcing or maintain direct-g1 authority definition;
+- practical-rate/realtime reduction;
+- aliasing matrix;
+- calibrated Graph-D extraction;
+- CPU/lifecycle QA.
