@@ -1,4 +1,4 @@
-# revision: 13 - corrected Jensen Rs600 LF reference propagated through IRON
+# revision: 14 - TRI0DE full DC equilibrium correction
 name: V2 Offline Reference Suite
 
 on:
