@@ -88,8 +88,10 @@ public:
         const double baseComp = (-.46*wT - .52*wP - .40*wI) * driveDb;
         const double polishTrimDb = (.73*wT + 2.67*wP - .06*wI) * effectiveDrive;
         const double smoothTrimDb = characterTrimDb(effectiveDrive,wT,wP,wI);
+        const double noBoostTrimDb =
+            pentodeNoBoostTrimDb(clamp01(params.drive),wP);
         const double comp = dbToGain(
-            trim + baseComp + polishTrimDb + smoothTrimDb);
+            trim + baseComp + polishTrimDb + smoothTrimDb + noBoostTrimDb);
 
         const double protect = .18*wT + .42*wP + .30*wI;
         const double attackAmount = .08*wT + .22*wP + .15*wI;
@@ -176,8 +178,10 @@ public:
         const double baseComp = (-.46*wT - .52*wP - .40*wI) * driveDb;
         const double polishTrimDb = (.73*wT + 2.67*wP - .06*wI) * effectiveDrive;
         const double smoothTrimDb = characterTrimDb(effectiveDrive,wT,wP,wI);
+        const double noBoostTrimDb =
+            pentodeNoBoostTrimDb(clamp01(params.drive),wP);
         const double comp = dbToGain(
-            trim + baseComp + polishTrimDb + smoothTrimDb);
+            trim + baseComp + polishTrimDb + smoothTrimDb + noBoostTrimDb);
 
         const double protect = .18*wT + .42*wP + .30*wI;
         const double attackAmount = .08*wT + .22*wP + .15*wI;
@@ -310,6 +314,26 @@ private:
             return a[seg]+(a[seg+1]-a[seg])*s;
         };
         return wT*interp(tri)+wP*interp(pen)+wI*interp(iron);
+    }
+
+    static double pentodeNoBoostTrimDb(double drive,double wP)
+    {
+        // Conservative V2 policy: never use Drive as a loudness boost.
+        // Pentode is the only mode that showed a meaningful positive level
+        // excursion on low-level programme material after removing the old
+        // level-dependent static compensation. Apply only attenuation here;
+        // hot signals are intentionally allowed to compress with more Drive.
+        static constexpr double x[5]={0.0,.25,.50,.75,1.0};
+        static constexpr double trim[5]={0.0,0.0,0.0,-1.50,-1.40};
+
+        drive=clamp01(drive);
+        int seg=0;
+        while(seg<3 && drive>x[seg+1]) ++seg;
+        const double span=x[seg+1]-x[seg];
+        const double u=span>0.0?(drive-x[seg])/span:0.0;
+        const double t=u*u*(3.0-2.0*u);
+        const double v=trim[seg]+(trim[seg+1]-trim[seg])*t;
+        return wP*v;
     }
 
     static double characterTrimDb(double effectiveDrive,double wT,double wP,double wI)
