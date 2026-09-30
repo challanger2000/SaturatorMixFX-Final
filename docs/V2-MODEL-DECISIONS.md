@@ -175,3 +175,27 @@ Large-signal check at the documented grid-current condition:
 
 Decision:
 retain EHX-1 as the most useful Dempwolf/Zoelzer specimen, but require a joint current-surface + loaded-circuit + large-signal fit before promotion.
+
+
+### TRI0DE authority split: measured specimen vs manufacturer average
+Status: ACCEPTED
+
+Primary tube authority:
+- Dempwolf/Zoelzer EHX-1 measured 12AX7 specimen parameter set.
+
+Primary circuit archetype:
+- Mullard ECC83 cathode-biased R-C amplifier family.
+
+Cross-check role of Mullard:
+- verify that the measured specimen behaves plausibly within the ECC83/12AX7 hardware class;
+- provide practical bias/load/topology anchors;
+- do NOT force the measured EHX-1 specimen to equal Mullard average-production numbers exactly.
+
+Reason:
+Dempwolf/Zoelzer explicitly note that real tubes of the same type/manufacturer may deviate materially from one another (the paper cites variation up to about 20%). A specimen-accurate measured model is therefore more physically honest than empirically bending it to an average datasheet table.
+
+Consequence:
+- EHX-1 current-surface/grid-current fit remains the TRI0DE tube reference;
+- Mullard loaded gain/output/distortion differences are documented as cross-source variation;
+- no arbitrary trim will be added to make the EHX-1 specimen pretend to be an average Mullard specimen;
+- the selected surrounding circuit may use documented Mullard-style values, but the resulting signal behavior is allowed to reflect the EHX-1 specimen.
