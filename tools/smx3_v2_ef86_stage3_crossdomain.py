@@ -29,15 +29,24 @@ ENV={200.0:40.0,250.0:50.0,300.0:64.0,350.0:75.0,400.0:87.0}
 def score(path,currents,mode):
     rows=list(csv.DictReader(path.open(encoding="utf-8")))
     sig=[]
+    detail=[]
     for r in rows:
         if mode=="A":
-            ia=currents(250.0,float(r["vg2_v"]),float(r["vg1_v"]))[0]
+            x1=float(r["vg2_v"]);x2=float(r["vg1_v"])
+            ia=currents(250.0,x1,x2)[0]
             ref=float(r["ia_ma"]);u=float(r["uncertainty_ma"])
+            ident=f"Vg2={x1:g} V Vg1={x2:g} V"
         else:
-            ia=currents(float(r["va_v"]),140.0,float(r["curve_vg1_v"]))[0]
+            x1=float(r["va_v"]);x2=float(r["curve_vg1_v"])
+            ia=currents(x1,140.0,x2)[0]
             ref=float(r["ia_ma"]);u=float(r["uncertainty_ma"])
-        sig.append((1e3*ia-ref)/u)
-    return math.sqrt(sum(x*x for x in sig)/len(sig)),max(abs(x) for x in sig)
+            ident=f"Va={x1:g} V Vg1={x2:g} V"
+        model=1e3*ia
+        s=(model-ref)/u
+        sig.append(s)
+        detail.append((abs(s),ident,ref,model,u,s))
+    detail.sort(reverse=True)
+    return math.sqrt(sum(x*x for x in sig)/len(sig)),max(abs(x) for x in sig),detail
 
 
 def envelope():
@@ -88,6 +97,10 @@ def main():
         print(f"  Stage2 NRMS={a[0]:.6f} sigma worst={a[1]:.6f}")
         print(f"  Stage3 NRMS={b[0]:.6f} sigma worst={b[1]:.6f}")
         print(f"  delta NRMS={b[0]-a[0]:+.6f} sigma")
+        if label=="Graph B knee":
+            print("  Stage3 worst knee points:")
+            for _,ident,ref,model,u,s in b[2][:5]:
+                print(f"    {ident}: ref={ref:.6f}mA model={model:.6f}mA u={u:.6f}mA residual={s:+.6f}sigma")
 
     env_rms,env_worst,env_errs=envelope()
     print()
