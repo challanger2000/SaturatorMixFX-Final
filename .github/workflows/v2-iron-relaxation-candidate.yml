@@ -1,0 +1,23 @@
+name: V2 IRON Relaxation Candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-relaxation-candidate.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify fixed one-state candidate
+        run: |
+          python -m py_compile tools/smx3_v2_dlp_utils.py tools/smx3_v2_iron_relaxation_candidate.py
+          python tools/smx3_v2_iron_relaxation_candidate.py
