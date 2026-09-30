@@ -1,6 +1,7 @@
 #pragma once
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
+#include "../../SMX3Common/DSP/Smx3V1Reference.h"
 #include <array>
 
 namespace SaturatorMixFX {
@@ -24,18 +25,10 @@ private:
     static constexpr int kOversample = 4;
     static constexpr int kOversampleSections = 8;
 
-    struct BiquadState { double z1=0.0, z2=0.0; };
+    using V1Core = SaturatorMixFX::V1Reference::Core;
+    using BiquadState = V1Core::BiquadState;
+    using ChannelState = V1Core::ChannelState;
     struct BiquadCoeffs { double b0=1.0, b1=0.0, b2=0.0, a1=0.0, a2=0.0; };
-    struct ChannelState {
-        double previousInput=0.0, ironMemory=0.0, dcX1=0.0, dcY1=0.0;
-        double lowBand=0.0, highSmooth=0.0;
-        double envFast=0.0, envSlow=0.0;
-        double triodeCharge=0.0, pentodeCharge=0.0, ironFlux=0.0;
-        std::array<BiquadState,kOversampleSections> osUp{};
-        std::array<BiquadState,kOversampleSections> osDown{};
-        std::array<BiquadState,kOversampleSections> cleanUp{};
-        std::array<BiquadState,kOversampleSections> cleanDown{};
-    };
     struct CoreParams {
         double drive=0.30;
         double character=0.0;
@@ -62,6 +55,7 @@ private:
     double triodeChargeCoeff_=0.0, pentodeChargeCoeff_=0.0, ironFluxCoeff_=0.0;
     std::array<BiquadCoeffs,kOversampleSections> osCoeffs_{};
     std::array<ChannelState,kMaxChannels> channelState_{};
+    V1Core v1ReferenceCore_{};
     bool processing_=false;
 };
 
