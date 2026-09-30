@@ -62,7 +62,7 @@ def make_currents(spec):
     return currents
 
 
-def run_case(name,spec,freq=1000.0,vin_rms=2.0,fs=384000.0):
+def run_case(name,spec,freq=1000.0,vin_rms=4.0,fs=384000.0,recovery_fs=96000.0):
     original=dyn.currents
     dyn.currents=make_currents(spec)
 
@@ -103,15 +103,16 @@ def run_case(name,spec,freq=1000.0,vin_rms=2.0,fs=384000.0):
         # Remove the signal and observe return toward the zero-input operating point.
         dc=dyn.solve_dc()
         recovery=[]
-        checkpoints=(0.001,0.005,0.010,0.025,0.050,0.100,0.200)
+        checkpoints=(0.001,0.005,0.010,0.025,0.050,0.100,0.200,0.500,1.000,2.000)
         next_idx=0
-        total=int(round(checkpoints[-1]*fs))
+        recovery_dt=1.0/recovery_fs
+        total=int(round(checkpoints[-1]*recovery_fs))
 
         for n in range(total+1):
             if n>0:
-                x,_=dyn.trapezoid_step(0.4+(n-1)*dt,x,dt,0.0,freq)
+                x,_=dyn.trapezoid_step(0.4+(n-1)*recovery_dt,x,recovery_dt,0.0,freq)
 
-            t=n/fs
+            t=n/recovery_fs
             while next_idx<len(checkpoints) and t>=checkpoints[next_idx]-0.5/fs:
                 vg=x[dyn.G]-x[dyn.K]
                 recovery.append((
@@ -126,14 +127,14 @@ def run_case(name,spec,freq=1000.0,vin_rms=2.0,fs=384000.0):
         # close to zero-input reference and stay checked only as a practical metric.
         x=state_at_release[:]
         recovery_ms=None
-        limit=int(round(0.5*fs))
+        limit=int(round(2.0*recovery_fs))
         for n in range(limit+1):
             if n>0:
-                x,_=dyn.trapezoid_step(0.4+(n-1)*dt,x,dt,0.0,freq)
+                x,_=dyn.trapezoid_step(0.4+(n-1)*recovery_dt,x,recovery_dt,0.0,freq)
             vg_err=abs((x[dyn.G]-x[dyn.K])-(dc[dyn.G]-dc[dyn.K]))
             vk_err=abs(x[dyn.K]-dc[dyn.K])
             if vg_err<0.010 and vk_err<0.010:
-                recovery_ms=1000.0*n/fs
+                recovery_ms=1000.0*n/recovery_fs
                 break
 
         return {
@@ -152,7 +153,7 @@ def run_case(name,spec,freq=1000.0,vin_rms=2.0,fs=384000.0):
 
 def main():
     print("SMX-3 V2 TRI0DE dynamic grid-current-law sensitivity")
-    print("RSD-2 plate law fixed; 1 kHz / 2.0 Vrms sustained overload.")
+    print("RSD-2 plate law fixed; 1 kHz / 4.0 Vrms sustained overload.")
     print()
     print("law,min_Va_V,max_Vg_V,max_Ig_uA,avg_Vg_V,avg_Vk_V,recovery_to_10mV_ms")
 
