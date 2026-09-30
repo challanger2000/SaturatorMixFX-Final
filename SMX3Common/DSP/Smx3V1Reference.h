@@ -32,6 +32,10 @@ public:
         double lowBand=0.0, highSmooth=0.0;
         double envFast=0.0, envSlow=0.0;
         double triodeCharge=0.0, pentodeCharge=0.0, ironFlux=0.0;
+        // V2 physical IRON magnetic states. These are deliberately separate
+        // from the legacy V1 ironMemory/ironFlux states so processSample()
+        // remains a frozen V1 reference.
+        double ironV2H=0.0, ironV2M=0.0, ironV2Relax=0.0;
         std::array<BiquadState,kOversampleSections> osUp{};
         std::array<BiquadState,kOversampleSections> osDown{};
         std::array<BiquadState,kOversampleSections> cleanUp{};
@@ -118,6 +122,91 @@ public:
             const double nlP=shapePentode(up*dynamicGain,s);
             const double nlI=shapeIron(up*dynamicGain,s);
             const double nl=wT*nlT+wP*nlP+wI*nlI;
+            const double filtered=runOversamplingFilter(nl,s.osDown);
+            const double cleanFiltered=runOversamplingFilter(cleanUp,s.cleanDown);
+            if(os==kOversample-1)
+            {
+                processedOs=filtered;
+                cleanOs=cleanFiltered;
+            }
+        }
+
+        double processed=processedOs*comp;
+        const double attackBlend=normTransient*attackAmount;
+        processed=processed*(1.0-attackBlend)+cleanOs*attackBlend;
+        processed=peakProtect(processed);
+        processed=dcBlock(processed,s);
+
+        const double wetSignal=cleanOs+effectiveDrive*(processed-cleanOs);
+        const double mixed=dry*cleanOs+wet*wetSignal;
+        return mixed*outGain;
+    }
+
+
+    // V2 production candidate:
+    // - preserves the established outer SMX-3 gain/colour/transient/mix flow;
+    // - replaces only the IRON nonlinear branch with the frozen unified
+    //   Jiles-Atherton + one-state relaxation model;
+    // - advances the magnetic model once per host sample with midpoint/RK2.
+    //
+    // Evidence for 1x RK2 is in tools/smx3_v2_iron_practical_program_benchmark.py.
+    double processSampleV2Iron(double x, ChannelState& s, const Params& params) const
+    {
+        const double pos = clamp01(params.character) * 2.0;
+        const double wT = std::max(0.0, 1.0 - pos);
+        const double wI = std::max(0.0, pos - 1.0);
+        const double wP = 1.0 - wT - wI;
+
+        const double effectiveDrive = shapeDrive(params.drive);
+        const double driveDb = 24.0 * effectiveDrive;
+        const double inputGain = dbToGain(driveDb);
+        const double wet = clamp01(params.mix);
+        const double dry = 1.0 - wet;
+        const double outGain = dbToGain(-18.0 + 24.0 * clamp01(params.output));
+
+        const double trim = (-9.50*wT - 19.00*wP - 14.47*wI) * effectiveDrive;
+        const double baseComp = (-.46*wT - .52*wP - .40*wI) * driveDb;
+        const double polishTrimDb = (.73*wT + 2.67*wP - .06*wI) * effectiveDrive;
+        const double smoothTrimDb = characterTrimDb(effectiveDrive,wT,wP,wI);
+        const double comp = dbToGain(trim + baseComp + polishTrimDb + smoothTrimDb);
+
+        const double protect = .18*wT + .42*wP + .30*wI;
+        const double attackAmount = .08*wT + .22*wP + .15*wI;
+
+        s.lowBand = lowCoeff_*s.lowBand + (1.0-lowCoeff_)*x;
+        s.highSmooth = highCoeff_*s.highSmooth + (1.0-highCoeff_)*x;
+        const double low = s.lowBand;
+        const double high = x - s.highSmooth;
+        const double mid = x - low - high;
+
+        const double triCol = .94*low + 1.09*mid + .84*high;
+        const double penCol = .84*low + 1.10*mid + 1.07*high;
+        const double ironCol = 1.13*low + 1.025*mid + .80*high;
+        const double coloured = wT*triCol + wP*penCol + wI*ironCol;
+
+        const double a = std::abs(x);
+        s.envFast = envFastCoeff_*s.envFast + (1.0-envFastCoeff_)*a;
+        s.envSlow = envSlowCoeff_*s.envSlow + (1.0-envSlowCoeff_)*a;
+        const double transient = std::max(0.0,s.envFast-s.envSlow);
+        const double normTransient = clamp01(transient/(.06+s.envSlow));
+        const double dynamicGain = inputGain*(1.0-protect*normTransient);
+
+        // The physical branch is intentionally host-rate. Feed its result
+        // through the already-existing downsampling path as a ZOH signal so
+        // character interpolation remains time-aligned with TRI/PENT.
+        const double ironHost = shapeIronV2(ironCol*dynamicGain,s);
+
+        double processedOs=0.0;
+        double cleanOs=0.0;
+        for(int os=0;os<kOversample;++os)
+        {
+            const double stuffed=(os==0)?(coloured*static_cast<double>(kOversample)):0.0;
+            const double cleanStuffed=(os==0)?(x*static_cast<double>(kOversample)):0.0;
+            const double up=runOversamplingFilter(stuffed,s.osUp);
+            const double cleanUp=runOversamplingFilter(cleanStuffed,s.cleanUp);
+            const double nlT=shapeTriode(up*dynamicGain,s);
+            const double nlP=shapePentode(up*dynamicGain,s);
+            const double nl=wT*nlT+wP*nlP+wI*ironHost;
             const double filtered=runOversamplingFilter(nl,s.osDown);
             const double cleanFiltered=runOversamplingFilter(cleanUp,s.cleanDown);
             if(os==kOversample-1)
@@ -281,6 +370,132 @@ private:
         const double linear=(.125+.018*(1.0-fluxAmount))*f;
         const double hysteretic=(.052+.014*fluxAmount)*m*std::abs(m);
         return core+soft+linear+hysteretic;
+    }
+
+
+    struct IronV2Deriv
+    {
+        double h=0.0, m=0.0, i=0.0, vout=0.0;
+    };
+
+    static double ironV2Langevin(double x)
+    {
+        const double ax=std::abs(x);
+        if(ax<1.0e-4)
+            return x/3.0;
+        return 1.0/std::tanh(x)-1.0/x;
+    }
+
+    static double ironV2LangevinD(double x)
+    {
+        const double ax=std::abs(x);
+        if(ax<1.0e-4)
+            return 1.0/3.0;
+        if(ax>20.0)
+            return 1.0/(x*x);
+        const double sh=std::sinh(x);
+        return 1.0/(x*x)-1.0/(sh*sh);
+    }
+
+    static double ironV2Dmdh(double H,double M,double direction)
+    {
+        constexpr double a=14.1;
+        constexpr double alpha=5.0e-5;
+        constexpr double k=17.8;
+        constexpr double ms=2.75e5;
+        constexpr double c=.535351563;
+
+        const double q=(H+alpha*M)/a;
+        const double man=ms*ironV2Langevin(q);
+        const double ld=ironV2LangevinD(q);
+        const double delta=direction>=0.0?1.0:-1.0;
+        const double dm=man-M;
+        const double deltaM=(delta*dm>=0.0)?1.0:0.0;
+
+        double den=(1.0-c)*delta*k-alpha*dm;
+        if(std::abs(den)<1.0e-12)
+            den=std::copysign(1.0e-12,den!=0.0?den:delta);
+
+        const double irreversible=(1.0-c)*deltaM*dm/den;
+        const double reversible=c*ms/a*ld;
+        double yden=1.0-alpha*reversible;
+        if(std::abs(yden)<1.0e-12)
+            yden=std::copysign(1.0e-12,yden!=0.0?yden:1.0);
+
+        return (irreversible+reversible)/yden;
+    }
+
+    static IronV2Deriv ironV2Deriv(double H,double M,double irel,double vs)
+    {
+        constexpr double rSource=600.0;
+        constexpr double rPrimary=1450.0;
+        constexpr double rSecondary=1550.0;
+        constexpr double rLoad=10000.0;
+        constexpr double rTotalLoad=rSecondary+rLoad;
+        constexpr double kI=1087366.676330566;
+        constexpr double kPhi=2.85816455767e-7;
+        constexpr double gRelax=2.73374681419e-6;
+        constexpr double tau=1.440238371e-3;
+
+        const double rSeries=rSource+rPrimary;
+        const double vnode=(vs-rSeries*(H/kI+irel))/(1.0+rSeries/rTotalLoad);
+        const double direction=vnode>=0.0?1.0:-1.0;
+        const double slope=ironV2Dmdh(H,M,direction);
+
+        double slopeDen=1.0+slope;
+        if(std::abs(slopeDen)<1.0e-12)
+            slopeDen=std::copysign(1.0e-12,slopeDen!=0.0?slopeDen:1.0);
+
+        IronV2Deriv d;
+        d.h=vnode/(kPhi*slopeDen);
+        d.m=slope*d.h;
+        d.i=(gRelax*vnode-irel)/tau;
+        d.vout=vnode*rLoad/rTotalLoad;
+        return d;
+    }
+
+    double shapeIronV2(double x,ChannelState& s) const
+    {
+        // +20 dBu RMS is mapped to digital full-scale peak. This gives the
+        // physical core a practical studio operating reference while the
+        // existing Drive control determines how hard it is pushed.
+        constexpr double voltsPerUnit=10.947178455;
+        constexpr double midbandGain=.7692385064990691;
+
+        if(!std::isfinite(x))
+        {
+            s.ironV2H=s.ironV2M=s.ironV2Relax=0.0;
+            return 0.0;
+        }
+
+        const double xin=std::max(-64.0,std::min(64.0,x));
+        const double vs=xin*voltsPerUnit;
+        const double dt=1.0/sampleRate_;
+
+        const IronV2Deriv k1=ironV2Deriv(s.ironV2H,s.ironV2M,s.ironV2Relax,vs);
+        const IronV2Deriv k2=ironV2Deriv(
+            s.ironV2H+.5*dt*k1.h,
+            s.ironV2M+.5*dt*k1.m,
+            s.ironV2Relax+.5*dt*k1.i,
+            vs);
+
+        const double h2=s.ironV2H+dt*k2.h;
+        const double m2=s.ironV2M+dt*k2.m;
+        const double i2=s.ironV2Relax+dt*k2.i;
+
+        if(!std::isfinite(h2)||!std::isfinite(m2)||!std::isfinite(i2))
+        {
+            s.ironV2H=s.ironV2M=s.ironV2Relax=0.0;
+            return xin;
+        }
+
+        s.ironV2H=h2;
+        s.ironV2M=m2;
+        s.ironV2Relax=i2;
+
+        const IronV2Deriv out=ironV2Deriv(h2,m2,i2,vs);
+        const double y=out.vout/(voltsPerUnit*midbandGain);
+        return std::isfinite(y)?y:xin;
     }
 
     double dcBlock(double x,ChannelState& s) const

@@ -292,7 +292,7 @@ double Processor::dcBlock(double x, ChannelState& s)
 double Processor::processCoreSample(double x, ChannelState& s, const CoreParams& params)
 {
     const V1Core::Params sharedParams{params.drive, params.character, params.mix, params.output};
-    return v1ReferenceCore_.processSample(x, s, sharedParams);
+    return v1ReferenceCore_.processSampleV2Iron(x, s, sharedParams);
 }
 
 tresult PLUGIN_API Processor::process(ProcessData& d)
