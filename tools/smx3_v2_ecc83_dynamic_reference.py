@@ -59,16 +59,33 @@ def currents(va,vg):
 
 
 def solve_dc():
+    """Solve the full zero-input DC equilibrium of the dynamic network.
+
+    At DC the input coupling capacitor is open, but the grid leak remains:
+        Vg/RG + Ig = 0
+    Therefore absolute grid voltage is generally slightly negative when the
+    tube model has finite grid current. The former solver forced Vg=0 and
+    created an artificial offset between its DC reference and the actual
+    long-time dynamic equilibrium.
+    """
+    vg=-0.02
     vk=1.2
     vp=165.0
-    for _ in range(20000):
-        ik,ia,_=currents(vp-vk,-vk)
+
+    for _ in range(30000):
+        ik,ia,ig=currents(vp-vk,vg-vk)
+        tvg=-RG*ig
         tvk=ik*RK
         tvp=VB-ia*RA
-        if max(abs(tvk-vk),abs(tvp-vp))<1e-12:
-            return [0.0,vp,vk,0.0]
-        vk=0.7*vk+0.3*tvk
-        vp=0.7*vp+0.3*tvp
+
+        if max(abs(tvg-vg),abs(tvk-vk),abs(tvp-vp))<1e-12:
+            return [vg,vp,vk,0.0]
+
+        d=0.25
+        vg=(1.0-d)*vg+d*tvg
+        vk=(1.0-d)*vk+d*tvk
+        vp=(1.0-d)*vp+d*tvp
+
     raise RuntimeError("DC solver did not converge")
 
 
