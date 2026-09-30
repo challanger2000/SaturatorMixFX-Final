@@ -148,3 +148,16 @@ Reason:
 Production implication:
 - first offline reference keeps plate and screen currents separate;
 - realtime reduction may simplify only after comparison against the reference circuit.
+
+
+### IRON harmonic composition / remanence
+Status: REQUIRED ACCEPTANCE DIMENSION
+
+Jensen/Whitlock documents that an unmagnetized transformer core is expected to show predominantly third-harmonic distortion, while residual magnetization creates significant even-order distortion and can make H2 exceed H3.
+
+Therefore:
+- total THD alone is insufficient;
+- H2/H3 and magnetic-history tests become mandatory;
+- the fitted model must react plausibly to DC bias/remanence and return deterministically to a demagnetized baseline.
+
+This requirement strengthens the case for a stateful magnetic model and rules out any final IRON implementation that merely matches a scalar THD curve with a memoryless symmetric waveshaper.
