@@ -5,12 +5,15 @@ This file records technical decisions so rejected or provisional approaches are 
 ## TRI0DE
 
 ### EHX-1 Dempwolf/Zoelzer 12AX7 parameter set
-Status: ACCEPTED AS FIRST OFFLINE REFERENCE CANDIDATE
+Status: SUPERSEDED AS PRIMARY TRI0DE REFERENCE; RETAINED AS MEASURED-SPECIMEN CROSS-CHECK
 
-Reason:
-- published fit to a measured practical 12AX7 specimen;
-- in the selected Mullard 250 V / 100 kOhm / 1.5 kOhm circuit, solved cathode current is within about 4.1 % of the manufacturer anchor;
-- small-signal gain is within about 2.2 % of the Mullard anchor without empirical output trim.
+Reason for supersession:
+- published fit to a measured practical 12AX7 specimen remains valuable;
+- the earlier gain comparison used the unloaded plate node;
+- once the documented 330 kOhm following-stage load is included, EHX-1 predicts about 50.22 V/V versus Mullard 54.5 V/V;
+- therefore the earlier ~2.2% gain agreement was not the correct loaded-circuit comparison.
+
+Retain EHX-1 as an independent measured-tube cross-check, especially for grid-current law and specimen variability.
 
 Not yet accepted as production DSP:
 - dynamic parasitics;
@@ -199,3 +202,20 @@ Consequence:
 - Mullard loaded gain/output/distortion differences are documented as cross-source variation;
 - no arbitrary trim will be added to make the EHX-1 specimen pretend to be an average Mullard specimen;
 - the selected surrounding circuit may use documented Mullard-style values, but the resulting signal behavior is allowed to reflect the EHX-1 specimen.
+
+
+### Mullard-loaded ECC83 multi-point fit
+Status: ACCEPTED AS PROVISIONAL TRI0DE MANUFACTURER-TABLE CANDIDATE; NOT FINAL
+
+Reason:
+- uses the Dempwolf/Zoelzer physically motivated equation family;
+- includes the documented 330 kOhm following-stage AC load;
+- one parameter set fits all five Mullard 100 kOhm amplifier rows (Vb=200..400 V);
+- worst cathode-current error is about 0.92%;
+- worst small-signal gain error is about 1.89%;
+- no per-row output trim is used.
+
+Not promoted because:
+- plate-current curve family not yet validated;
+- grid-current parameters are still borrowed provisionally from EHX-1;
+- large-signal distortion/output limits have not yet been reproduced.
