@@ -366,3 +366,18 @@ Required after promotion:
 - rerun independent integration-method cross-check;
 - rerun operating-domain boundary;
 - keep EHX-1 as specimen-variation fixture.
+
+
+### IRON realtime magnetic integration
+Status: HOST-RATE MIDPOINT ACCEPTED AS PRIMARY REALTIME CANDIDATE
+
+Evidence:
+- explicit midpoint/RK2 at 48 kHz compared against RK4 at 192 kHz;
+- tested +4/+20 dBu at 20/50/100 Hz and +20 dBu at 1 kHz;
+- worst THD residual ~0.0000051 percentage-points;
+- worst H3 residual ~0.0000138 percentage-points.
+
+Decision:
+- do not use fixed 4x oversampling merely for H/M numerical accuracy;
+- evaluate alias control separately;
+- first production candidate should keep magnetic state integration at host rate and add targeted oversampling only if alias measurements justify it.
