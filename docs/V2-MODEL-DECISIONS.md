@@ -671,3 +671,53 @@ classical eddy-current loss alone is structurally insufficient.
 Next:
 add the literature-supported excess/anomalous-loss term proportional to
 sign(dB/dt)*sqrt(abs(dB/dt)) and test the two dynamic coefficients jointly.
+
+
+### IRON fair classical-loss architecture test
+Status: REJECTED
+
+A fair small-signal test was performed without fixing the former 144 H
+lossless-equivalent inductance.
+
+The classical instantaneous dynamic-loss architecture linearizes to:
+
+Ymag = Gmag + 1/(s Lmag)
+
+and Lmag, Gmag, leakage-L and effective HF-C were jointly refitted.
+
+Best representative fit:
+- Lmag ~1181 H
+- Rparallel ~1.82 MOhm
+- DLP20 ~+0.646 deg
+- DLP worst ~0.646 deg
+- 20 kHz / 95 kHz / 1 kHz gain/Z are strong
+
+but:
+- 20 Hz response remains ~-0.00049 dB instead of Jensen ~-0.04 dB.
+
+Decision:
+even with L and G jointly free, a constant-conductance parallel G||L
+magnetizing architecture cannot reproduce Jensen low-frequency magnitude and
+DLP simultaneously.
+
+This rejects the classical instantaneous loss term as the complete missing
+mechanism independently of the earlier 144 H constraint.
+
+### IRON direct excess-field screen on fixed quasi-static candidate
+Status: REJECTED AS DIRECT FINAL FORMULATION
+
+A direct excess term proportional to sign(dB/dt)*sqrt(abs(dB/dt)) was screened
+together with the classical derivative term.
+
+Under the corrected Jensen DLP extraction:
+- DLP remains far outside the target;
+- increasing excess coefficient rapidly creates excessive low-level THD;
+- coarse best solution collapses back toward zero excess contribution.
+
+Decision:
+do not continue tuning the instantaneous classical+excess field formulation on
+the fixed quasi-static candidate.
+
+Next accepted architecture under test:
+one explicit magnetic-relaxation state whose dynamic field vanishes in the
+quasi-static limit while its conductance contribution decays with frequency.
