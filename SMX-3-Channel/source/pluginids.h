@@ -5,8 +5,8 @@
 
 namespace SaturatorMixFX {
 
-static const Steinberg::FUID kProcessorUID (0x74D9F51A, 0x2E754BC8, 0xA9439C72, 0x1DB0A1F4);
-static const Steinberg::FUID kControllerUID (0x1D27F0E2, 0xA98442CE, 0xB8B0B6D1, 0x90E83753);
+static const Steinberg::FUID kProcessorUID (0x86D3F3F0, 0xE7785981, 0x8ED1204F, 0x08A35C82);
+static const Steinberg::FUID kControllerUID (0x17D4F54D, 0x0E35572C, 0x94A755F2, 0xF0BD2F7A);
 
 constexpr Steinberg::Vst::ParamID kParamOnOff      = 99;
 constexpr Steinberg::Vst::ParamID kParamDrive      = 100;

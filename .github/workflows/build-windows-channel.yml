@@ -22,14 +22,14 @@ jobs:
       - name: Configure SMX-3 Channel
         shell: pwsh
         run: >-
-          cmake -S SMX-3-Channel -B build-channel
+          cmake -S SMX-3-V2-Channel -B build-channel
           -G "Visual Studio 17 2022"
           -A x64
           -DVST3_SDK_ROOT="$env:GITHUB_WORKSPACE/vst3sdk"
           -DSMTG_CREATE_PLUGIN_LINK=0
 
       - name: Build Release
-        run: cmake --build build-channel --config Release --target SMX-3-Channel
+        run: cmake --build build-channel --config Release --target SMX-3-V2-Channel
 
       - name: Build VST3 Validator
         run: cmake --build build-channel --config Release --target validator
@@ -42,9 +42,9 @@ jobs:
             throw "validator.exe not found after validator target build"
           }
 
-          $plugin = Get-ChildItem -Path build-channel -Recurse -Directory -Filter SMX-3-Channel.vst3 | Select-Object -First 1
+          $plugin = Get-ChildItem -Path build-channel -Recurse -Directory -Filter SMX-3-V2-Channel.vst3 | Select-Object -First 1
           if (-not $plugin) {
-            throw "SMX-3-Channel.vst3 not found after plugin build"
+            throw "SMX-3-V2-Channel.vst3 not found after plugin build"
           }
 
           Write-Host "Validator: $($validator.FullName)"
@@ -67,13 +67,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: SMX-3-Channel-Validator-Log
+          name: SMX-3-V2-Channel-Validator-Log
           path: validator-channel.log
           if-no-files-found: warn
 
       - name: Upload VST3
         uses: actions/upload-artifact@v4
         with:
-          name: SMX-3-Channel-0.1.1-Windows-x64
+          name: SMX-3-V2-Channel-2.0.0-Windows-x64
           path: build-channel/**/*.vst3
           if-no-files-found: error

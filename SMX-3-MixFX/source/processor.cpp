@@ -1,5 +1,6 @@
 #include "processor.h"
 #include "pluginids.h"
+#include "../../SMX3Common/State/Smx3VstStateIO.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "public.sdk/source/vst/vstparameters.h"
 #include "base/source/fstreamer.h"
@@ -484,19 +485,16 @@ tresult PLUGIN_API Processor::process(ProcessData& d)
 
 tresult PLUGIN_API Processor::setState(IBStream* s)
 {
-    if (!s)
+    const auto decoded = StateV2::readFromStream(s);
+    if (decoded.source == StateV2::Source::Invalid)
         return kResultFalse;
 
-    IBStreamer f(s, kLittleEndian);
-    double b = 0.0, dr = .30, c = 0.0, m = 1.0, o = .75;
-    if (!f.readDouble(b) || !f.readDouble(dr) || !f.readDouble(c) || !f.readDouble(m) || !f.readDouble(o))
-        return kResultFalse;
+    onOff_ = decoded.params.bypass;
+    drive_ = decoded.params.drive;
+    character_ = decoded.params.character;
+    mix_ = decoded.params.mix;
+    output_ = decoded.params.output;
 
-    onOff_ = clamp01(b);
-    drive_ = clamp01(dr);
-    character_ = clamp01(c);
-    mix_ = clamp01(m);
-    output_ = clamp01(o);
     smoothDrive_ = drive_;
     smoothCharacter_ = character_;
     smoothMix_ = mix_;
@@ -512,18 +510,8 @@ tresult PLUGIN_API Processor::setState(IBStream* s)
 
 tresult PLUGIN_API Processor::getState(IBStream* s)
 {
-    if (!s)
-        return kResultFalse;
-
-    IBStreamer f(s, kLittleEndian);
-    if (!f.writeDouble(onOff_) ||
-        !f.writeDouble(drive_) ||
-        !f.writeDouble(character_) ||
-        !f.writeDouble(mix_) ||
-        !f.writeDouble(output_))
-        return kResultFalse;
-
-    return kResultOk;
+    const StateV2::Parameters state{onOff_, drive_, character_, mix_, output_};
+    return StateV2::writeToStream(s, state) ? kResultOk : kResultFalse;
 }
 
 } // namespace SaturatorMixFX

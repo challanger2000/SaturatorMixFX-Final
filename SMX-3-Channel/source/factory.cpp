@@ -5,7 +5,7 @@
 #include "public.sdk/source/main/pluginfactory.h"
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 
-#define stringPluginName "SMX-3 Channel"
+#define stringPluginName "SMX-3 V2 Channel"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
