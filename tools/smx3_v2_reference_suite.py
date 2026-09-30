@@ -40,6 +40,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("TRIODE grid-current source cross-check", ["tools/smx3_v2_ecc83_grid_current_crosscheck.py"]),
     ("physical level calibration candidate", ["tools/smx3_v2_level_calibration.py"]),
     ("V1 oversampling baseline", ["tools/smx3_v1_oversampling_baseline.py","--sample-rate","44100"]),
 ]
