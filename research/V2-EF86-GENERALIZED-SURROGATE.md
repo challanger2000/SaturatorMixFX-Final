@@ -81,3 +81,32 @@ Do NOT call it final because:
 - realtime discretization and aliasing are not tested.
 
 The offline manufacturer-data surface remains the authority. This compact model survives only as long as it stays within measured error against that authority.
+
+
+## Full 5%-THD supply-sweep recheck
+
+The exact Philips-1956 large-signal envelope was then tested at all fixed-component circuit-1 supply points, not only 250 V.
+
+| Vb | Philips Vo @5% | generalized surrogate | error |
+|---:|---:|---:|---:|
+| 200 V | 40 V | ~40.30 V | +0.74 % |
+| 250 V | 50 V | ~49.18 V | -1.65 % |
+| 300 V | 64 V | ~57.67 V | -9.89 % |
+| 350 V | 75 V | ~65.82 V | -12.25 % |
+| 400 V | 87 V | ~73.64 V | -15.36 % |
+
+### Status correction
+
+The generalized beta surrogate is therefore NOT a final EF86 model.
+
+It remains useful as:
+- a strong local 200-250 V realtime-surrogate baseline;
+- evidence that one extra knee degree of freedom materially improves the 250 V large-signal trajectory;
+- a comparison candidate against the future manufacturer-data current surface.
+
+But the full supply sweep demonstrates remaining structural model-form limitation at higher plate/supply voltage.
+
+Current status:
+LOCAL PROVISIONAL SURROGATE ONLY.
+
+Promotion requires a model/current-surface that reproduces the complete 200-400 V large-signal envelope without per-supply correction.
