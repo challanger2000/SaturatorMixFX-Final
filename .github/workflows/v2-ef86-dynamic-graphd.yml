@@ -1,0 +1,23 @@
+name: V2 EF86 Dynamic Graph-D Probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-ef86-dynamic-graphd.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: python -m py_compile tools/smx3_v2_ef86_dynamic_graphD.py
+      - name: Run dynamic Graph-D probe
+        run: python tools/smx3_v2_ef86_dynamic_graphD.py
