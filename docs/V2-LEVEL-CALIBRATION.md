@@ -1,125 +1,148 @@
 # SMX-3 V2 Level Calibration
 
-Status: provisional physical-level calibration
-Purpose: define digital-to-hardware excitation before production DSP mapping
+Status: policy frozen; numerical per-mode calibration NOT frozen
 
 ## Important terminology
 
-There is no existing 125A Engineering repository rule that fixes a dBFS <-> dBu calibration.
+There is no existing 125A Engineering rule that fixes one universal dBFS <-> dBu mapping.
 
-Therefore the values below are an SMX-3 V2 product calibration, not a claim of universal studio standard.
+EBU R 68 documents a digital alignment signal 18 dB below full scale:
+- digital alignment level: -18 dBFS
 
-## External nominal reference
+Source:
+https://tech.ebu.ch/publications/r068
 
-Provisional product convention:
+This does NOT by itself define +4 dBu = -18 dBFS for every interface or studio.
 
-- nominal DAW alignment signal: -18 dBFS sine amplitude
-- corresponding conceptual external hardware level: +4 dBu
-- +4 dBu = 1.2283 Vrms
+Therefore any mapping between SMX-3 digital level and a modeled hardware voltage/current is a PRODUCT CALIBRATION and must be documented as such.
 
-This is used only to make the modeled hardware levels understandable and reproducible.
+## General signal mapping
 
-## TRI0DE input pad
+Each physical model must expose an explicit engineering chain:
 
-The selected ECC83 reference becomes strongly nonlinear if the full +4 dBu line signal is applied directly to the control grid.
+digital sample
+-> calibration gain / input network
+-> physical model input in volts/amperes
+-> physical nonlinear circuit
+-> physical output
+-> explicit output calibration
+-> plugin output sample
 
-A realistic saturator therefore requires input attenuation before the modeled common-cathode grid.
+No hidden waveshaper coefficient may substitute for this mapping.
 
-Choose Drive=0 grid target:
+## Candidate external alignment convention
 
-- approximately 0.10 Vrms at the nominal +4 dBu external level.
+A useful candidate convention for later evaluation is:
 
-Required voltage ratio:
+- -18 dBFS sine RMS alignment -> conceptual +4 dBu external line level.
 
-0.10 / 1.2283 = 0.08141
+If adopted, +20 dBu would be 16 dB above nominal, corresponding to -2 dBFS relative sine level.
 
-or approximately:
+Evidence classification:
+PRODUCT-DERIVED.
 
--21.79 dB input attenuation.
+Reason it is useful:
+- the Jensen JT-11P-1 data use +4 dBu and +20 dBu directly;
+- it leaves a physically interpretable 16 dB interval between nominal and the documented 20 Hz / 1% THD region;
+- it aligns naturally with an -18 dBFS digital engineering reference.
 
-This attenuation is part of the modeled device gain staging, not post-hoc harmonic compensation.
+This mapping is NOT frozen until TRI0DE and PENTODE physical operating ranges are validated too.
 
-## TRI0DE measured operating ladder
+## TRI0DE calibration status
 
-From the frozen EHX-1/Mullard large-signal reference:
+NOT FROZEN.
 
-| grid Vin RMS | relative to 0.10 Vrms | approximate THD | interpretation |
-|---:|---:|---:|---|
-| 0.10 V | 0 dB | 0.43 % | baseline active hardware character |
-| 0.20 V | +6.02 dB | 0.88 % | gentle saturation |
-| 0.30 V | +9.54 dB | 1.34 % | musical saturation |
-| 0.50 V | +13.98 dB | 2.39 % | clearly saturated |
-| 0.70 V | +16.90 dB | 3.73 % | strong |
-| 1.00 V | +20.00 dB | 6.55 % | heavy / grid current begins to matter |
-| 1.50 V | +23.52 dB | 13.99 % | extreme |
-| 2.00 V | +26.02 dB | 20.30 % | very extreme |
+Earlier EHX-1 / Mullard-derived Drive ladders are superseded.
 
-This produces a physically meaningful Drive range of approximately:
+Reason:
+- the first EHX comparison used an unloaded plate-node gain;
+- the later loaded Mullard multi-point fit reproduced DC and small-signal gain very well;
+- that same fit failed the documented large-signal point badly (~36.6 Vrms / ~6.44% modeled versus Mullard 26 Vrms / 3.9%).
 
-0 dB to +26 dB additional modeled input gain.
+Therefore no current TRI0DE model is authoritative enough to define a production dBFS-to-grid-voltage Drive ladder.
 
-Notably, V1 already used a nominal 0..24 dB Drive range, so V2 can retain a familiar macro span while replacing the arbitrary waveshaper behavior with actual circuit excitation.
+Required before calibration:
+1. accepted ECC83 large-signal reference;
+2. verified grid-current onset;
+3. verified manufacturer distortion/output point;
+4. accepted input/coupling/bypass network;
+5. frequency-dependent measurement.
 
-## Proposed Drive macro
+## PENTODE calibration status
 
-Drive normalized d in [0,1].
+NOT FROZEN.
 
-Physical target:
-- d=0 -> +0 dB above the Drive-0 grid reference;
-- d=1 -> approximately +26 dB.
+The provisional EF86 multi-anchor fit is promising in DC/small signal but has not yet passed:
+- full Philips plate-curve family;
+- knee validation;
+- large-signal 5% distortion/output envelope.
 
-The mapping need not be linear in d.
+No digital-to-EF86 input mapping is accepted until those gates pass.
 
-Desired control feel:
-- 0%: active baseline hardware character, no extra drive;
-- 20-50%: useful musical saturation;
-- 50-75%: clearly nonlinear;
-- 75-100%: strong/extreme, including positive-grid-current operation.
+## IRON calibration status
 
-The exact curve is to be derived from measured THD/crest/gain progression rather than copied from V1 shapeDrive().
+IRON has the strongest current physical level anchors because Jensen specifies real line input levels.
 
-## Model-specific calibration
+Documented targets include:
+- +4 dBu / 20 Hz -> typical ~0.025% THD;
+- +20 dBu / 20 Hz -> typical ~1% THD;
+- +4 dBu / 1 kHz -> typical <0.001% THD.
 
-Do NOT force TRI0DE, PENTODE and IRON to share identical internal voltage/current excitation merely because one Drive knob selects all modes.
+However the current Jiles-Atherton example parameter shape has been rejected as a Jensen fit:
+- after scaling to ~1% at +20 dBu / 20 Hz;
+- it predicts roughly 0.153% at +4 dBu / 20 Hz.
+
+Therefore even IRON's final production Drive mapping waits for an accepted magnetic parameter fit.
+
+## Drive macro policy
+
+The UI may keep one normalized Drive control, but the physical units underneath are model-specific.
+
+Do NOT force TRI0DE, PENTODE and IRON to share one arbitrary internal voltage scale.
 
 Instead:
+- TRI0DE Drive maps to its accepted tube input network/grid excitation;
+- PENTODE Drive maps to its accepted EF86 input network/grid excitation;
+- IRON Drive maps to line input level / flux excitation.
 
-1. define one external conceptual line level;
-2. give each hardware model its physically justified input network / attenuation;
-3. map the same normalized Drive macro to a comparable *musical progression* while preserving each circuit's real operating units.
+Desired user-facing progression remains:
+- 0%: active baseline hardware operation;
+- 20-50%: musical;
+- 50-75%: clearly nonlinear;
+- 75-100%: strong/creative.
 
-This means:
-- TRI0DE Drive can map to grid excitation voltage;
-- PENTODE Drive can map to the selected EF86 input-circuit excitation;
-- IRON Drive maps to transformer input dBu / flux linkage.
+The numeric mapping is derived only after each model's measured THD/gain/crest/memory progression exists.
 
-The UI macro is common; the underlying physical units are model-specific.
+## Drive=0 semantics
 
-## IRON calibration anchor
+Drive=0 is NOT required to be mathematically neutral.
 
-IRON has unusually clean nominal behavior by design.
+For this hardware-modeling product:
+- Bypass is the neutral reference.
+- Active Drive=0 may impart the real baseline character of the selected hardware circuit.
+- That character must arise naturally from the accepted physical/circuit model.
 
-Jensen reference:
-- +4 dBu / 20 Hz -> ~0.025% THD
-- +20 dBu / 20 Hz -> ~1% THD
+No artificial 'always-on analog color' stage is added merely to make Drive=0 audible.
 
-Thus a 16 dB hardware-level increase changes the low-frequency magnetic core from very clean to clearly nonlinear.
+## Mix=0 semantics
 
-For SMX-3 creative use, Drive above the documented +20 dBu reference may be permitted only after:
-- offline magnetic model remains stable;
-- extrapolation is explicitly classified;
-- extreme mode does not rely on unidentified/unphysical model regions.
+Mix=0 remains a separate dry-path decision.
 
-## PENTODE calibration
+Current target:
+- Mix=0 returns the true dry input path.
 
-PENTODE calibration is intentionally not frozen yet.
+Any departure from this must be explicitly justified by a measured architecture; it is not inherited from the hardware model's baseline color.
 
-It waits for the accepted EF86 large-signal reference because the simple six-parameter model has already been rejected for failing the full manufacturer 5%-THD output envelope.
+## Output calibration
 
-## No auto-level hidden in physical reference
+Never alter physical-model coefficients merely to equalize loudness between modes.
 
-Hardware-reference measurements are made without concealed level matching.
+Keep separate:
+1. physical stage gain/loss;
+2. model-to-plugin calibration;
+3. optional listening/auto-level compensation;
+4. explicit user Output control.
 
-For listening comparisons, a separate measured output compensation may be applied.
+Reference measurements are performed without hidden auto-level.
 
-The production Output parameter remains explicit and distinct from Drive calibration.
+Level-matched listening comparisons may use a separately measured compensation stage, reported explicitly.
