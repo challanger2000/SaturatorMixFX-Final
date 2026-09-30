@@ -291,3 +291,26 @@ SMX-3 use:
 - frequency-law diagnostic;
 - DC-bias/remanence test design;
 - demagnetized default-state definition.
+
+
+### EF86 / 6267 control-grid-current onset cross-source data
+Ferranti EF86 data:
+https://frank.pocnet.net/other/Ferranti/Ferranti_Valves%26CathodeRayTubes_Volume1_1961.pdf
+
+Telefunken/Siemens EF806S / 6267 data:
+https://bms.isjtr.ro/sheets/128/e/EF806S.pdf
+
+Evidence use:
+DOCUMENTED CROSS-SOURCE DEVICE LIMIT / LARGE-SIGNAL CONSTRAINT
+
+Both sources give an EF86/6267-family control-grid condition near:
+- Vg1 approximately -1.3 V
+- at Ig1 approximately +0.3 uA
+
+SMX-3 use:
+- constrain the onset of control-grid current in the future dynamic PENTODE reference;
+- cross-check the input amplitude at the manufacturer maximum-output region;
+- do not treat -1.3 V as a complete grid-current curve.
+
+Important:
+one onset point does not identify the full Ig1(Vg1,Va,Vg2) law. Any dynamic grid-current curve fitted around it remains EMPIRICALLY TUNED / ESTIMATED unless additional primary data are found.
