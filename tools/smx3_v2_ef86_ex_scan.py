@@ -155,13 +155,40 @@ def solve_plate(vin,dc,p):
     vp0,vs,vk,a0,_=dc
     rload=1.0/(1.0/RA+1.0/RGLOAD)
     vth=vp0+a0*rload
-    x=vp0
-    for _ in range(4000):
-        cur=ia(x-vk,vs-vk,vin-vk,ex,vct,kg1)
-        t=vth-cur*rload
-        if abs(t-x)<1e-9:return x
-        x=.75*x+.25*t
-    raise RuntimeError("plate solve")
+    vg1=vin-vk
+
+    def residual(x):
+        cur=ia(x-vk,vs-vk,vg1,ex,vct,kg1)
+        return x-(vth-cur*rload)
+
+    lo=vk-20.0
+    hi=max(vth+50.0,vp0+50.0)
+    flo=residual(lo)
+    fhi=residual(hi)
+
+    for _ in range(10):
+        if flo<=0.0<=fhi:
+            break
+        if flo>0.0:
+            lo-=50.0
+            flo=residual(lo)
+        if fhi<0.0:
+            hi+=50.0
+            fhi=residual(hi)
+    else:
+        raise RuntimeError("plate root not bracketed")
+
+    for _ in range(80):
+        mid=.5*(lo+hi)
+        fm=residual(mid)
+        if abs(fm)<1e-10 or hi-lo<1e-10:
+            return mid
+        if fm>0.0:
+            hi=mid
+        else:
+            lo=mid
+
+    return .5*(lo+hi)
 
 
 def small_gain(dc,p):
