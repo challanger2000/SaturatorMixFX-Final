@@ -88,7 +88,10 @@ public:
         const double baseComp = (-.46*wT - .52*wP - .40*wI) * driveDb;
         const double polishTrimDb = (.73*wT + 2.67*wP - .06*wI) * effectiveDrive;
         const double smoothTrimDb = characterTrimDb(effectiveDrive,wT,wP,wI);
-        const double comp = dbToGain(trim + baseComp + polishTrimDb + smoothTrimDb);
+        const double driveLevelComp =
+            hardwareDriveLevelCompDb(clamp01(params.drive),wT,wP,wI);
+        const double comp = dbToGain(
+            trim + baseComp + polishTrimDb + smoothTrimDb + driveLevelComp);
 
         const double protect = .18*wT + .42*wP + .30*wI;
         const double attackAmount = .08*wT + .22*wP + .15*wI;
@@ -285,6 +288,29 @@ private:
     {
         d=clamp01(d);
         return d*d*d*(10.0-15.0*d+6.0*d*d);
+    }
+
+    static double hardwareDriveLevelCompDb(
+        double drive,double wT,double wP,double wI)
+    {
+        // Programme-material calibration at 48 kHz. The anchors compensate
+        // the measured mean level loss while preserving the nonlinear shape.
+        // Interpolate smoothly to avoid audible gain kinks while automating.
+        static constexpr double x[5]={0.0,.25,.50,.75,1.0};
+        static constexpr double tri[5]={0.0,.48,3.30,7.91,12.30};
+        static constexpr double pen[5]={0.0,.77,3.50,6.67,10.93};
+        static constexpr double iron[5]={0.0,.33,.69,1.75,3.06};
+
+        drive=clamp01(drive);
+        int seg=0;
+        while(seg<3 && drive>x[seg+1]) ++seg;
+        const double span=x[seg+1]-x[seg];
+        const double u=span>0.0?(drive-x[seg])/span:0.0;
+        const double s=u*u*(3.0-2.0*u);
+        const auto interp=[&](const double* a){
+            return a[seg]+(a[seg+1]-a[seg])*s;
+        };
+        return wT*interp(tri)+wP*interp(pen)+wI*interp(iron);
     }
 
     static double characterTrimDb(double effectiveDrive,double wT,double wP,double wI)
