@@ -314,3 +314,30 @@ SMX-3 use:
 
 Important:
 one onset point does not identify the full Ig1(Vg1,Va,Vg2) law. Any dynamic grid-current curve fitted around it remains EMPIRICALLY TUNED / ESTIMATED unless additional primary data are found.
+
+
+### Philips EF86 capacitance / dynamic-network data
+Primary:
+https://www.r-type.org/pdfs/ef86-1.pdf
+
+Later Philips handbook cross-check:
+https://frank.pocnet.net/other/Philips/elcoma/Philips_ElectronTubes_4_1975-03.pdf
+
+Documented device capacitances:
+- Cg1(a) = 3.8 pF
+- Ca(g1) approximately 5.1-5.3 pF depending Philips edition
+- Cag1 max. 0.05 pF
+- Cg1f max. 0.0025 pF
+
+Philips application network:
+- input coupling 0.01 uF
+- cathode bypass 50 uF
+- screen bypass 0.5 uF
+- output coupling 0.01 uF
+
+Use:
+- dynamic PENTODE MNA authority;
+- frequency/phase reference;
+- dynamic-state design.
+
+Do not infer ambiguous input-grid-return resistance from OCR.
