@@ -130,7 +130,9 @@ def main():
         return 1
 
     print("REFERENCE SUITE PASS")
-    print("Note: this validates current frozen offline gates, not VST3 release QA.")\n    if not args.deep:\n        print("Use --deep for archived/heavy research comparisons.")
+    print("Note: this validates current frozen offline gates, not VST3 release QA.")
+    if not args.deep:
+        print("Use --deep for archived/heavy research comparisons.")
     return 0
 
 
