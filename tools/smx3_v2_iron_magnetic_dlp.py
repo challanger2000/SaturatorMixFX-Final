@@ -57,9 +57,11 @@ def simulate_phase(freq,level_dbu=4.0,warmup_cycles=30,analysis_cycles=4):
     im_x=0.0
 
     for i,v in enumerate(y):
-        # analysis interval starts after an integer number of cycles, so local
-        # phase is sufficient and avoids unnecessary absolute-time growth.
-        a=2.0*math.pi*freq*i/fs
+        # Use the actual absolute sample time. The warmup length is rounded to
+        # an integer sample and is not necessarily an exact integer number of
+        # periods for arbitrary frequency fixtures.
+        sample_index=start+i
+        a=2.0*math.pi*freq*sample_index/fs
         re_y+=v*math.cos(a)
         im_y-=v*math.sin(a)
 
