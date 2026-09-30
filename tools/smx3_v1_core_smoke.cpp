@@ -37,7 +37,7 @@ static double inputSample(int n,double sr)
     return 0.72*s+polarity*impulse;
 }
 
-static int runCase(double sr,double drive,double character,double mix,double output)
+static int runCase(double sr,double drive,double character,double mix,double output,std::uint64_t expectedHash)
 {
     Core core;
     core.prepare(sr);
@@ -89,10 +89,36 @@ int main()
         {0.50,0.50,1.00,1.00},
     };
 
-    for(double sr:rates)
-        for(const auto& p:cases)
-            if(const int rc=runCase(sr,p.drive,p.character,p.mix,p.output))
+    const std::uint64_t golden[4][7]={
+        {
+            0xa12a8e5c8732ac7aull,0x2771226c2f0463cbull,0xc0a28e7d89c6924bull,
+            0x3f398a757de0711bull,0x359cbe8874026460ull,0xa12a8e5c8732ac7aull,
+            0x69ed3949db3c3ce3ull
+        },
+        {
+            0xc7dcade7b2f3cb7dull,0x026073cbc2f78904ull,0xc4a3b996c40044a3ull,
+            0x0f33469406dceab3ull,0x6600fa26739e001eull,0xc7dcade7b2f3cb7dull,
+            0xad0db1b0c1f69672ull
+        },
+        {
+            0xf5a7f278f2c79e5aull,0xb0e2e61bde2878eull,0x21be72e2eb3c3bb0ull,
+            0x03d25de4c580efdaull,0x6c0edd6aee7447e1ull,0xf5a7f278f2c79e5aull,
+            0x08562f979493a8b8ull
+        },
+        {
+            0xe18cd2e0d38ef23dull,0xdd5cfda2b31386dcull,0xd9673f82b960c75aull,
+            0x3f385c7a7fead2fbull,0xd4e04933a7f80d6aull,0xe18cd2e0d38ef23dull,
+            0x94e25ba118b47e2cull
+        }
+    };
+
+    for(int ri=0;ri<4;++ri)
+        for(int ci=0;ci<7;++ci)
+        {
+            const auto& p=cases[ci];
+            if(const int rc=runCase(rates[ri],p.drive,p.character,p.mix,p.output,golden[ri][ci]))
                 return rc;
+        }
 
     // Reset determinism test.
     Core c;
