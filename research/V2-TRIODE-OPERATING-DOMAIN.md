@@ -1,154 +1,82 @@
-> SPECIMEN UPDATE — 2026-09-30
->
-> The settled-state values below were measured with EHX-1. RSD-2 is now the primary
-> dynamic specimen. The domain methodology remains authoritative, but numerical
-> boundaries must be re-established for RSD-2 before Drive calibration.
-
-# SMX-3 V2 TRI0DE Operating-Domain Probe
+# SMX-3 V2 TRI0DE Operating Domain
 
 Date: 2026-09-30
-Reference:
-Dempwolf/Zoelzer EHX-1 12AX7 current model inside the documented Philips/Mullard ECC83 dynamic network.
+Primary specimen:
+Dempwolf/Zoelzer RSD-2 12AX7 in the documented Philips/Mullard ECC83 network.
 
-Status:
-settled-state result; supersedes the earlier short-run interpretation.
+## Primary-source model domain
 
-## Why this gate exists
-
-The Dempwolf/Zoelzer source model identifies reduced accuracy especially for:
-- positive grid voltage;
-- very low anode voltage, approximately Va < 20 V.
-
-SMX-3 must therefore measure where the actual cathode-biased/coupled reference circuit enters those regions.
-
-## Measurement-method correction
-
-The first operating-domain estimate used only a fixed number of cycles and therefore inherited the same insufficient-settling problem documented in:
-
-research/V2-TRIODE-SETTLING-CORRECTION.md
-
-The corrected probe now preconditions the complete nonlinear/capacitive circuit for 0.4 s before evaluating the final cycles.
-
-This materially changes the strong-drive HF operating point because:
-- cathode bias has time to shift;
-- input-coupling/grid-current interaction reaches periodic steady state;
-- the circuit self-biases rather than remaining near its cold-start trajectory.
-
-## Settled-state regression points
-
-GitHub Actions run 36657000349 measured:
-
-| frequency | Vin RMS | min Va | max Vg | max Ig | interpretation |
-|---:|---:|---:|---:|---:|---|
-| 20 Hz | 0.70 V | ~125.65 V | ~-0.515 V | ~0.054 uA | valid-domain |
-| 1 kHz | 0.70 V | ~117.91 V | ~-0.312 V | ~0.281 uA | valid-domain |
-| 10 kHz | 0.70 V | ~117.86 V | ~-0.311 V | ~0.284 uA | valid-domain |
-| 20 kHz | 0.70 V | ~117.87 V | ~-0.311 V | ~0.284 uA | valid-domain |
-| 20 kHz | 1.00 V | ~107.22 V | ~-0.101 V | ~3.96 uA | still negative-grid |
-| 20 kHz | 8.00 V | ~78.32 V | ~+0.563 V | ~167.88 uA | positive-grid extrapolation |
-
-## Important correction
-
-The earlier short-run estimate suggested:
-- positive-grid crossing already near ~0.93 Vrms at 20 kHz;
-- Va < 20 V around 8 Vrms / 20 kHz.
-
-Those conclusions are superseded.
-
-After proper settling:
-- 1.0 Vrms / 20 kHz remains negative-grid;
-- 8.0 Vrms / 20 kHz enters positive-grid operation strongly;
-- but Va remains around 78 V rather than dropping below 20 V.
-
-The cathode-bias/grid-conduction network moves the operating point substantially under sustained extreme excitation.
-
-## Current conservative normal-domain fixture
-
-The automated gate now establishes:
-
-- 0.70 Vrms remains safely negative-grid from 20 Hz through 20 kHz;
-- 1.00 Vrms at 20 kHz also remains negative-grid;
-- 8.00 Vrms at 20 kHz intentionally exercises the positive-grid extrapolation region.
-
-This gives the future product calibration more headroom than the initial short-run result suggested.
-
-## Low-Va limitation
-
-Very-low-anode-voltage behavior remains a known limitation of the Dempwolf model family.
-
-However, the present documented Mullard/Philips circuit may not reach Va < 20 V under ordinary or even very strong steady sine excitation before:
-- grid conduction;
-- cathode-bias shift;
-- coupling-network behavior
-
-substantially changes the trajectory.
-
-Therefore Va<20 V is now treated as:
-- a monitored warning;
-- not a required stress fixture.
-
-Do not invent an artificial low-Va test merely to force the circuit into a region it does not naturally visit.
-
-## Product implication
-
-### 0-75% Drive target
-Can likely remain fully inside the validated negative-grid region if calibration is chosen carefully.
-
-### 75-100% Drive target
-May intentionally enter positive-grid operation for stronger physical saturation.
-
-Before production:
-- positive-grid behavior needs a more authoritative extension or bounded model;
-- Drive mapping must record the fraction of samples/time spent beyond Vg=0;
-- extreme operation must not depend on undocumented low-Va extrapolation.
-
-## Decision
-
-The first practical validity boundary in the current TRI0DE circuit remains positive-grid operation.
-
-But correct periodic steady-state measurement moves that boundary materially higher than the initial short-run estimate.
-
-This is favorable:
-SMX-3 can obtain substantial authentic triode nonlinearity before relying on the least reliable region of the Dempwolf current model.
-
-
-## Primary-source correction: positive grid is measured territory
-
-Dempwolf & Zoelzer did NOT define all positive-grid operation as invalid.
-
-Their practical 12AX7 measurement range was approximately:
+Dempwolf/Zoelzer measured practical 12AX7 specimens over approximately:
 - Va = 20..300 V
 - Vg = -5..+3 V
 
-Positive grid current is explicitly measured and modeled.
+Positive grid voltage is explicitly measured and modeled.
 
-The documented limitation is specifically:
+The documented problematic region is specifically:
 - Vg > 0
-- combined with Va < approximately 20 V
+- combined with Va < approximately 20 V.
 
-because the real anode current falls rapidly as Va approaches 0 V and the published formulation does not reproduce that low-Va behavior correctly.
+Therefore first positive-grid crossing is NOT a model-validity ceiling.
 
-Therefore:
-- positive Vg alone is a valid overdrive/grid-current state;
-- the automated domain gate now tracks minimum Va specifically while Vg>0;
-- the hard invalidity test is the combination Vg>0 AND Va<20 V, or leaving the published Vg measurement range.
+The automated gate tracks:
+- minimum Va;
+- maximum Vg;
+- peak grid current;
+- minimum Va specifically while Vg>0;
+- whether the combined Vg>0 / Va<20 V condition occurs.
 
-This supersedes earlier wording that treated first positive-grid crossing itself as the model-validity ceiling.
+## Measurement method
 
-## Independent overload cross-check: Danyuk AES 137
+All domain measurements use physical-time preconditioning before the analysis interval.
 
-Dimitri Danyuk, "Triode Emulator: Part 2", AES Convention Paper 9124 (2014), reports measured 12AX7 grid current under high drive.
+This is required because:
+- cathode-bias time constants are slow;
+- input-coupling/grid-current interaction changes sustained overload bias;
+- fixed-cycle startup measurements previously produced misleading boundaries.
 
-Relevant observations:
-- negative, transition and positive-grid-current regions are visible experimentally;
-- around Vgk=+0.3 V, grid current is about 200 uA for the measured specimen/circuit;
-- typical AC coupling causes charge shift / blocking behavior;
-- sustained grid voltage much above roughly +0.2..+0.3 V is difficult in the studied AC-coupled triode stage because grid current discharges/charges the coupling network.
+## Current RSD-2 settled fixtures
 
-SMX-3 implication:
-- moderate positive-grid operation is physically meaningful;
-- grid-current interaction with the coupling capacitor is a required part of authentic extreme Drive behavior;
-- a static clamp at Vg=0 would be physically wrong;
-- the dynamic circuit itself should limit/reshape sustained positive-grid excursions.
+Revision-11 run 36692441356:
 
-The Danyuk measurements are a separate specimen/circuit and are therefore a cross-check, not a numeric target for the Mullard/EHX reference.
+| frequency | Vin RMS | min Va | max Vg | peak Ig | invalid Vg>0 & Va<20? |
+|---:|---:|---:|---:|---:|---:|
+| 20 Hz | 0.70 V | ~118.35 V | ~-0.539 V | ~0.049 uA | no |
+| 1 kHz | 0.70 V | ~108.62 V | ~-0.335 V | ~0.143 uA | no |
+| 10 kHz | 0.70 V | ~108.59 V | ~-0.334 V | ~0.144 uA | no |
+| 20 kHz | 0.70 V | ~108.59 V | ~-0.334 V | ~0.144 uA | no |
+| 20 kHz | 1.00 V | ~93.99 V | ~-0.102 V | ~3.44 uA | no |
+| 20 kHz | 8.00 V | ~65.34 V | ~+0.451 V | ~200.68 uA | no |
+
+At the extreme 20 kHz / 8 Vrms fixture:
+- grid conduction is substantial;
+- Vg remains far below the published +3 V measurement ceiling;
+- Va while Vg is positive remains about 65 V;
+- the known low-Va/positive-grid failure region is not entered.
+
+## Independent overload cross-check
+
+Danyuk AES-137 measurements independently confirm that positive-grid current is real 12AX7 overload behavior.
+
+Around Vgk=+0.3 V, Danyuk reports approximately 200 uA for the tested specimen/circuit.
+
+The current RSD-2 law gives lower current at the same grid voltage, demonstrating meaningful specimen/source variation.
+
+Therefore extreme Drive must be evaluated across multiple grid-current laws before choosing the final archetype.
+
+## Product implication
+
+There is materially more physically defensible TRI0DE Drive headroom than implied by the earlier incorrect rule "Vg>0 is invalid."
+
+Drive 75-100% may use grid conduction as authentic tube behavior, provided:
+- the circuit remains inside the measured Vg range;
+- the Vg>0 / Va<20 V combination is avoided or separately modeled;
+- blocking/recovery remains stable and intentional;
+- the chosen grid-current archetype is documented.
+
+## Current status
+
+The RSD-2 reference clears the present measured-domain gate.
+
+The next TRI0DE blocker is not first positive-grid crossing.
+
+It is selecting and validating the extreme grid-current/blocking archetype across measured specimen/source variation.
