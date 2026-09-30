@@ -40,6 +40,7 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 kink sensitivity", ["tools/smx3_v2_ef86_kink_sensitivity.py"]),
     ("legacy EX=1.40 dynamic reference", ["tools/smx3_v2_ef86_dynamic_reference.py"]),
     ("EF86 Graph-A three-way family comparison", ["tools/smx3_v2_ef86_graphA_threeway.py"]),
     ("EF86 Stage-2 minimal-screen rejection", ["tools/smx3_v2_ef86_stage2_screen_probe.py"]),
