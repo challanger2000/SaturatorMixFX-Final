@@ -2,14 +2,15 @@
 
 Date: 2026-09-30
 Tool: tools/smx3_v2_ecc83_dynamic_reference.py
-Status: offline dynamic reference candidate
+Status: strong offline dynamic reference candidate
+Primary measured specimen: Dempwolf/Zoelzer RSD-2 12AX7
 
 ## Circuit
 
-Tube:
-- Dempwolf/Zoelzer measured EHX-1 12AX7 specimen.
+Tube device law:
+- Dempwolf/Zoelzer measured RSD-2 12AX7 specimen.
 
-Manufacturer surrounding network:
+Documented Philips/Mullard surrounding network:
 - Vb=250 V
 - Ra=100 kOhm
 - Rk=1.5 kOhm
@@ -24,88 +25,120 @@ Published 12AX7 parasitics:
 - Cgk=2.3 pF
 - Cag=2.4 pF
 
+RSD-2 current parameters:
+- G=2.173e-3
+- mu=100.2
+- gamma=1.28
+- C=3.19
+- Gg=5.911e-4
+- xi=1.358
+- Cg=11.76
+- Ig0=4.527e-8 A
+
+Evidence:
+PUBLISHED-PARAMETER DERIVED / MEASURED-SPECIMEN MODEL embedded in a DOCUMENTED manufacturer circuit network.
+
+## Why RSD-2 is primary
+
+Manufacturer-loaded static comparison at Vb=250 V / Ra=100 kOhm / Rk=1.5 kOhm / Rg'=330 kOhm:
+
+- RSD-2 idle current error: about -2.86%
+- RSD-2 loaded gain error: about +5.52%
+- RSD-2 distortion error at 26 Vrms: about -0.20 percentage-points relative to Mullard's 3.9%
+
+RSD-2 currently gives the strongest combined agreement across those manufacturer-loaded criteria.
+
+This is not a claim that RSD-2 is a universal ECC83.
+
+EHX-1 and RSD-1 remain independent specimen cross-checks.
+
 ## Numerical method
 
-The pF parasitics make the nodal ODE stiff enough that naive explicit RK4 at ordinary audio rates is not a trustworthy reference solver.
+The pF parasitics make the nodal system stiff enough that ordinary-rate explicit integration is not used as the offline authority.
 
-The offline tool therefore uses:
+The reference uses:
 - constant capacitance MNA matrix;
 - implicit trapezoidal integration;
 - Newton solve at every step;
 - numerical Jacobian;
-- 192 kHz default reference step rate.
+- physical-time preconditioning;
+- frequency-adaptive high-density analysis.
 
-This is intentionally a correctness/reference implementation, not a realtime architecture.
+Reference integration rule:
+- at least 192 kHz;
+- at least 96 integration steps per fundamental period.
 
-## DC result
+## Settled dynamic results
 
-Approximately:
-- plate node ~167.523 V
-- cathode ~1.23721 V
+Revision-11 QA run 36692441356 produced:
 
-matching the existing EHX-1 DC reference.
+### 1 kHz / 10 mVrms
 
-## Small-signal dynamic behavior
+At increasing integration density:
+- 192 kHz: gain 56.39860, THD 0.0746939%
+- 384 kHz: gain 56.40236, THD 0.0746684%
+- 768 kHz: gain 56.40330, THD 0.0746621%
 
-At 1 kHz / 10 mVrms:
-- gain is approximately 50.5 V/V,
-which is consistent with the previously corrected loaded static EHX-1 gain (~50.2 V/V).
+Top-two residual:
+- gain ~16.66 ppm
+- phase ~0.000060 degree
+- THD ~0.000006 percentage-points
 
-The 0.01 uF input/output coupling network causes the expected LF attenuation; therefore the dynamic circuit should not be compared to the static AC-loaded model at very low frequency as if they were the same topology.
+### 1 kHz / 0.70 Vrms
 
-The Miller/parasitic network is now explicit rather than approximated by a post-EQ.
+- 192 kHz: gain 54.02718, THD 6.60311%
+- 384 kHz: gain 54.03042, THD 6.60377%
+- 768 kHz: gain 54.03123, THD 6.60393%
 
-## 1 kHz nonlinear progression
+Top-two residual:
+- gain ~15.00 ppm
+- phase ~0.000063 degree
+- THD ~0.000163 percentage-points
 
-Representative dynamic results at 192 kHz reference integration:
+### 10 kHz / 10 mVrms
 
-| Vin RMS | Vout RMS | THD |
-|---:|---:|---:|
-| 0.10 V | ~4.94 V | ~0.435 % |
-| 0.30 V | ~14.77 V | ~1.343 % |
-| 0.50 V | ~24.46 V | ~2.41 % |
-| 0.70 V | ~33.79 V | ~3.87 % |
-| 1.00 V | ~44.20 V | ~10.24 % |
+At 3.84 MHz:
+- gain ~56.46204
+- THD ~0.0746760%
 
-At low/moderate excitation the dynamic model closely follows the static EHX-1 harmonic baseline.
+### 20 kHz / 10 mVrms
 
-At stronger excitation the real input coupling/grid-current interaction changes the trajectory materially. This is expected physical behavior and demonstrates why the final TRI0DE cannot be reduced to a fixed memoryless transfer curve without measured error.
+At 7.68 MHz:
+- gain ~56.45870
+- THD ~0.0747087%
 
-## Important next checks
+The settled low-level THD is therefore essentially frequency-stable through the tested band rather than showing the false HF rise seen before the settling-time correction.
 
-Before promoting this solver to the final offline authority:
-1. integration convergence vs 384/768 kHz reference step rate;
-2. waveform residual vs step rate;
-3. grid-voltage/grid-current trajectories;
-4. 500 Hz / 1 kHz / 2 kHz burst behavior;
-5. compare implicit trapezoid with a second integration method;
-6. establish valid Drive mapping that avoids relying excessively on Dempwolf's known positive-grid/very-low-Va model limitations.
+## Independent numerical-method agreement
 
-No realtime production kernel is selected yet.
+Implicit trapezoid vs implicit midpoint at the high reference rates:
 
+- 1 kHz / 10 mVrms: gain residual ~8.50 ppm; THD residual ~0.0000010 pp
+- 1 kHz / 0.70 Vrms: gain residual ~8.81 ppm; THD residual ~0.000166 pp
+- 10 kHz / 10 mVrms: gain residual ~33.96 ppm
+- 20 kHz / 10 mVrms: gain residual ~33.61 ppm
 
-## Integration-rate convergence correction
+This independently validates the aggregate offline numerical solution.
 
-A follow-up convergence check showed two different numerical regimes:
+## Current physical-domain result
 
-At 1 kHz:
-- 192 kHz, 384 kHz and 768 kHz integration rates produce essentially the same large-signal result.
-- Example at Vin=1.0 Vrms: output changes by only a few millivolts and THD by only a few thousandths of a percentage point.
+The Dempwolf measurement/model domain includes approximately:
+- Va=20..300 V
+- Vg=-5..+3 V
 
-At 20 kHz:
-- 192 kHz is too coarse for an offline authority; trapezoidal discretization still shifts the measured magnitude/phase.
-- Increasing the integration density materially changes the result toward convergence.
+Positive-grid operation is therefore valid model territory by itself.
 
-Therefore the reference tool no longer uses a fixed 192 kHz rate for every test.
+The known limitation is specifically positive Vg combined with Va below about 20 V.
 
-Current rule:
-- fs_reference = max(192 kHz, 96 * fundamental frequency)
+The current RSD-2 dynamic circuit is monitored for that combined condition.
 
-Examples:
-- 1 kHz -> 192 kHz
-- 10 kHz -> 960 kHz
-- 20 kHz -> 1.92 MHz
+## Remaining TRI0DE blockers
 
-This keeps the numerical reference error below the level at which it could be mistaken for tube/Miller response.
+1. grid-current specimen/archetype decision for extreme Drive;
+2. blocking/recovery comparison across RSD-1/RSD-2/EHX-1/Danyuk evidence;
+3. final multi-level/frequency fixture set;
+4. realtime reduction;
+5. aliasing and CPU comparison;
+6. final Drive calibration.
 
-The production plugin is NOT expected to run at these rates. This is purely an offline ground-truth calculation used to judge reduced realtime implementations.
+No production realtime kernel is selected yet.
