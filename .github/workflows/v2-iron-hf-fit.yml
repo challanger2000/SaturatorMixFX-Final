@@ -1,4 +1,4 @@
-# revision: 4 - include loss-aware small-signal target
+# revision: 5 - include dynamic-loss residual decomposition
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -46,6 +46,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_jensen_lossaware_target.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run dynamic-loss residual decomposition
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_loss_residual.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Upload log
         if: always()
