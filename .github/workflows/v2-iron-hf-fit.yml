@@ -1,4 +1,4 @@
-# revision: 2 - corrected 144H basis plus DLP check
+# revision: 3 - corrected 144H basis, linear and magnetic DLP
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -12,17 +12,36 @@ on:
 jobs:
   hf-fit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run reduced HF fit
+
+      - name: Syntax check
+        run: |
+          python -m py_compile             tools/smx3_v2_jensen_hf_fit.py             tools/smx3_v2_jensen_hf_dlp_check.py             tools/smx3_v2_iron_candidate.py             tools/smx3_v2_iron_magnetic_dlp.py
+
+      - name: Run corrected reduced HF fit
         shell: bash
-        run: python tools/smx3_v2_jensen_hf_fit.py 2>&1 | tee iron-hf-fit.log
+        run: |
+          python tools/smx3_v2_jensen_hf_fit.py 2>&1 | tee iron-hf-fit.log
+
+      - name: Run linear-skeleton DLP check
+        shell: bash
+        run: |
+          python tools/smx3_v2_jensen_hf_dlp_check.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run full magnetic DLP probe
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_magnetic_dlp.py 2>&1 | tee -a iron-hf-fit.log
+
       - name: Upload log
         if: always()
         uses: actions/upload-artifact@v4
