@@ -23,20 +23,23 @@ PY=sys.executable
 
 POSITIVE=[
     ("EF86 Stage-3 cross-domain", ["tools/smx3_v2_ef86_stage3_crossdomain.py"]),
-    ("IRON DC-bias/remanence gate", ["tools/smx3_v2_iron_dc_bias_probe.py"]),
-    ("IRON numerical method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
     ("EF86 Stage-3 large-signal knee", ["tools/smx3_v2_ef86_stage3_knee_candidate.py"]),
     ("EF86 Stage-2 joint static", ["tools/smx3_v2_ef86_stage2_joint_static.py"]),
     ("EF86 Stage-1 plate surface", ["tools/smx3_v2_ef86_stage1_plate_surface.py"]),
     ("provisional Iron exact-anchor candidate", ["tools/smx3_v2_iron_candidate.py"]),
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
     ("ECC83 large signal", ["tools/smx3_v2_ecc83_large_signal.py"]),
-    ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
-    ("ECC83 integration-method cross-check", ["tools/smx3_v2_ecc83_method_crosscheck.py"]),
     ("ECC83 operating-domain gate", ["tools/smx3_v2_ecc83_domain_probe.py"]),
-    ("IRON realtime integration reduction", ["tools/smx3_v2_iron_realtime_reduction.py"]),
     ("Jensen linear skeleton", ["tools/smx3_v2_jensen_linear_reference.py"]),
     ("Jiles-Atherton standalone loop", ["tools/smx3_v2_jiles_atherton_reference.py"]),
+]
+
+EXTENDED_POSITIVE=[
+    ("IRON DC-bias/remanence gate", ["tools/smx3_v2_iron_dc_bias_probe.py"]),
+    ("IRON numerical method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
+    ("IRON realtime integration reduction", ["tools/smx3_v2_iron_realtime_reduction.py"]),
+    ("ECC83 dynamic convergence", ["tools/smx3_v2_ecc83_dynamic_convergence.py"]),
+    ("ECC83 integration-method cross-check", ["tools/smx3_v2_ecc83_method_crosscheck.py"]),
 ]
 
 INFORMATIONAL=[
@@ -89,7 +92,8 @@ def run_case(label,args,verbose):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--verbose",action="store_true")
-    ap.add_argument("--deep",action="store_true",help="Also run archived/heavy research comparisons.")
+    ap.add_argument("--extended",action="store_true",help="Also run expensive current numerical/physics hard gates.")
+    ap.add_argument("--deep",action="store_true",help="Also run archived/heavy research comparisons (implies --extended).")
     args=ap.parse_args()
 
     failures=[]
@@ -102,6 +106,14 @@ def main():
         print(f"[{status}] {label}")
         if rc!=0:
             failures.append(label)
+
+    if args.extended or args.deep:
+        for label,cmd in EXTENDED_POSITIVE:
+            rc=run_case(label,cmd,args.verbose)
+            status="EXTENDED-PASS" if rc==0 else "EXTENDED-FAIL"
+            print(f"[{status}] {label}")
+            if rc!=0:
+                failures.append(label)
 
     for label,cmd in EXPECTED_FAILURE:
         rc=run_case(label,cmd,args.verbose)
@@ -134,6 +146,8 @@ def main():
 
     print("REFERENCE SUITE PASS")
     print("Note: this validates current frozen offline gates, not VST3 release QA.")
+    if not (args.extended or args.deep):
+        print("Use --extended for expensive current numerical hard gates.")
     if not args.deep:
         print("Use --deep for archived/heavy research comparisons.")
     return 0
