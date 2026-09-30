@@ -1,4 +1,4 @@
-# revision: 15 - true fast hard gates after suite split
+# revision: 13 - corrected 144H Iron candidate basis
 name: V2 Offline Reference Suite
 
 on:
