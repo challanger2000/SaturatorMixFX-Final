@@ -22,6 +22,9 @@ PY=sys.executable
 
 
 POSITIVE=[
+    ("EF86 Stage-3 large-signal knee", ["tools/smx3_v2_ef86_stage3_knee_candidate.py"]),
+    ("EF86 Stage-2 joint static", ["tools/smx3_v2_ef86_stage2_joint_static.py"]),
+    ("EF86 Stage-1 plate surface", ["tools/smx3_v2_ef86_stage1_plate_surface.py"]),
     ("IRON numerical-method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
     ("provisional Iron exact-anchor candidate", ["tools/smx3_v2_iron_candidate.py"]),
     ("ECC83 operating point", ["tools/smx3_v2_ecc83_reference.py","--check"]),
@@ -37,6 +40,8 @@ POSITIVE=[
 ]
 
 INFORMATIONAL=[
+    ("EF86 Graph-A three-way family comparison", ["tools/smx3_v2_ef86_graphA_threeway.py"]),
+    ("EF86 Stage-2 minimal-screen rejection", ["tools/smx3_v2_ef86_stage2_screen_probe.py"]),
     ("EF86 unified multi-domain scorecard", ["tools/smx3_v2_ef86_scorecard.py"]),
     ("EF86 Graph-A family comparison", ["tools/smx3_v2_ef86_graphA_compare.py"]),
     ("IRON reset convergence", ["tools/smx3_v2_iron_reset_convergence.py"]),
