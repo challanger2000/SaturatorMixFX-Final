@@ -1,4 +1,4 @@
-# revision: 3 - add nonlinear time-domain magnetic transfer gate
+# revision: 4 - rerun corrected time-domain phasor gate
 name: V2 IRON Unified Regression
 
 on:
