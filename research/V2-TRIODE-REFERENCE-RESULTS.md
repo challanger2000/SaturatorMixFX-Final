@@ -62,3 +62,21 @@ RSD-2 provisional cross-source limits:
 - distortion error at 26 Vrms <=0.5 percentage points
 
 These are research-regression tolerances, not production claims.
+
+
+## Superseding loaded-amplifier recheck
+
+The small-signal gain values above were originally evaluated without the documented 330 kOhm following-stage AC load.
+
+That comparison must not be used as the final amplifier-fit judgement.
+
+The authoritative follow-up is:
+research/V2-TRIODE-MULTIDOMAIN-RECHECK.md
+
+Loaded EHX-1:
+- gain approximately 50.22 V/V vs Mullard 54.5
+- output approximately 32.52 Vrms at peak Ig about 0.3 uA vs Mullard 26 Vrms
+- THD approximately 3.42 % vs Mullard 3.9 %
+
+Status:
+EHX-1 is the best published measured-specimen starting point, NOT a completed Mullard-reference fit.
