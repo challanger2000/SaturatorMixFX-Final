@@ -168,21 +168,42 @@ def trapezoid_step(t,x,dt,vin_peak,freq):
     raise RuntimeError("Newton solver did not converge")
 
 
-def simulate(freq,vin_rms,fs=None,cycles=8):
+def simulate(freq,vin_rms,fs=None,cycles=8,warmup_seconds=0.4):
     # The offline reference must not let its own integration rate dominate the
     # measured HF response. Keep at least 96 integration steps per fundamental
-    # period and never go below 192 kHz.
+    # period and never go below 192 kHz for the analysis interval.
     if fs is None:
         fs=max(192000.0,96.0*freq)
-    samples=max(1,int(round(cycles*fs/freq)))
-    dt=1.0/fs
+
     x=solve_dc()
     vin_peak=vin_rms*math.sqrt(2.0)
-    out=[]
     max_newton=0
 
+    # IMPORTANT:
+    # A fixed number of cycles is not a valid settling criterion for this
+    # circuit. The 50 uF cathode bypass with 1.5 kOhm Rk has a ~75 ms time
+    # constant, so 8 cycles at 10/20 kHz are far too short.
+    #
+    # Precondition for a fixed physical time at a lower-but-still-resolved
+    # integration density, then switch to the high-density analysis rate.
+    # This keeps HF reference cost tractable without measuring startup
+    # transients as harmonic distortion.
+    warm_fs=min(fs,max(192000.0,24.0*freq))
+    warm_samples=max(0,int(round(warmup_seconds*warm_fs)))
+    warm_dt=1.0/warm_fs
+
+    for n in range(warm_samples):
+        x,it=trapezoid_step(n*warm_dt,x,warm_dt,vin_peak,freq)
+        max_newton=max(max_newton,it)
+
+    t0=warm_samples/warm_fs if warm_samples else 0.0
+
+    samples=max(1,int(round(cycles*fs/freq)))
+    dt=1.0/fs
+    out=[]
+
     for n in range(samples):
-        x,it=trapezoid_step(n*dt,x,dt,vin_peak,freq)
+        x,it=trapezoid_step(t0+n*dt,x,dt,vin_peak,freq)
         max_newton=max(max_newton,it)
         out.append(x[O])
 
@@ -198,7 +219,7 @@ def simulate(freq,vin_rms,fs=None,cycles=8):
     # advances from n*dt to (n+1)*dt before the output sample is stored.
     # Project both output and the known input on those SAME absolute time
     # instants. This avoids a sample-rate-dependent one-step phase bias.
-    times=[(start+i+1)/fs for i in range(N)]
+    times=[t0+(start+i+1)/fs for i in range(N)]
 
     mags=[]
     phases=[]
