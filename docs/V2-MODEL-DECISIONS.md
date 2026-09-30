@@ -483,3 +483,35 @@ do not implement TRI0DE by simply running the full offline MNA at 16x.
 Develop a reduced/exactly discretized linear-capacitive network around the
 validated nonlinear tube current law, then select oversampling separately from
 alias measurements.
+
+
+### EF86 Stage-2 joint static candidate
+Status: STRONG PROVISIONAL STATIC CANDIDATE
+
+Reason:
+- one coupled plate/screen parameter set clears the current Graph A/B surfaces;
+- reproduces Ia, Ig2, gm and Ri closely;
+- reproduces Philips circuit-1 Ik(Vb) and small-signal gain(Vb) without per-supply correction.
+
+Limitation:
+- large-signal 5%-THD envelope remains too early without Stage-3 knee correction.
+
+### EF86 Stage-3 localized knee candidate
+Status: STRONG PROVISIONAL LARGE-SIGNAL CANDIDATE
+
+Reason:
+- localized low-Va correction leaves normal Graph-A/B operating region essentially untouched;
+- exact 5%-THD supply envelope is now within roughly 0.3-4.2%;
+- Graph-D input/output compression trajectory is very close to provisional manufacturer reads.
+
+Remaining limitation:
+- Graph-D intermediate distortion points are not yet calibrated strongly enough for another free fit parameter;
+- control-grid current and dynamic input network are still missing.
+
+### EF86 control-grid current
+Status: REQUIRED FOR FINAL DYNAMIC PENTODE REFERENCE
+
+Cross-source EF86/6267 data place Ig1≈0.3 uA near Vg1≈-1.3 V.
+
+Consequence:
+the final dynamic PENTODE model must include control-grid current and input-network state before production Drive calibration is frozen.
