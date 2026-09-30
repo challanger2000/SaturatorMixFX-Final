@@ -1,30 +1,28 @@
-> SUPERSEDED NUMERICAL VALUES — 2026-09-30
->
-> The residual table below used the historical EHX-1 specimen. The method itself remains
-> the required cross-check. RSD-2 is now the dynamic reference and must independently
-> clear the same frozen method-agreement tolerances.
-
 # SMX-3 V2 TRI0DE Integration-Method Cross-Check
 
 Date: 2026-09-30
+Primary specimen: Dempwolf/Zoelzer RSD-2 12AX7
 
 Methods:
 - implicit trapezoidal integration;
 - independent implicit midpoint integration.
 
-Both solve the same:
-- Dempwolf/Zoelzer EHX-1 current equations;
+Both solve:
+- RSD-2 measured current equations;
 - Philips/Mullard ECC83 surrounding network;
-- Cag/Cgk/Cak parasitic capacitances.
+- Cag/Cgk/Cak parasitic capacitances;
+- the same physical-time settling protocol.
 
-## Results at high reference density
+## Current RSD-2 results
 
-| case | rate | gain residual | phase residual | THD residual |
+Revision-11 run 36692441356:
+
+| case | reference rate | gain residual | phase residual | THD residual |
 |---|---:|---:|---:|---:|
-| 1 kHz / 10 mVrms | 768 kHz | ~8.38 ppm | ~0.00000042 deg | ~0.00000090 pp |
-| 1 kHz / 0.70 Vrms | 768 kHz | ~8.36 ppm | ~0.00000020 deg | ~0.000104 pp |
-| 10 kHz / 10 mVrms | 3.84 MHz | ~33.24 ppm | ~0.000000014 deg | ~0.0000168 pp |
-| 20 kHz / 10 mVrms | 7.68 MHz | ~33.34 ppm | ~0.000000040 deg | ~0.0000093 pp |
+| 1 kHz / 10 mVrms | 768 kHz | ~8.503 ppm | ~0.000000121 deg | ~0.000001004 pp |
+| 1 kHz / 0.70 Vrms | 768 kHz | ~8.814 ppm | ~0.000000468 deg | ~0.000165752 pp |
+| 10 kHz / 10 mVrms | 3.84 MHz | ~33.956 ppm | ~0.000000036 deg | ~0.000003051 pp |
+| 20 kHz / 10 mVrms | 7.68 MHz | ~33.614 ppm | ~0.000000064 deg | ~0.000002662 pp |
 
 pp = percentage-points.
 
@@ -36,21 +34,14 @@ pp = percentage-points.
 
 ## Decision
 
-PASS.
+PASS for the RSD-2 offline reference.
 
-The two independent second-order implicit formulations converge to effectively the same aggregate solution over:
-- low-level operation;
-- materially nonlinear operation;
-- 10 kHz;
-- 20 kHz.
+Basic numerical-integrator credibility is no longer a TRI0DE blocker.
 
-This materially strengthens the dynamic TRI0DE offline authority.
-
-The remaining TRI0DE blockers are no longer basic numerical-integrator credibility. They are now primarily:
-- operating-domain diagnostics (grid current / Va<20 V);
-- frozen multi-frequency/multi-level fixture matrix;
+Remaining work concerns:
+- physical grid-current/archetype choice;
+- blocking/recovery;
 - realtime reduction;
-- aliasing/CPU comparison;
-- final product Drive calibration.
-
-Dempwolf Figure-9 direct waveform residual remains intentionally excluded because the paper does not publish the numerical component values of its specific laboratory Figure-8 amplifier.
+- aliasing;
+- CPU;
+- final product calibration.
