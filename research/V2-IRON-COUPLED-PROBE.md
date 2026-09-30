@@ -136,3 +136,50 @@ while preserving:
 - stateful magnetic memory.
 
 Do NOT discard Jiles-Atherton merely because the published example parameter set fails the JT-11P-1 amplitude law.
+
+
+## Settled magnetic-cycle correction — 2026-09-30
+
+The earlier harmonic-parity follow-up analyzed the Jiles-Atherton response before the magnetic state had fully reached a periodic orbit.
+
+That especially contaminated H2.
+
+The coupled probe now performs 40 complete magnetic warm-up cycles before analyzing the final four cycles.
+
+With the original rejected DAFx example parameter shape and the same high-level scaling, the settled-state results are approximately:
+
+### +4 dBu / 20 Hz
+- THD ≈ 0.1584 %
+- H3 ≈ 0.1573 %
+- H5 ≈ 0.0150 %
+- H2 becomes effectively negligible
+- H2/H3 falls to roughly -99 dB
+
+### +14 dBu / 20 Hz
+- THD ≈ 0.4218 %
+- H3 ≈ 0.4205 %
+- H2 effectively negligible
+
+### +20 dBu / 20 Hz
+- THD ≈ 0.9971 %
+- H3 ≈ 0.9830 %
+- H5 ≈ 0.1645 %
+- H2 effectively negligible
+
+## Revised conclusion
+
+The earlier reported finite H2 in the 12-cycle run was primarily magnetic startup/remanence settling, not the stationary symmetric distortion of the model.
+
+This strengthens, rather than weakens, the Jensen/Whitlock consistency:
+
+- the un-biased settled model is overwhelmingly odd-symmetric;
+- H3 dominates;
+- even harmonics collapse after the periodic orbit is reached.
+
+The model is still rejected as a JT-11P-1 amplitude-law fit because:
+- +4 dBu / 20 Hz remains about 0.158 % THD instead of ~0.025 %;
+- +20 dBu / 20 Hz remains close to the fitted ~1 % point.
+
+Therefore the remaining problem is specifically the low-field nonlinear/hysteretic strength, not harmonic parity.
+
+Future IRON fitting must measure only after magnetic periodic-state convergence or after an explicitly defined demagnetization/state protocol.
