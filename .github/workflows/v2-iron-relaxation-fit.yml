@@ -1,0 +1,40 @@
+name: V2 IRON Relaxation Fit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-iron-relaxation-fit.yml'
+
+jobs:
+  relaxation-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check
+        run: |
+          python -m py_compile             tools/smx3_v2_dlp_utils.py             tools/smx3_v2_iron_relaxation_fit.py
+
+      - name: Run one-state magnetic-relaxation fit
+        shell: bash
+        run: |
+          python tools/smx3_v2_iron_relaxation_fit.py 2>&1 | tee iron-relaxation-fit.log
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-IRON-Relaxation-Fit
+          path: iron-relaxation-fit.log
+          if-no-files-found: warn
