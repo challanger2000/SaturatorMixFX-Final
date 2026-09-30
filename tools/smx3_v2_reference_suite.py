@@ -22,6 +22,7 @@ PY=sys.executable
 
 
 POSITIVE=[
+    ("EF86 Stage-3 cross-domain", ["tools/smx3_v2_ef86_stage3_crossdomain.py"]),
     ("IRON DC-bias/remanence gate", ["tools/smx3_v2_iron_dc_bias_probe.py"]),
     ("IRON numerical method cross-check", ["tools/smx3_v2_iron_method_crosscheck.py"]),
     ("EF86 Stage-3 large-signal knee", ["tools/smx3_v2_ef86_stage3_knee_candidate.py"]),
