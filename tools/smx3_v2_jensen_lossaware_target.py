@@ -27,6 +27,7 @@ manufacturer construction values.
 
 import math
 import cmath
+from smx3_v2_dlp_utils import dlp_degrees
 
 RSOURCE=600.0
 RP=1450.0
@@ -101,40 +102,14 @@ def relative_db(freq):
     return db(transfer(freq,True))-db(transfer(1000.0,True))
 
 
-def unwrap(phases):
-    out=[phases[0]]
-    for p in phases[1:]:
-        q=p
-        while q-out[-1]>math.pi:
-            q-=2.0*math.pi
-        while q-out[-1]<-math.pi:
-            q+=2.0*math.pi
-        out.append(q)
-    return out
-
-
-def fit_line(xs,ys):
-    n=len(xs)
-    sx=sum(xs); sy=sum(ys)
-    sxx=sum(x*x for x in xs)
-    sxy=sum(x*y for x,y in zip(xs,ys))
-    den=n*sxx-sx*sx
-    b=(n*sxy-sx*sy)/den
-    a=(sy-b*sx)/n
-    return a,b
-
-
 def dlp():
     n=1201
     f0=20.0
     f1=20000.0
     freqs=[f0*(f1/f0)**(i/(n-1)) for i in range(n)]
-    phases=unwrap([cmath.phase(transfer(f,True)) for f in freqs])
-    a,b=fit_line(freqs,phases)
-    res=[math.degrees(p-(a+b*f)) for f,p in zip(freqs,phases)]
-    return freqs,res,-b/(2.0*math.pi)
-
-
+    phases=[cmath.phase(transfer(f,True)) for f in freqs]
+    d=dlp_degrees(freqs,phases)
+    return freqs,d["residual_deg"],d["delay_s"]
 def main():
     gain_1k=db(transfer(1000.0,False))
     zin=abs(input_impedance(1000.0))
