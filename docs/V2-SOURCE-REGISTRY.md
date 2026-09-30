@@ -361,3 +361,33 @@ SMX-3 use:
 - validate importance of grid-current/coupling-capacitor interaction;
 - design blocking/recovery fixtures;
 - cross-check extreme Drive behavior independently from Dempwolf.
+
+
+### D. C. Jiles — Modelling the Effects of Eddy Current Losses on Frequency Dependent Hysteresis in Electrically Conducting Media
+IEEE Transactions on Magnetics 30(6), 1994, pp. 4326-4328
+DOI: 10.1109/20.334076
+Open copy: https://zenodo.org/records/1232132
+Evidence use: DYNAMIC-LOSS MODEL ARCHITECTURE
+
+Relevant result:
+- the quasi-static hysteresis model is extended with explicit frequency-dependent loss terms;
+- classical eddy-current instantaneous power scales with (dB/dt)^2;
+- anomalous/excess-loss power scales with |dB/dt|^(3/2);
+- the quasi-static hysteresis loop remains the limiting low-frequency case.
+
+SMX-3 implication:
+- keep static/quasi-static Jiles-Atherton hysteresis parameters responsible for hysteresis/remanence;
+- represent missing dynamic/core losses with separate derivative-dependent loss terms;
+- require added dynamic-loss contribution to vanish as dB/dt -> 0 so DC/remanence behavior is not silently replaced.
+
+### Dynamic Jiles-Atherton core-loss literature
+Core Loss Calculation Based on Finite-Element Method with Jiles-Atherton Dynamic Hysteresis Model, IEEE Transactions on Magnetics 54(3), 2018
+Repository summary: http://hdl.handle.net/10453/131295
+Evidence use: DYNAMIC-LOSS MODEL ARCHITECTURE
+
+Relevant result:
+- traditional Jiles-Atherton hysteresis is combined with separate instantaneous eddy-current and excess-loss models;
+- hysteresis, eddy-current and excess losses are identified/fitted as distinct contributions.
+
+SMX-3 implication:
+the next IRON stage should not retune quasi-static hysteresis merely to fake Jensen DLP.
