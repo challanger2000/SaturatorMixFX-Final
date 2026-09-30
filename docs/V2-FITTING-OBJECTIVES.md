@@ -75,7 +75,7 @@ Frozen/derived:
 - turns ratio=1:1
 - load=10 kOhm
 - source=600 Ohm for cited tests
-- low-level effective Lm ~106.55 H from the 20 Hz response anchor
+- low-level effective Lm ~144.0 H from the 20 Hz response anchor in test circuit 1 with Rs=600 Ohm
 
 Targets:
 - 1 kHz input impedance
