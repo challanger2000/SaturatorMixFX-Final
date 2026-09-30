@@ -46,13 +46,20 @@ def simulate_linear(freq,level_dbu=-40.0,fs=None,warmup_cycles=30,analysis_cycle
         M += dt*(k1m+2*k2m+2*k3m+k4m)/6.0
 
         if i>=start:
-            a=2.0*math.pi*freq*(i-start)/fs
+            a=2.0*math.pi*freq*i/fs
             re += v1*math.cos(a)
             im -= v1*math.sin(a)
             count += 1
 
     cy=complex(re,im)
-    cx=complex(0.0,-0.5*amp*count)
+    rex=0.0
+    imx=0.0
+    for i in range(start,n):
+        a=2.0*math.pi*freq*i/fs
+        x=amp*math.sin(a)
+        rex+=x*math.cos(a)
+        imx-=x*math.sin(a)
+    cx=complex(rex,imx)
     return cy/cx
 
 
