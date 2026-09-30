@@ -62,7 +62,7 @@ static std::vector<double> programme(const std::string& kind,int n)
     return y;
 }
 
-static void measure(const std::string& material,double character)
+static void measure(const std::string& material,double character,double drive)
 {
     constexpr int N=48000;
     constexpr int warm=4096;
@@ -70,8 +70,8 @@ static void measure(const std::string& material,double character)
     wetCore.prepare(fs);
     dryCore.prepare(fs);
     Core::ChannelState wetState{}, dryState{};
-    Core::Params wetParams{0.0,character,1.0,0.75};
-    Core::Params dryParams{0.0,character,0.0,0.75};
+    Core::Params wetParams{drive,character,1.0,0.75};
+    Core::Params dryParams{drive,character,0.0,0.75};
 
     auto x=programme(material,N);
     std::vector<double> yWet(N), yDry(N);
@@ -107,6 +107,7 @@ static void measure(const std::string& material,double character)
     const char* mode=character<.25?"TRIODE":(character<.75?"PENTODE":"IRON");
     std::cout<<std::fixed<<std::setprecision(3)
              <<material<<","<<mode
+             <<",drive_pct="<<static_cast<int>(std::lround(drive*100.0))
              <<",lag="<<bestLag
              <<",level_delta_dB="<<levelDelta
              <<",matched_residual_dBc="<<residual
@@ -115,10 +116,11 @@ static void measure(const std::string& material,double character)
 
 int main()
 {
-    std::cout<<"material,mode,metrics\n";
+    std::cout<<"material,mode,drive,metrics\n";
     for(const char* m:{"drums","bass","guitar"})
         for(double c:{0.0,.5,1.0})
-            measure(m,c);
-    std::cout<<"PASS: zero-drive hardware-character benchmark completed\n";
+            for(double d:{0.0,.25,.50,.75,1.0})
+                measure(m,c,d);
+    std::cout<<"PASS: hardware-character drive sweep completed\n";
     return 0;
 }
