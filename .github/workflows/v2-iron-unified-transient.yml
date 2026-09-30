@@ -1,4 +1,4 @@
-# revision: 5 - RK2 vs RK4 transient candidate matrix
+# revision: 6 - add practical program-material benchmark
 name: V2 IRON Unified Transient Multitone
 
 on:
@@ -19,6 +19,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Syntax
-        run: python -m py_compile tools/smx3_v2_iron_unified_transient_multitone.py
+        run: python -m py_compile tools/smx3_v2_iron_unified_transient_multitone.py tools/smx3_v2_iron_practical_program_benchmark.py
       - name: Run transient multitone gate
         run: python tools/smx3_v2_iron_unified_transient_multitone.py
+      - name: Run practical program-material benchmark
+        run: python tools/smx3_v2_iron_practical_program_benchmark.py
