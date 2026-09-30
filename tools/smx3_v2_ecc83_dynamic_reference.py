@@ -268,7 +268,7 @@ def simulate(freq,vin_rms,fs=None,cycles=8,warmup_seconds=0.4):
 
 def main():
     dc=solve_dc()
-    print("SMX-3 V2 dynamic ECC83 EHX-1 reference")
+    print("SMX-3 V2 dynamic ECC83 RSD-2 reference")
     print(f"DC: Vp={dc[P_NODE]:.9f} V Vk={dc[K]:.9f} V")
     print()
 
