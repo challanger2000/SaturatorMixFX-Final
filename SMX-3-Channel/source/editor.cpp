@@ -110,6 +110,20 @@ private:
     VSTGUI::SharedPointer<VSTGUI::CVSTGUITimer>timer_;
 };
 
+class VersionLabelView final : public VSTGUI::CView {
+public:
+    explicit VersionLabelView(const VSTGUI::CRect& r):CView(r){setMouseEnabled(false);}
+    void draw(VSTGUI::CDrawContext* ctx) override {
+        if(!ctx){setDirty(false);return;}
+        auto r=getViewSize();
+        ctx->setDrawMode(VSTGUI::kAntiAliasing);
+        ctx->setFont(VSTGUI::kNormalFontSmall);
+        ctx->setFontColor({205,210,218,210});
+        ctx->drawString("V2 · 2.0.0",r,VSTGUI::kRightText);
+        setDirty(false);
+    }
+};
+
 class ZoomView final : public VSTGUI::CView {
 public:
     ZoomView(const VSTGUI::CRect&r,SMX3Editor*e):CView(r),editor_(e){setMouseEnabled(true);}
@@ -122,6 +136,6 @@ private: SMX3Editor*editor_=nullptr;
 
 SMX3Editor::SMX3Editor(Steinberg::Vst::EditController*c):VSTGUI::VST3Editor(c,"view","SMX3.uidesc"),controller_(c){setZoomFactor(.68);setAllowedZoomFactors({.50,.68});}
 void SMX3Editor::setUserZoom(double f){if(f==.50||f==.68)setZoomFactor(f);}
-VSTGUI::CView* SMX3Editor::createView(const VSTGUI::UIAttributes&a,const VSTGUI::IUIDescription*d){if(const auto n=a.getAttributeValue(VSTGUI::IUIDescription::kCustomViewName)){if(*n=="TubeGlow")return new TubeGlowView({0,0,1536,520});if(*n=="Underlight")return new BitmapView({243,895,1293,965},"SMX3_Base_Underlight.png");if(*n=="Drive")return new DriveView({618,553,918,853},controller_);if(*n=="Mode")return new ModeView({990,660,1468,825},controller_);if(*n=="UiZoom")return new ZoomView({1370,70,1450,102},this);}return VSTGUI::VST3Editor::createView(a,d);}
+VSTGUI::CView* SMX3Editor::createView(const VSTGUI::UIAttributes&a,const VSTGUI::IUIDescription*d){if(const auto n=a.getAttributeValue(VSTGUI::IUIDescription::kCustomViewName)){if(*n=="TubeGlow")return new TubeGlowView({0,0,1536,520});if(*n=="Underlight")return new BitmapView({243,895,1293,965},"SMX3_Base_Underlight.png");if(*n=="Drive")return new DriveView({618,553,918,853},controller_);if(*n=="Mode")return new ModeView({990,660,1468,825},controller_);if(*n=="UiZoom")return new ZoomView({1370,70,1450,102},this);if(*n=="VersionLabel")return new VersionLabelView({1280,930,1490,975});}return VSTGUI::VST3Editor::createView(a,d);}
 
 } // namespace SaturatorMixFX
