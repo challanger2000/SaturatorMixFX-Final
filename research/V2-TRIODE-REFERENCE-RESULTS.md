@@ -1,68 +1,64 @@
-# SMX-3 V2 TRI0DE Reference Baseline Results
+# SMX-3 V2 TRI0DE Reference Baseline — corrected loaded-circuit comparison
 
 Date: 2026-09-30
 Tool: tools/smx3_v2_ecc83_reference.py
-Reference circuit: Mullard ECC83 R-C coupled A.F. amplifier, Vb=250 V, Ra=100 kOhm, Rk=1.5 kOhm
+
+## Why this document supersedes the earlier EHX-1 selection
+
+The first cross-source comparison used the selected 250 V / 100 kOhm / 1.5 kOhm operating point but compared small-signal gain without the manufacturer-documented 330 kOhm following-stage load.
+
+The Philips/Mullard circuit diagram and table explicitly include Rg'=330 kOhm for the selected row.
+
+That load materially changes the gain comparison and therefore the preferred measured 12AX7 specimen.
+
+The corrected comparison includes:
+- Vb=250 V
+- Ra=100 kOhm
+- Rk=1.5 kOhm
+- Rg'=330 kOhm
+- cathode bypassed for the low-frequency/static comparison
 
 Manufacturer anchors:
-- Ik ~0.86 mA
-- |Av| ~54.5 V/V
+- Ia/Ik approximately 0.86 mA
+- voltage gain 54.5
+- output 26 Vrms at the stated Ig=0.3 uA criterion
+- total distortion 3.9% at that operating condition
 
-Published Dempwolf/Zoelzer 12AX7 fitted specimens were inserted into the same cathode-bias circuit without empirical correction.
+## Corrected results
 
-## Results
+| specimen | solved Ik | current error | loaded gain | gain error | model THD at 26 Vrms |
+|---|---:|---:|---:|---:|---:|
+| RSD-1 | 0.8225 mA | -4.36% | 59.09 | +8.43% | 3.71% |
+| RSD-2 | 0.8354 mA | -2.86% | 57.51 | +5.52% | 3.70% |
+| EHX-1 | 0.8248 mA | -4.09% | 50.22 | -7.84% | 2.53% |
 
-| fitted specimen | solved Ik | Ik error vs Mullard | solved cathode V | solved plate V | small-signal Av | gain error vs Mullard |
-|---|---:|---:|---:|---:|---:|---:|
-| RSD-1 | 0.822535 mA | -4.356 % | 1.233802 V | 167.754571 V | -65.6144 | +20.393 % |
-| RSD-2 | 0.835388 mA | -2.862 % | 1.253082 V | 166.465697 V | -63.8346 | +17.128 % |
-| EHX-1 | 0.824808 mA | -4.092 % | 1.237213 V | 167.523073 V | -55.6907 | +2.185 % |
+## Decision
 
-## Interpretation
+RSD-2 supersedes EHX-1 as the first SMX-3 V2 TRI0DE reference specimen.
 
-All three fitted physical specimens solve to a cathode current reasonably close to the Mullard average operating point.
+Reason:
+- closest loaded gain of the three published measured specimens;
+- very close cathode current;
+- model distortion near the manufacturer 3.9% value at 26 Vrms.
 
-However, the two RSD fits predict substantially higher small-signal gain in this specific Mullard circuit.
+This correction is an example of the project measurement policy working as intended: a prior provisional decision is changed when a more complete circuit model provides better evidence.
 
-EHX-1 is the only published specimen of the three that simultaneously:
-- remains within about 4.1 % of the Mullard cathode-current anchor;
-- remains within about 2.2 % of the Mullard gain anchor;
-- requires no output-gain trim or model-coefficient retuning.
+## Remaining mismatch: manufacturer grid-current criterion
 
-Therefore EHX-1 is selected as the first SMX-3 V2 TRI0DE physical reference specimen.
+The manufacturer table labels the 26 Vrms output point with Ig=0.3 uA.
 
-This does not mean:
-- every ECC83 behaves exactly like EHX-1;
-- Mullard average data and the measured EHX specimen are the same tube;
-- production V2 must expose a branded EHX or Mullard clone.
+The Dempwolf specimen models do not reproduce that criterion at 26 Vrms in this static loaded-circuit calculation. RSD-2 grid current remains materially below 0.3 uA at that exact output level.
 
-It means EHX-1 provides the strongest currently available cross-source consistency between:
-1. a measured practical 12AX7 parameter fit;
-2. an independent manufacturer-published ECC83 amplifier operating point.
+Therefore:
+- RSD-2 is a strong cross-source reference, not an exact average-Mullard clone;
+- grid-current onset remains an independent validation dimension;
+- do not retune grid-current parameters solely to force one manufacturer table label until the dynamic manufacturer circuit is simulated and the precise measurement convention is resolved.
 
 ## Regression gate
 
-The research solver currently gates EHX-1 at:
-- absolute cathode-current error <= 8 % versus the Mullard anchor;
-- absolute gain error <= 5 % versus the Mullard anchor.
+RSD-2 provisional cross-source limits:
+- cathode-current error <=5%
+- loaded gain error <=6%
+- distortion error at 26 Vrms <=0.5 percentage points
 
-These limits are intentionally wider than the present result. They detect implementation/units/solver regressions while allowing for:
-- manufacturer average vs individual specimen differences;
-- the simplified low-frequency small-signal load assumptions in the current reference solver.
-
-Tolerances may only be tightened after:
-- output load is represented exactly;
-- cathode bypass and coupling networks are frozen;
-- parasitic capacitances are added;
-- the manufacturer table transcription is independently rechecked.
-
-## Next TRI0DE reference tests
-
-1. Static Ia/Ig surface points from Dempwolf/Zoelzer.
-2. Positive-grid-current onset.
-3. Low-frequency large-signal transfer.
-4. Harmonic spectrum versus input amplitude.
-5. Dempwolf paper waveform cases: 500 Hz at 2 V / 4 V / 8 V excitation.
-6. 4 V sine-burst cases at 500 Hz / 1 kHz / 2 kHz.
-7. Add Cak=0.9 pF, Cgk=2.3 pF, Cag=2.4 pF and verify high-frequency behaviour.
-8. Only then derive the realtime candidate.
+These are research-regression tolerances, not production claims.
