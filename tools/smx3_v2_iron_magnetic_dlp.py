@@ -18,6 +18,7 @@ import math
 import cmath
 
 import smx3_v2_iron_candidate as iron
+from smx3_v2_dlp_utils import dlp_degrees
 
 
 FREQS=(20.0,30.0,50.0,100.0,200.0,500.0,1000.0,2000.0,5000.0,10000.0,20000.0)
@@ -78,50 +79,22 @@ def simulate_phase(freq,level_dbu=4.0,warmup_cycles=30,analysis_cycles=4):
     return p
 
 
-def unwrap(phases):
-    out=[phases[0]]
-    for p in phases[1:]:
-        q=p
-        while q-out[-1]>math.pi:
-            q-=2.0*math.pi
-        while q-out[-1]<-math.pi:
-            q+=2.0*math.pi
-        out.append(q)
-    return out
-
-
-def fit_line(xs,ys):
-    n=len(xs)
-    sx=sum(xs);sy=sum(ys)
-    sxx=sum(x*x for x in xs)
-    sxy=sum(x*y for x,y in zip(xs,ys))
-    den=n*sxx-sx*sx
-    b=(n*sxy-sx*sy)/den
-    a=(sy-b*sx)/n
-    return a,b
-
-
 def main():
-    phases=unwrap([simulate_phase(f) for f in FREQS])
-    a,b=fit_line(FREQS,phases)
+    phases=[simulate_phase(f) for f in FREQS]
+    dlp=dlp_degrees(FREQS,phases)
+    residual=dlp["residual_deg"]
+    tau=dlp["delay_s"]
 
-    residual=[
-        math.degrees(p-(a+b*f))
-        for f,p in zip(FREQS,phases)
-    ]
-
-    tau=-b/(2.0*math.pi)
-
-    print("SMX-3 V2 corrected IRON magnetic-only DLP probe")
+    print("SMX-3 V2 corrected IRON magnetic-only Jensen-DLP probe")
     print(f"best-fit delay = {1e6*tau:.9f} us")
     print("freq_Hz,raw_relative_phase_deg,DLP_residual_deg")
 
     for f,p,r in zip(FREQS,phases,residual):
         print(f"{f:.1f},{math.degrees(p):+.9f},{r:+.9f}")
 
-    lo=min(residual)
-    hi=max(residual)
-    worst=max(abs(lo),abs(hi))
+    lo=dlp["min_deg"]
+    hi=dlp["max_deg"]
+    worst=dlp["worst_abs_deg"]
 
     print()
     print(f"residual min = {lo:+.9f} deg")
