@@ -1,4 +1,4 @@
-# revision: 2 - coherent test frequencies and comparable THD
+# revision: 3 - extend Triode numerical rate through 768 kHz
 name: V2 Triode Realtime Rate Benchmark
 
 on:
