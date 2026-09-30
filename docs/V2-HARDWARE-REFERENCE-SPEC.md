@@ -304,3 +304,37 @@ A later Philips receiving-tube handbook gives approximately:
 - dtot = 5 %
 
 Treat the later data as an independent manufacturer cross-check / production-family spread, not as a replacement for the 1956 curve set.
+
+
+## TRI0DE manufacturer circuit-network refinement
+
+Primary manufacturer sheet:
+Philips/Mullard ECC83 operating characteristics, January 1970 edition.
+
+The published A.F.-amplifier diagram explicitly shows:
+- input coupling capacitor: 0.01 uF;
+- input grid-leak resistor: 1 MOhm;
+- cathode bypass capacitor: 50 uF;
+- output coupling capacitor: 0.01 uF.
+
+For the selected 250 V / 100 kOhm anode-resistor row:
+- Ra = 100 kOhm;
+- Rg' (next-stage grid resistor/load) = 330 kOhm;
+- Rk = 1.5 kOhm;
+- Ia = 0.86 mA;
+- voltage gain = 54.5;
+- output at Ig=0.3 uA criterion = 26 Vrms;
+- total distortion at that condition = 3.9%.
+
+Evidence class:
+DOCUMENTED.
+
+V2 consequence:
+the next dynamic TRI0DE offline reference should use the actual published coupling and cathode-bypass network instead of inventing RC time constants.
+
+The Dempwolf/Zoelzer parasitic tube capacitances remain separate device-level elements:
+- Cak=0.9 pF
+- Cgk=2.3 pF
+- Cag=2.4 pF
+
+The manufacturer circuit capacitors and tube parasitics must not be conflated.
