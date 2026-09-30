@@ -20,6 +20,7 @@ import pathlib
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 GRAPHA=ROOT/"research"/"ef86_philips_graphA_provisional.csv"
 GRAPHB=ROOT/"research"/"ef86_philips1956_platecurve_provisional.csv"
+GRAPHB_KNEE=ROOT/"research"/"ef86_philips1956_platecurve_knee_provisional.csv"
 
 P={
     "MU":43.5037280,
@@ -160,6 +161,7 @@ def main():
 
     ar,aw=graph_score(GRAPHA,"A")
     br,bw=graph_score(GRAPHB,"B")
+    kr,kw=graph_score(GRAPHB_KNEE,"B")
 
     print("SMX-3 V2 EF86 Stage-2 joint static candidate")
     print(f"Ia={ia0*1e3:.9f} mA target 3.000")
@@ -167,7 +169,8 @@ def main():
     print(f"gm={gm*1e3:.9f} mA/V target 2.000")
     print(f"Ri={ri/1e6:.9f} MOhm target 2.500")
     print(f"Graph A NRMS={ar:.6f} sigma worst={aw:.6f}")
-    print(f"Graph B NRMS={br:.6f} sigma worst={bw:.6f}")
+    print(f"Graph B plateau NRMS={br:.6f} sigma worst={bw:.6f}")
+    print(f"Graph B knee NRMS={kr:.6f} uncertainty-units worst={kw:.6f}")
     print()
     print("Vb,Ik_mA,target_Ik_mA,gain,target_gain")
 
@@ -187,7 +190,9 @@ def main():
     print(f"worst gain error={worst_g:.6f}%")
 
     if ar>1.25 or br>1.25:
-        raise SystemExit("FAIL: Philips graph surface")
+        raise SystemExit("FAIL: Philips Graph A/B plateau surface")
+    if kr>1.25:
+        raise SystemExit("FAIL: Philips Graph-B low-Va knee surface")
     if abs((ia0-0.003)/0.003)>0.03:
         raise SystemExit("FAIL: Ia anchor")
     if abs((ig20-0.0006)/0.0006)>0.10:
