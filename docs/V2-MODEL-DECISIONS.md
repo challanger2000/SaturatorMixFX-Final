@@ -440,3 +440,29 @@ current model.
 
 Final 1x freeze still requires 44.1 kHz, multitone/transient and C++ realtime
 QA.
+
+
+### IRON host-rate multitone checkpoint
+Status: 1X HOST-RATE ARCHITECTURE NEAR-FROZEN
+
+Direct four-tone IMD waveform residual:
+- 44.1 kHz: ~-96.46 dB
+- 48 kHz: ~-97.86 dB
+
+Together with the sine/direct/alias/state results, fixed IRON oversampling is now rejected as unnecessary for the current physical model.
+
+Remaining offline freeze gate:
+- transient/burst excitation.
+
+### PENTODE oversampling checkpoint
+Status: 1X REJECTED; 4X PRIMARY STRAIGHTFORWARD CANDIDATE; 2X ALTERNATIVE
+
+Coherent physical harmonic-fold estimate at strong drive:
+- 1x worst ~-39.6 dBc;
+- 2x worst ~-80.0 dBc;
+- 4x worst ~-156.6 dBc.
+
+Dynamic numerical accuracy also improves from 1x -> 2x -> 4x.
+
+Decision:
+benchmark 4x as the reference production architecture and compare against any lower-cost 2x + targeted antialias method. Do not ship the strong EF86 path at 1x.
