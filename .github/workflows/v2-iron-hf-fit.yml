@@ -1,4 +1,4 @@
-# revision: 3 - corrected 144H basis, linear and magnetic DLP
+# revision: 4 - include loss-aware small-signal target
 name: V2 IRON HF Reduced Fit
 
 on:
@@ -41,6 +41,11 @@ jobs:
         shell: bash
         run: |
           python tools/smx3_v2_iron_magnetic_dlp.py 2>&1 | tee -a iron-hf-fit.log
+
+      - name: Run loss-aware small-signal target
+        shell: bash
+        run: |
+          python tools/smx3_v2_jensen_lossaware_target.py 2>&1 | tee -a iron-hf-fit.log
 
       - name: Upload log
         if: always()
