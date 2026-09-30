@@ -249,3 +249,26 @@ Published circuit diagram:
 - output coupling C=0.01 uF
 
 This is now the authoritative surrounding network for the dynamic TRI0DE reference unless later primary evidence justifies a deliberate alternative.
+
+
+### Jiles-Atherton parameter identification literature
+
+Hernandez, Muranaka & Cardoso — Identification of the Jiles-Atherton model parameters using random and deterministic searches
+Physica B 275 (2000), 212-215
+DOI: 10.1016/S0921-4526(99)00766-8
+Evidence use: fitting methodology
+Key point: automatic parameter extraction minimizes error against experimental B-H hysteresis curves; simulated annealing is used to seek a global solution.
+
+Rubezic, Lazovic & Jovanovic — Parameter identification of Jiles-Atherton model using the chaotic optimization method
+COMPEL 37(6), 2018
+DOI: 10.1108/COMPEL-11-2017-0496
+Evidence use: fitting methodology
+Key point: five physically meaningful parameters are optimized against measured loops; simultaneous optimization of multiple hysteresis loops is supported.
+
+Constraint-based Jiles-Atherton parameter estimation, COMPEL 39(6), 2020
+DOI: 10.1108/COMPEL-08-2019-0332
+Evidence use: fitting methodology / stability
+Key point: unconstrained fitting can generate non-physical hysteresis loops; physical constraints plus global/local optimization improve robustness.
+
+SMX-3 implication:
+the Jensen audio curves are not B-H loops, so fitted magnetic parameters remain effective model parameters unless direct magnetic evidence becomes available.
