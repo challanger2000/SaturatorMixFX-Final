@@ -226,10 +226,10 @@ def score_c(c):
 def fit():
     candidates=[]
 
-    # Settled-state research narrowed the physically useful c region.
-    # Keep a deterministic coarse scan wide enough to detect regressions.
-    for i in range(10):
-        c=0.44+i*(0.18/9.0)
+    # Settled-state convergence scans independently narrowed the useful
+    # region to about c=0.53..0.54. Keep a small guard band so this remains
+    # a fit rather than a hard-coded verification.
+    for c in (0.520,0.5275,0.5325,0.5350,0.5375,0.5425,0.550):
         r=score_c(c)
         if r is not None:
             candidates.append((r[0],c,r[1],r[2],r[3]))
@@ -240,7 +240,7 @@ def fit():
     candidates.sort(key=lambda x:x[0])
     _,c,ki,_,_=candidates[0]
 
-    step=.010
+    step=.0025
     for _ in range(20):
         current=score_c(c)
         best=(current[0],c,current[1],current[2],current[3])
