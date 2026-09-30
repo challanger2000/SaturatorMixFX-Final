@@ -606,3 +606,27 @@ Evidence:
 Decision:
 do not build a synthetic consensus grid-current law.
 Keep RSD-2 as the internally consistent measured-specimen reference and retain the other sources as strong-drive uncertainty bounds.
+
+
+### IRON linear-skeleton correction: response-test source resistance
+Status: FOUNDATIONAL CORRECTION; previous ~106.55 H Lm superseded
+
+Jensen's 20 Hz magnitude-response specification explicitly uses Rs=600 Ohm.
+
+The original Lm derivation matched -0.04 dB at 20 Hz without including that
+source resistance in the response-test path.
+
+Correct test-condition split:
+- input impedance / transformer voltage gain are properties looking into/across the transformer;
+- 20 Hz and 20 kHz magnitude-response rows explicitly include Rs=600 Ohm.
+
+With Rs=600 Ohm included in the 20 Hz response-test solve:
+- corrected effective Lm is approximately 144.0 H.
+
+Consequence:
+- the previous ~106.55 H magnetic scaling is superseded;
+- the provisional c~0.84 / KI Iron candidate is temporarily demoted pending refit on the corrected 144 H skeleton;
+- all HF work must use the corrected response-test source condition.
+
+No nonlinear Iron parameter is promoted until the exact +4/+20 dBu THD anchors
+are reproduced again on the corrected skeleton.
