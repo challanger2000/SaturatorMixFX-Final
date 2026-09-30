@@ -17,8 +17,9 @@ Circuit:
 
 Numerics:
 constant capacitance MNA matrix + implicit trapezoidal integration with Newton
-iterations. This is deliberately slower than production DSP and serves as the
-dynamic authority candidate.
+iterations. The reference rate is frequency-adaptive: at least 192 kHz and at
+least 96 integration steps per fundamental period. This is deliberately slower
+than production DSP and serves as the dynamic authority candidate.
 
 Standard library only.
 """
@@ -167,7 +168,12 @@ def trapezoid_step(t,x,dt,vin_peak,freq):
     raise RuntimeError("Newton solver did not converge")
 
 
-def simulate(freq,vin_rms,fs=192000.0,cycles=8):
+def simulate(freq,vin_rms,fs=None,cycles=8):
+    # The offline reference must not let its own integration rate dominate the
+    # measured HF response. Keep at least 96 integration steps per fundamental
+    # period and never go below 192 kHz.
+    if fs is None:
+        fs=max(192000.0,96.0*freq)
     samples=max(1,int(round(cycles*fs/freq)))
     dt=1.0/fs
     x=solve_dc()
