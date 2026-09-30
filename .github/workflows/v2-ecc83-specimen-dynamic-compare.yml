@@ -1,0 +1,31 @@
+name: V2 ECC83 Specimen Dynamic Compare
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.0.0-development
+    paths:
+      - '.github/workflows/v2-ecc83-specimen-dynamic-compare.yml'
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile tools/smx3_v2_ecc83_specimen_dynamic_compare.py
+      - name: Run specimen comparison
+        run: |
+          python tools/smx3_v2_ecc83_specimen_dynamic_compare.py 2>&1 | tee ecc83-specimen-dynamic.log
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMX3-V2-ECC83-Specimen-Dynamic
+          path: ecc83-specimen-dynamic.log
+          if-no-files-found: error
