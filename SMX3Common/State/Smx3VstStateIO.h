@@ -1,52 +1,14 @@
 #pragma once
 
 #include "Smx3StateV2.h"
+#include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 
 namespace SaturatorMixFX {
 namespace StateV2 {
-
-constexpr std::size_t kMaxSerializedBytes = 256u;
-
-inline bool readExact(Steinberg::IBStream* stream, void* dst, Steinberg::int32 bytes)
-{
-    if (!stream || !dst || bytes < 0)
-        return false;
-
-    auto* out = static_cast<std::uint8_t*>(dst);
-    Steinberg::int32 total = 0;
-    while (total < bytes)
-    {
-        Steinberg::int32 got = 0;
-        const auto result = stream->read(out + total, bytes - total, &got);
-        if (result != Steinberg::kResultOk || got <= 0)
-            return false;
-        total += got;
-    }
-    return true;
-}
-
-inline bool writeExact(Steinberg::IBStream* stream, const void* src, Steinberg::int32 bytes)
-{
-    if (!stream || !src || bytes < 0)
-        return false;
-
-    auto* in = static_cast<const std::uint8_t*>(src);
-    Steinberg::int32 total = 0;
-    while (total < bytes)
-    {
-        Steinberg::int32 written = 0;
-        const auto result = stream->write(const_cast<std::uint8_t*>(in + total), bytes - total, &written);
-        if (result != Steinberg::kResultOk || written <= 0)
-            return false;
-        total += written;
-    }
-    return true;
-}
 
 inline DecodeResult readFromStream(Steinberg::IBStream* stream)
 {
@@ -54,38 +16,71 @@ inline DecodeResult readFromStream(Steinberg::IBStream* stream)
     if (!stream)
         return invalid;
 
-    std::array<std::uint8_t, kMaxSerializedBytes> bytes{};
-
-    // Four bytes are sufficient to distinguish the V2 magic from the legacy
-    // five-double payload without seeking backwards in the host stream.
-    if (!readExact(stream, bytes.data(), 4))
+    Steinberg::IBStreamer io(stream, Steinberg::kLittleEndian);
+    const auto start = io.tell();
+    if (start < 0)
         return invalid;
 
-    if (getU32LE(bytes.data()) != kMagic)
+    Steinberg::int32 marker = 0;
+    if (!io.readInt32(marker))
+        return invalid;
+
+    if (static_cast<std::uint32_t>(marker) != kMagic)
     {
-        if (!readExact(stream, bytes.data() + 4,
-                       static_cast<Steinberg::int32>(kLegacyBytes - 4)))
+        if (io.seek(start, Steinberg::kSeekSet) != start)
             return invalid;
-        return decode(bytes.data(), kLegacyBytes);
+
+        Parameters legacy{};
+        if (!io.readDouble(legacy.bypass) ||
+            !io.readDouble(legacy.drive) ||
+            !io.readDouble(legacy.character) ||
+            !io.readDouble(legacy.mix) ||
+            !io.readDouble(legacy.output))
+            return invalid;
+
+        DecodeResult result{};
+        if (!sanitize(legacy, result.params))
+            return invalid;
+        result.source = Source::LegacyV1;
+        return result;
     }
 
-    if (!readExact(stream, bytes.data() + 4,
-                   static_cast<Steinberg::int32>(kHeaderBytes - 4)))
+    Steinberg::int32 version = 0;
+    Steinberg::int32 payloadBytes = 0;
+    Steinberg::int32 reserved = 0;
+    if (!io.readInt32(version) ||
+        !io.readInt32(payloadBytes) ||
+        !io.readInt32(reserved))
         return invalid;
 
-    const std::uint32_t payloadBytes = getU32LE(bytes.data() + 8);
-    if (payloadBytes < kV1PayloadBytes)
+    (void)reserved;
+
+    if (static_cast<std::uint32_t>(version) != kFormatVersion ||
+        payloadBytes < static_cast<Steinberg::int32>(kV1PayloadBytes))
         return invalid;
 
-    const std::size_t total = kHeaderBytes + static_cast<std::size_t>(payloadBytes);
-    if (total > bytes.size())
+    Parameters current{};
+    if (!io.readDouble(current.bypass) ||
+        !io.readDouble(current.drive) ||
+        !io.readDouble(current.character) ||
+        !io.readDouble(current.mix) ||
+        !io.readDouble(current.output))
         return invalid;
 
-    if (!readExact(stream, bytes.data() + kHeaderBytes,
-                   static_cast<Steinberg::int32>(payloadBytes)))
-        return invalid;
+    const auto extraBytes =
+        payloadBytes - static_cast<Steinberg::int32>(kV1PayloadBytes);
+    if (extraBytes > 0)
+    {
+        const auto pos = io.tell();
+        if (pos < 0 || io.seek(pos + extraBytes, Steinberg::kSeekSet) != pos + extraBytes)
+            return invalid;
+    }
 
-    return decode(bytes.data(), total);
+    DecodeResult result{};
+    if (!sanitize(current, result.params))
+        return invalid;
+    result.source = Source::VersionedV2;
+    return result;
 }
 
 inline bool writeToStream(Steinberg::IBStream* stream, const Parameters& params)
@@ -97,8 +92,17 @@ inline bool writeToStream(Steinberg::IBStream* stream, const Parameters& params)
     if (!sanitize(params, safe))
         return false;
 
-    const auto bytes = encode(safe);
-    return writeExact(stream, bytes.data(), static_cast<Steinberg::int32>(bytes.size()));
+    Steinberg::IBStreamer io(stream, Steinberg::kLittleEndian);
+
+    return io.writeInt32(static_cast<Steinberg::int32>(kMagic)) &&
+           io.writeInt32(static_cast<Steinberg::int32>(kFormatVersion)) &&
+           io.writeInt32(static_cast<Steinberg::int32>(kV1PayloadBytes)) &&
+           io.writeInt32(0) &&
+           io.writeDouble(safe.bypass) &&
+           io.writeDouble(safe.drive) &&
+           io.writeDouble(safe.character) &&
+           io.writeDouble(safe.mix) &&
+           io.writeDouble(safe.output);
 }
 
 } // namespace StateV2
