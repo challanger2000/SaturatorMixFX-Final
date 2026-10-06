@@ -16,18 +16,36 @@ inline bool readExact(Steinberg::IBStream* stream, void* dst, Steinberg::int32 b
 {
     if (!stream || !dst || bytes < 0)
         return false;
-    Steinberg::int32 got = 0;
-    const auto result = stream->read(dst, bytes, &got);
-    return result == Steinberg::kResultOk && got == bytes;
+
+    auto* out = static_cast<std::uint8_t*>(dst);
+    Steinberg::int32 total = 0;
+    while (total < bytes)
+    {
+        Steinberg::int32 got = 0;
+        const auto result = stream->read(out + total, bytes - total, &got);
+        if (result != Steinberg::kResultOk || got <= 0)
+            return false;
+        total += got;
+    }
+    return true;
 }
 
 inline bool writeExact(Steinberg::IBStream* stream, const void* src, Steinberg::int32 bytes)
 {
     if (!stream || !src || bytes < 0)
         return false;
-    Steinberg::int32 written = 0;
-    const auto result = stream->write(const_cast<void*>(src), bytes, &written);
-    return result == Steinberg::kResultOk && written == bytes;
+
+    auto* in = static_cast<const std::uint8_t*>(src);
+    Steinberg::int32 total = 0;
+    while (total < bytes)
+    {
+        Steinberg::int32 written = 0;
+        const auto result = stream->write(const_cast<std::uint8_t*>(in + total), bytes - total, &written);
+        if (result != Steinberg::kResultOk || written <= 0)
+            return false;
+        total += written;
+    }
+    return true;
 }
 
 inline DecodeResult readFromStream(Steinberg::IBStream* stream)
