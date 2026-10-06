@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <cmath>
 #include <type_traits>
+#if defined(SMX3_MAC_STATE_DIAGNOSTIC)
+#include <cstdio>
+#endif
 
 namespace SaturatorMixFX {
 using namespace Steinberg;
@@ -448,6 +451,9 @@ tresult PLUGIN_API Processor::setState(IBStream* s)
 tresult PLUGIN_API Processor::getState(IBStream* s)
 {
     const StateV2::Parameters state{onOff_, drive_, character_, mix_, output_};
+#if defined(SMX3_MAC_STATE_DIAGNOSTIC)
+    std::fprintf(stderr, "SMX3 DIAG processor getState bypass=%.17g\\n", state.bypass);
+#endif
     return StateV2::writeToStream(s, state) ? kResultOk : kResultFalse;
 }
 
