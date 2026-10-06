@@ -1,4 +1,5 @@
 name: Build SMX-3 V2 macOS Universal Beta
+# retry after robust state stream IO
 
 on:
   workflow_dispatch:
