@@ -432,6 +432,10 @@ tresult PLUGIN_API Processor::process(ProcessData& d)
 tresult PLUGIN_API Processor::setState(IBStream* s)
 {
     const auto decoded = StateV2::readFromStream(s);
+#if defined(SMX3_MAC_STATE_DIAGNOSTIC)
+    std::fprintf(stderr, "SMX3 DIAG processor setState source=%d bypass=%.17g\\n",
+        static_cast<int>(decoded.source), decoded.params.bypass);
+#endif
     if (decoded.source == StateV2::Source::Invalid)
         return kResultFalse;
 
