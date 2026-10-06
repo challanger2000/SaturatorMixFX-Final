@@ -1,4 +1,5 @@
 name: Diagnose SMX-3 V2 macOS Channel State
+# diagnostic pass 2: trace Processor::setState
 
 on:
   workflow_dispatch:
