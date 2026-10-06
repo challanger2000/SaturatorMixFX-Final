@@ -1,5 +1,4 @@
-name: Build SMX-3 V2 macOS Universal Beta
-# retry after robust state stream IO
+name: Diagnose SMX-3 V2 macOS Channel State
 
 on:
   workflow_dispatch:
@@ -13,9 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  diagnose:
     runs-on: macos-15
-
     steps:
       - name: Checkout V2 source
         uses: actions/checkout@v4
@@ -28,21 +26,15 @@ jobs:
           path: vst3sdk
           submodules: recursive
 
-      - name: Show build environment
-        run: |
-          sw_vers
-          uname -m
-          cmake --version
-          xcodebuild -version
-
-      - name: Configure Channel Universal
+      - name: Configure Channel diagnostic
         run: |
           cmake -S SMX-3-Channel -B build-channel -G Xcode \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
             -DVST3_SDK_ROOT="${{ github.workspace }}/vst3sdk" \
-            -DSMTG_CREATE_PLUGIN_LINK=0
+            -DSMTG_CREATE_PLUGIN_LINK=0 \
+            -DSMTG_RUN_VST_VALIDATOR=OFF
 
       - name: Build Channel and validator
         run: |
@@ -50,143 +42,30 @@ jobs:
             --target SMX-3-V2-Channel validator \
             --parallel
 
-      - name: Validate Channel
+      - name: Run diagnostic validator
         run: |
           set -euo pipefail
           plugin="$(find build-channel -type d -name 'SMX-3-V2-Channel.vst3' -print -quit)"
           validator="$(find build-channel -type f -name 'validator' -perm +111 -print -quit)"
           test -n "$plugin"
           test -n "$validator"
-          "$validator" "$plugin" 2>&1 | tee validator-channel.log
-          grep -Eq 'Result:[[:space:]]+47 tests passed,[[:space:]]+0 tests failed' validator-channel.log
-
-      - name: Configure Mix FX Universal
-        run: |
-          cmake -S SMX-3-MixFX -B build-mixfx -G Xcode \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
-            -DVST3_SDK_ROOT="${{ github.workspace }}/vst3sdk" \
-            -DSMTG_CREATE_PLUGIN_LINK=0
-
-      - name: Build Mix FX and validator
-        run: |
-          cmake --build build-mixfx --config Release \
-            --target SMX-3-V2-MixFX validator \
-            --parallel
-
-      - name: Validate Mix FX class scan
-        run: |
-          set -euo pipefail
-          plugin="$(find build-mixfx -type d -name 'SMX-3-V2-MixFX.vst3' -print -quit)"
-          validator="$(find build-mixfx -type f -name 'validator' -perm +111 -print -quit)"
-          test -n "$plugin"
-          test -n "$validator"
           set +e
-          "$validator" "$plugin" 2>&1 | tee validator-mixfx.log
-          code=$?
+          "$validator" "$plugin" 2>&1 | tee validator-channel-diagnostic.log
+          code=${PIPESTATUS[0]}
           set -e
-          grep -Eq 'category[[:space:]]*=[[:space:]]*Audio Mix Processor' validator-mixfx.log
-          grep -Eq 'Result:[[:space:]]+0 tests passed,[[:space:]]+0 tests failed' validator-mixfx.log
-          if [ "$code" -ne 0 ]; then
-            echo "Validator exit code $code accepted only because Audio Mix Processor class scan and expected 0/0 result were confirmed."
-          fi
+          echo "validator_exit=$code" >> "$GITHUB_ENV"
 
-      - name: Verify version and Universal architectures
-        run: |
-          set -euo pipefail
-          channel="$(find build-channel -type d -name 'SMX-3-V2-Channel.vst3' -print -quit)"
-          mixfx="$(find build-mixfx -type d -name 'SMX-3-V2-MixFX.vst3' -print -quit)"
-          test -n "$channel"
-          test -n "$mixfx"
-
-          for plugin in "$channel" "$mixfx"; do
-            moduleinfo="$plugin/Contents/Resources/moduleinfo.json"
-            test -f "$moduleinfo"
-            grep -Eq '"Version"[[:space:]]*:[[:space:]]*"2\.0\.0"' "$moduleinfo"
-          done
-
-          for binary in \
-            "$channel/Contents/MacOS/SMX-3-V2-Channel" \
-            "$mixfx/Contents/MacOS/SMX-3-V2-MixFX"
-          do
-            file "$binary"
-            archs="$(lipo -archs "$binary")"
-            echo "$binary: $archs"
-            echo "$archs" | grep -qw arm64
-            echo "$archs" | grep -qw x86_64
-          done
-
-          mkdir -p staging/VST3
-          ditto "$channel" staging/VST3/SMX-3-V2-Channel.vst3
-          ditto "$mixfx" staging/VST3/SMX-3-V2-MixFX.vst3
-
-      - name: Ad-hoc sign staged bundles
-        run: |
-          set -euo pipefail
-          for plugin in \
-            "staging/VST3/SMX-3-V2-Channel.vst3" \
-            "staging/VST3/SMX-3-V2-MixFX.vst3"
-          do
-            codesign --force --deep --sign - "$plugin"
-            codesign --verify --deep --strict --verbose=2 "$plugin"
-          done
-
-      - name: Assemble macOS Gumroad Beta package
-        run: |
-          set -euo pipefail
-          ROOT="release/125A_SMX-3_V2_v2.0.0_macOS_Universal_BETA"
-          ZIP="release/125A_SMX-3_V2_v2.0.0_macOS_Universal_BETA_Gumroad.zip"
-          rm -rf release
-          mkdir -p "$ROOT/VST3" "$ROOT/Documentation"
-
-          ditto "staging/VST3/SMX-3-V2-Channel.vst3" "$ROOT/VST3/SMX-3-V2-Channel.vst3"
-          ditto "staging/VST3/SMX-3-V2-MixFX.vst3" "$ROOT/VST3/SMX-3-V2-MixFX.vst3"
-
-          cp README.md LICENSE.txt INSTALL_DE.txt INSTALL_EN.txt \
-             BEDIENUNGSANLEITUNG_DE.md MANUAL_EN.md "$ROOT/Documentation/"
-          cp docs/SMX-3_Handbuch_DE.pdf docs/SMX-3_Manual_EN.pdf "$ROOT/Documentation/"
-
-          cat > "$ROOT/INSTALL_MACOS_BETA.txt" <<'EOF'
-          125A SMX-3 V2 v2.0.0 - macOS Universal VST3 BETA
-
-          TEST STATUS
-          This build is BETA until validated on physical Mac hardware.
-          Both VST3 bundles are Universal: Apple Silicon arm64 + Intel x86_64.
-
-          INSTALLATION
-          1. Close Studio One / Fender Studio.
-          2. Copy both VST3 bundles from the VST3 folder to:
-             ~/Library/Audio/Plug-Ins/VST3/
-             or
-             /Library/Audio/Plug-Ins/VST3/
-          3. Restart the host and rescan VST3 plug-ins if required.
-          4. Use SMX-3 V2 Channel as a normal insert.
-          5. Use SMX-3 V2 Mix FX in the Mix FX slot.
-
-          NOTE
-          This tester build is ad-hoc signed and not Apple Developer ID notarized.
-          If macOS quarantine blocks a bundle, remove quarantine from the copied
-          VST3 bundle before testing.
-
-          Please report macOS version, Mac model/CPU, Studio One/Fender Studio
-          version, and exact reproduction steps for any issue.
-          EOF
-
-          (
-            cd "$ROOT"
-            find . -type f ! -name SHA256SUMS.txt -print0 |
-              sort -z |
-              xargs -0 shasum -a 256 > SHA256SUMS.txt
-          )
-
-          ditto -c -k --sequesterRsrc --keepParent "$ROOT" "$ZIP"
-          test -f "$ZIP"
-          ls -lh "$ZIP"
-
-      - name: Upload macOS Gumroad Beta package
+      - name: Upload diagnostic log
         uses: actions/upload-artifact@v4
         with:
-          name: 125A_SMX-3_V2_v2.0.0_macOS_Universal_BETA_Gumroad
-          path: release/125A_SMX-3_V2_v2.0.0_macOS_Universal_BETA_Gumroad.zip
+          name: SMX-3-V2-macOS-state-diagnostic
+          path: validator-channel-diagnostic.log
           if-no-files-found: error
+
+      - name: Mark diagnostic result
+        run: |
+          grep -E 'SMX3 DIAG|Parameter Bypass persistence|Result:' validator-channel-diagnostic.log || true
+          if grep -Eq 'Result:[[:space:]]+47 tests passed,[[:space:]]+0 tests failed' validator-channel-diagnostic.log; then
+            exit 0
+          fi
+          exit 1
