@@ -7,6 +7,9 @@
 #include "public.sdk/source/vst/vstparameters.h"
 
 #include <cstring>
+#if defined(SMX3_MAC_STATE_DIAGNOSTIC)
+#include <cstdio>
+#endif
 
 namespace SaturatorMixFX {
 
@@ -46,6 +49,10 @@ tresult PLUGIN_API Controller::setComponentState(IBStream* state) {
     if (decoded.source == StateV2::Source::Invalid)
         return kResultFalse;
 
+#if defined(SMX3_MAC_STATE_DIAGNOSTIC)
+    std::fprintf(stderr, "SMX3 DIAG controller setComponentState source=%d bypass=%.17g\\n",
+        static_cast<int>(decoded.source), decoded.params.bypass);
+#endif
     setParamNormalized(kParamOnOff, decoded.params.bypass);
     setParamNormalized(kParamDrive, decoded.params.drive);
     setParamNormalized(kParamCharacter, decoded.params.character);
