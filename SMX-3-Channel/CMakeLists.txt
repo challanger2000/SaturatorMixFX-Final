@@ -40,6 +40,7 @@ elseif(APPLE)
     target_sources(SMX-3-V2-Channel PRIVATE
         ${vst3sdk_SOURCE_DIR}/public.sdk/source/main/macmain.cpp
     )
+    target_compile_definitions(SMX-3-V2-Channel PRIVATE SMX3_MAC_STATE_DIAGNOSTIC=1)
 endif()
 
 smtg_target_add_plugin_resources(SMX-3-V2-Channel
